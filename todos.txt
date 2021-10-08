@@ -16,3 +16,5 @@ Features:
     - [ ] write up help menu
     - [ ] implement guides & snaps for moving and scaling
 
+    - [ ] press ALT to drag canvas with LEFT-MOUSE-BUTTON
+    - [ ] touchdevices cant drag images!
