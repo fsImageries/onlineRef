@@ -1,0 +1,18 @@
+Features:
+    - [ ] Layout (in grids)
+    - [x] Transforms (rotate, translate, scale)
+    - [x] Drag N Drop from Desktop and Browser
+    - [x] Google Resolver for links
+
+    - [x] Toggle Panning on TouchDevices
+    - [x] Toggle Selecting on TouchDevices
+    - [x] Toggle Zooming on TouchDevices
+
+    - [x] free-form rotation
+    - [~] blender/maya (probably maya for transforms) shortcut system (fix wrong activations)
+    - [x] Order (Z-index)/ MoveToTop
+    - [x] Populate icons with function (except Help)
+
+    - [ ] write up help menu
+    - [ ] implement guides & snaps for moving and scaling
+

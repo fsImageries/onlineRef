@@ -1,0 +1,125 @@
+@import "./mixins.scss";
+
+@keyframes jiggle {
+  0% {
+    transform: rotate(calc(var(--jiggle-rotation) * -1));
+  }
+  50% {
+    transform: rotate(var(--jiggle-rotation));
+  }
+}
+
+:root {
+  // Background color palette
+  --dark-liver: #5b5863ff;
+  --sonic-silver: #77767aff;
+  --persian-indigo: #32156bff;
+  --medium-purple: #9d6dfcff;
+  --ultramarine: #5612deff;
+
+  --bg-color: #090820;
+
+  --settings-add-size: 6vh;
+  --jiggle-rotation: 9deg;
+  --rectangle-width-border-radius: 20%;
+  --rectangle-height: 40vh;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-color);
+  overflow: hidden;
+  color: black;
+}
+
+.optionsButtons {
+  @include rightCornerPosition;
+  z-index: 5;
+  // display: flex;
+
+  .linkInputWrapper{
+    transition: .5s;
+    // width: 0;
+    overflow: hidden;
+    // margin-top: 5.54vh;
+    // margin-right: 1.25vh;
+  }
+
+  .wrapper_bar{
+    width: 100%;
+  }
+
+  .wrapper_div{
+    display: flex;
+    align-items: baseline;
+    gap: 1vh;
+  }
+
+
+  .settingsBtn {
+    width: 100%;
+    padding: 1%;
+    margin-bottom: 1vh;
+    -webkit-font-smoothing: subpixel-antialiased;
+    backface-visibility: hidden;
+    // transition: 500ms ease-in-out;
+    // TODO only apply when no touch device detected
+    // &:hover {
+    //   animation: jiggle 500ms ease-in-out infinite;
+    // }
+    @include roundedIconFrame(--settings-add-size);
+  }
+  .adder {
+    font-weight: 900;
+  }
+}
+
+.settingsPanel {
+  @include rightCornerPosition;
+
+  height: var(--rectangle-height);
+  width: calc(var(--rectangle-height) / 2);
+  background-color: white;
+  border-radius: var(--rectangle-width-border-radius) /
+    calc(var(--rectangle-width-border-radius) / 2);
+  overflow: hidden;
+  padding: 1%;
+
+  #fileUp{
+    display: none;
+    }
+  
+  i {
+    @include roundedIconFrame(--settings-add-size, black, white);
+  }
+  
+  .inputLabel{
+    cursor: pointer;
+    text-align: center;
+    margin-top: 2.5vh;
+    width: 100%;
+    display: block;
+    border-left: 0px;
+    border-right: 0;
+    border-top: 1px solid;
+    border-bottom: 1px solid;
+  }
+
+  .icon{
+    display: flex;
+    justify-content: center;
+  }
+
+  .inputLabel::placeholder{
+    // font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .close {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    margin-bottom: 2vh;
+    transform: translateX(-50%);
+    @include roundedIconFrame(--settings-add-size, black, white);
+  }
+}
