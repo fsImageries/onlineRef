@@ -16,7 +16,8 @@ const xSideInFade = (selector, rev=false, settings_conf=false) => {
     let tl = gsap.timeline({duration:.15})
     const settings = settings_conf ? settings_conf : {
         x:50,
-        stagger:0.15
+        stagger:0.15,
+        ease: "Power4.easeOut"
     }
 
     if (rev) tl.from(selector, settings)
@@ -27,5 +28,22 @@ const xSideInFade = (selector, rev=false, settings_conf=false) => {
     return tl
 }
 
+const btns_slide = (selector) => {
+    let tl = gsap.timeline({
+        duration:.15
+    })
 
-export {heightFade, xSideInFade}
+    const settings = {
+        // y: ($(selector).last().offset().top + $(selector).last().height()) * -1,
+        xPercent: 100,
+        stagger:0.075
+    }
+
+    tl.to(selector, settings)
+    tl.pause()
+
+    return tl
+}
+
+
+export {heightFade, xSideInFade, btns_slide}

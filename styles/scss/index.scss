@@ -19,7 +19,7 @@
 
   --bg-color: #090820;
 
-  --settings-add-size: 6vh;
+  --settings-add-size: 4vh;
   --jiggle-rotation: 9deg;
   --rectangle-width-border-radius: 20%;
   --rectangle-height: 40vh;
@@ -35,28 +35,34 @@ body {
 .optionsButtons {
   @include rightCornerPosition;
   z-index: 5;
-  // display: flex;
 
-  .linkInputWrapper{
-    transition: .5s;
-    // width: 0;
+  .linkInputWrapper {
+    transition: 0.5s;
     overflow: hidden;
-    // margin-top: 5.54vh;
-    // margin-right: 1.25vh;
   }
 
-  .wrapper_bar{
+  .wrapper_bar {
     width: 100%;
   }
 
-  .wrapper_div{
+  .wrapper_div {
+    &:nth-child(1) {
+      z-index: 10;
+    }
     display: flex;
     align-items: baseline;
     gap: 1vh;
   }
 
+  .settingsBtnSpacer{
+    width: 25%;
+    height: 1vh;
+    // border-radius: 20%;
+    border-top: 1px #80808059 solid;
+  }
 
   .settingsBtn {
+    z-index: inherit;
     width: 100%;
     padding: 1%;
     margin-bottom: 1vh;
@@ -85,15 +91,15 @@ body {
   overflow: hidden;
   padding: 1%;
 
-  #fileUp{
+  #fileUp {
     display: none;
-    }
-  
+  }
+
   i {
     @include roundedIconFrame(--settings-add-size, black, white);
   }
-  
-  .inputLabel{
+
+  .inputLabel {
     cursor: pointer;
     text-align: center;
     margin-top: 2.5vh;
@@ -105,12 +111,12 @@ body {
     border-bottom: 1px solid;
   }
 
-  .icon{
+  .icon {
     display: flex;
     justify-content: center;
   }
 
-  .inputLabel::placeholder{
+  .inputLabel::placeholder {
     // font-family: Arial, Helvetica, sans-serif;
   }
 

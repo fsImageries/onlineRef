@@ -14,7 +14,8 @@ let Config = {
     rotateAct: false,
     rotateFree: false,
     curShapes: undefined,
-    lastAnchor: undefined
+    lastAnchor: undefined,
+    stageDrag: false
 }
 
 var isTouch = isTouchDevice();
@@ -80,7 +81,7 @@ const add_select_zoom = (stage, transform, selectionRectangle) => {
     let x1, y1, x2, y2;
     stage.on('mousedown touchstart', (e) => {
         if (!isTouch) {
-            stage.draggable(e.evt.button === 1 || e.evt.altKey);
+            stage.draggable(e.evt.button === 1 || e.evt.altKey || Config.stageDrag);
         }
         if (e.target !== stage) {
             return;

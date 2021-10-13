@@ -11,9 +11,27 @@ const link_input_anim   = animate.xSideInFade(".linkInput", true, {x:1000})
 
 // Register key-holds (if not touchdevice)
 if (!isTouch) {
-    $(".moveDrag").closest(".wrapper_div").css("display", "none")
-    $(".rotateDrag").closest(".wrapper_div").css("display", "none")
-    $(".scaleDrag").closest(".wrapper_div").css("display", "none")
+    // $(".moveDrag").closest(".wrapper_div").css("display", "none")
+    // $(".rotateDrag").closest(".wrapper_div").css("display", "none")
+    // $(".scaleDrag").closest(".wrapper_div").css("display", "none")
+    // $(".settingsBtnSpacer").closest(".wrapper_div").css("display", "none")
+
+    $(".rotateDrag").on("click", () => {
+        StageConfig.TransMain.anchorSize(StageConfig.TransMain.anchorSize() ? 0 : 7.5)
+        Config.rotateAct = true
+        toggle_rotation()
+    })
+
+    $(".scaleDrag").on("click", () => {
+        StageConfig.TransMain.anchorSize(StageConfig.TransMain.anchorSize() ? 0 : 7.5)
+        Config.rotateAct = false
+        toggle_rotation()
+    })
+
+    $(".moveDrag").on("click", () => {
+        Config.stageDrag = !Config.stageDrag
+        StageConfig.Stage.draggable(!StageConfig.Stage.draggable());
+    });
 
     $(document).on("keyup keydown", (e) => {
         Config.multScale = e.shiftKey
@@ -34,21 +52,7 @@ if (!isTouch) {
 // if touchdevice register extra buttons and helps
 else {
 
-    $(".rotateDrag").on("click", () => {
-        StageConfig.TransMain.anchorSize(StageConfig.TransMain.anchorSize() ? 0 : 7.5)
-        Config.rotateAct = true
-        toggle_rotation()
-    })
-
-    $(".scaleDrag").on("click", () => {
-        StageConfig.TransMain.anchorSize(StageConfig.TransMain.anchorSize() ? 0 : 7.5)
-        Config.rotateAct = false
-        toggle_rotation()
-    })
-
-    $(".moveDrag").on("click", () => {
-        StageConfig.Stage.draggable(!StageConfig.Stage.draggable());
-    });
+    
     
 }
 
@@ -105,3 +109,18 @@ $(".linkInput").on("keydown", e => {
         $(".linkInput").val("")
     }
 });
+
+$(".settingsAll").on("click", () => {
+    const class_name =  $(".settingsAll").attr("class")
+    toggleClass(".settingsAll", "active")
+
+    some.timeScale(1)
+    if (class_name.includes("active")) some.play()
+     else some.reverse()
+})
+
+
+const some = animate.btns_slide(".wrapper_div:not(:nth-child(1))")
+some.timeScale(50).play()
+
+// setTimeout(()=> some.timeScale(1).reverse(), 1000)

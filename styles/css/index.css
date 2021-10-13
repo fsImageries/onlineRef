@@ -27,7 +27,7 @@
   --medium-purple: #9d6dfcff;
   --ultramarine: #5612deff;
   --bg-color: #090820;
-  --settings-add-size: 6vh;
+  --settings-add-size: 4vh;
   --jiggle-rotation: 9deg;
   --rectangle-width-border-radius: 20%;
   --rectangle-height: 40vh;
@@ -48,8 +48,8 @@ body {
 }
 
 .optionsButtons .linkInputWrapper {
-  -webkit-transition: .5s;
-  transition: .5s;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
   overflow: hidden;
 }
 
@@ -67,7 +67,18 @@ body {
   gap: 1vh;
 }
 
+.optionsButtons .wrapper_div:nth-child(1) {
+  z-index: 10;
+}
+
+.optionsButtons .settingsBtnSpacer {
+  width: 25%;
+  height: 1vh;
+  border-top: 1px #80808059 solid;
+}
+
 .optionsButtons .settingsBtn {
+  z-index: inherit;
   width: 100%;
   padding: 1%;
   margin-bottom: 1vh;
