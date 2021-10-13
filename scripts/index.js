@@ -7,6 +7,8 @@ import * as animate from "./animations.js"
 
 // Animations
 const link_input_anim   = animate.xSideInFade(".linkInput", true, {x:1000})
+const func_btns_anim    = animate.btns_slide(".wrapper_div:not(:nth-child(1))")
+func_btns_anim.timeScale(50).play()
 
 
 // Register key-holds (if not touchdevice)
@@ -89,14 +91,13 @@ $(".settingsAll").on("click", () => {
     const class_name =  $(".settingsAll").attr("class")
     toggleClass(".settingsAll", "active")
 
-    some.timeScale(1)
-    if (class_name.includes("active")) some.play()
-     else some.reverse()
+    func_btns_anim.timeScale(1)
+    if (class_name.includes("active")) func_btns_anim.play()
+     else func_btns_anim.reverse()
 })
 
 
-const some = animate.btns_slide(".wrapper_div:not(:nth-child(1))")
-some.timeScale(50).play()
+
 
 
 $(".rotateDrag").on("click", () => {
