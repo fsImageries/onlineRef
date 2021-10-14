@@ -19,7 +19,7 @@
 
   --bg-color: #090820;
 
-  --settings-add-size: 4vh;
+  --icons-btn-size: 3rem;
   --jiggle-rotation: 9deg;
   --rectangle-width-border-radius: 20%;
   --rectangle-height: 40vh;
@@ -35,8 +35,12 @@ body {
 .optionsButtons {
   @include rightCornerPosition;
   z-index: 5;
+  pointer-events: none;
 
   .linkInputWrapper {
+    .linkInput{
+      border-radius: 5vh;
+    }
     transition: 0.5s;
     overflow: hidden;
   }
@@ -49,6 +53,7 @@ body {
     &:nth-child(1) {
       z-index: 10;
     }
+    pointer-events: none;
     display: flex;
     align-items: baseline;
     gap: 1vh;
@@ -57,11 +62,11 @@ body {
   .settingsBtnSpacer{
     width: 25%;
     height: 1vh;
-    // border-radius: 20%;
     border-top: 1px #80808059 solid;
   }
 
   .settingsBtn {
+    pointer-events: auto;
     z-index: inherit;
     width: 100%;
     padding: 1%;
@@ -73,7 +78,7 @@ body {
     // &:hover {
     //   animation: jiggle 500ms ease-in-out infinite;
     // }
-    @include roundedIconFrame(--settings-add-size);
+    @include roundedIconFrame(--icons-btn-size);
   }
   .adder {
     font-weight: 900;
@@ -96,7 +101,7 @@ body {
   }
 
   i {
-    @include roundedIconFrame(--settings-add-size, black, white);
+    @include roundedIconFrame(--icons-btn-size, black, white);
   }
 
   .inputLabel {
@@ -126,6 +131,6 @@ body {
     left: 50%;
     margin-bottom: 2vh;
     transform: translateX(-50%);
-    @include roundedIconFrame(--settings-add-size, black, white);
+    @include roundedIconFrame(--icons-btn-size, black, white);
   }
 }

@@ -17,5 +17,8 @@ Features:
     - [ ] implement guides & snaps for moving and scaling
 
     - [x] press ALT to drag canvas with LEFT-MOUSE-BUTTON
-    - [ ] touchdevices cant drag images!
+    - [~] touchdevices cant drag images!
     - [ ] button click feedback (little wobble anim)
+    - [ ] add videoframe function (load videos into canvas and play while hovering)
+    - [x] scales images down when bigger than window
+    - [x] place images where mouse drops

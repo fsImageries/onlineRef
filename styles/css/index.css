@@ -27,7 +27,7 @@
   --medium-purple: #9d6dfcff;
   --ultramarine: #5612deff;
   --bg-color: #090820;
-  --settings-add-size: 4vh;
+  --icons-btn-size: 3rem;
   --jiggle-rotation: 9deg;
   --rectangle-width-border-radius: 20%;
   --rectangle-height: 40vh;
@@ -45,6 +45,7 @@ body {
   top: 0.75%;
   right: 0.75%;
   z-index: 5;
+  pointer-events: none;
 }
 
 .optionsButtons .linkInputWrapper {
@@ -53,11 +54,16 @@ body {
   overflow: hidden;
 }
 
+.optionsButtons .linkInputWrapper .linkInput {
+  border-radius: 5vh;
+}
+
 .optionsButtons .wrapper_bar {
   width: 100%;
 }
 
 .optionsButtons .wrapper_div {
+  pointer-events: none;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -78,6 +84,7 @@ body {
 }
 
 .optionsButtons .settingsBtn {
+  pointer-events: auto;
   z-index: inherit;
   width: 100%;
   padding: 1%;
@@ -89,10 +96,10 @@ body {
   border-radius: 50%;
   background-color: white;
   color: black;
-  height: var(--settings-add-size);
-  width: var(--settings-add-size);
-  max-width: var(--settings-add-size);
-  max-height: var(--settings-add-size);
+  height: var(--icons-btn-size);
+  width: var(--icons-btn-size);
+  max-width: var(--icons-btn-size);
+  max-height: var(--icons-btn-size);
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -129,10 +136,10 @@ body {
   border-radius: 50%;
   background-color: black;
   color: white;
-  height: var(--settings-add-size);
-  width: var(--settings-add-size);
-  max-width: var(--settings-add-size);
-  max-height: var(--settings-add-size);
+  height: var(--icons-btn-size);
+  width: var(--icons-btn-size);
+  max-width: var(--icons-btn-size);
+  max-height: var(--icons-btn-size);
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -176,10 +183,10 @@ body {
   border-radius: 50%;
   background-color: black;
   color: white;
-  height: var(--settings-add-size);
-  width: var(--settings-add-size);
-  max-width: var(--settings-add-size);
-  max-height: var(--settings-add-size);
+  height: var(--icons-btn-size);
+  width: var(--icons-btn-size);
+  max-width: var(--icons-btn-size);
+  max-height: var(--icons-btn-size);
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
