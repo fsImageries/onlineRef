@@ -76,12 +76,11 @@ $(".linkInput").on("keydown", (e) => {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-$(".playVideo").on("click", e => {
-  Stage.stage.video_play_selected()
-})
+$(".playVideo").on("click", (e) => {
+  Stage.stage.video_play_selected();
+});
 
 ///////////////////////////////////////////////////////////////////////////////
-
 
 $(".moveDrag").on("click", (e) => {
   helpers.toggleClass(".moveDrag", "active");
@@ -120,7 +119,6 @@ $(".moveTT").on("click", (e) => {
   Stage.stage.duplicate_selected();
   btns_presser[helpers.getClickedClass(e.target)].restart();
 });
-
 
 // $(document).on("click", e => console.log(e.target))
 
