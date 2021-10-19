@@ -1,49 +1,40 @@
-const heightFade = (selector, rev=false) => {
-    let tl = gsap.timeline({duration:.15})
-    const settings = {
-        scaleY:0,
-    }
+const anim_temp = (selector, tl_conf, fx_conf, from=false) => {
+    const tl = gsap.timeline(tl_conf)
 
-    if (rev) tl.from(selector, settings)
-    else tl.to(selector, settings)
-
-    tl.pause()
-
-    return tl
-}
-
-const xSideInFade = (selector, rev=false, settings_conf=false) => {
-    let tl = gsap.timeline({duration:.15})
-    const settings = settings_conf ? settings_conf : {
-        x:50,
-        stagger:0.15,
-        ease: "Power4.easeOut"
-    }
-
-    if (rev) tl.from(selector, settings)
-    else tl.to(selector, settings)
-
-    tl.pause()
-
-    return tl
-}
-
-const btns_slide = (selector) => {
-    let tl = gsap.timeline({
-        duration:.15
-    })
-
-    const settings = {
-        // y: ($(selector).last().offset().top + $(selector).last().height()) * -1,
-        xPercent: 100,
-        stagger:0.075
-    }
-
-    tl.to(selector, settings)
+    if (from) tl.from(selector, fx_conf)
+    else tl.to(selector, fx_conf)
     tl.pause()
 
     return tl
 }
 
 
-export {heightFade, xSideInFade, btns_slide}
+const btn_press = (selector, tl_conf) => {
+    const tl = gsap.timeline(tl_conf)
+
+
+    // tl.to(".moveTT", {scaleX:1, scaleY:1})
+    tl.to(selector, {scaleX:1.1, scaleY:1.1})
+    tl.to(selector, {scaleX:1, scaleY:1})
+
+    tl.pause()
+    return tl
+}
+
+const btn_press_manger = (selectors, tl_conf) => {
+
+    const btn_mapper = {}
+    // for (let selector of selectors){
+    $(selectors).each(idx => {
+        const elem = $(selectors)[idx]
+        const tl = btn_press(elem, tl_conf)
+
+        const name = elem.className.replaceAll("settingsBtn","").replaceAll("active","").replaceAll(" ","")
+        btn_mapper[name] = tl
+    })    
+    return btn_mapper
+}
+
+
+
+export {anim_temp, btn_press, btn_press_manger}

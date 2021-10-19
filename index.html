@@ -18,6 +18,26 @@
     <link rel="stylesheet" href="styles/css/index.css" />
   </head>
   <body>
+    <div style="
+    position: absolute;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #edf5ffbd;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    "><div style="
+                        width: 50vw;
+                        height: 50vh;
+                        background-color: black;
+                        border-radius: 14%;
+                    "></div>
+                    </div>
+
+
     <div class="optionsButtons">
 
         <div class="wrapper_div">
@@ -37,7 +57,7 @@
 
         <div class="wrapper_div">
           <div class="linkInputWrapper">
-            <input class="linkInput" type="text">
+            <input class="linkInput" class="settingsBtn" type="text">
           </div>
 
           <div class="settingsBtn linkAdd">
@@ -52,7 +72,19 @@
 
         <div class="wrapper_div">
           <div class="wrapper_bar"></div>
-          <div class="settingsBtn moveDrag" style="width: 100%;">
+          <div class="settingsBtn playVideo" style="width: 100%;">
+            <i class="fas fa-play"></i>
+          </div>
+        </div>
+
+        <div class="wrapper_div">
+          <div class="wrapper_bar"></div>
+          <div class="settingsBtnSpacer"></div>
+        </div>
+
+        <div class="wrapper_div">
+          <div class="wrapper_bar"></div>
+          <div class="settingsBtn moveDrag active" style="width: 100%;">
             <!-- <i class="fas fa-arrows-alt"></i> -->
             <i class="fas fa-mouse-pointer"></i>
           </div>
@@ -65,14 +97,14 @@
 
         <div class="wrapper_div">
           <div class="wrapper_bar"></div>
-          <div class="settingsBtn scaleDrag" style="width: 100%;">
+          <div class="settingsBtn scaleTrans active" style="width: 100%;">
             <i class="fas fa-expand-arrows-alt"></i>
           </div>
         </div>
 
         <div class="wrapper_div">
           <div class="wrapper_bar"></div>
-          <div class="settingsBtn rotateDrag" style="width: 100%;">
+          <div class="settingsBtn rotateTrans" style="width: 100%;">
             <i class="fas fa-undo"></i>
           </div>
         </div>

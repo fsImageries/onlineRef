@@ -19,6 +19,8 @@
 
   --bg-color: #090820;
 
+  --active-btn-col: #FF007F;
+
   --icons-btn-size: 3rem;
   --jiggle-rotation: 9deg;
   --rectangle-width-border-radius: 20%;
@@ -40,6 +42,7 @@ body {
   .linkInputWrapper {
     .linkInput{
       border-radius: 5vh;
+      pointer-events:visible;
     }
     transition: 0.5s;
     overflow: hidden;
@@ -66,6 +69,10 @@ body {
   }
 
   .settingsBtn {
+    &.active{
+      background-color: var(--active-btn-col);
+    }
+    transition: background-color 1s;
     pointer-events: auto;
     z-index: inherit;
     width: 100%;
@@ -79,6 +86,7 @@ body {
     //   animation: jiggle 500ms ease-in-out infinite;
     // }
     @include roundedIconFrame(--icons-btn-size);
+    display: none;
   }
   .adder {
     font-weight: 900;

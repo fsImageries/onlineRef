@@ -16,4 +16,17 @@ const toggleClass = (selector, class_name) => {
   }
 };
 
-export { isTouchDevice, toggleClass };
+const cleanClassName = (class_name, replacers) => {
+  for (let name of class_name.split(" ")) {
+    if (!replacers.includes(name)) return name;
+  }
+};
+
+const getClickedClass = (elem) => {
+  return cleanClassName($(elem).closest(".settingsBtn")[0].className, [
+    "settingsBtn",
+    "active",
+  ]);
+};
+
+export { isTouchDevice, toggleClass, getClickedClass };

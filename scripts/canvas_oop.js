@@ -1,11 +1,5 @@
 import { isTouchDevice } from "./helpers.js";
 
-const getRatio = (stage, img) => {
-  const hRatio = stage.width() / img.width;
-  const vRatio = stage.height() / img.height;
-  return Math.min(hRatio, vRatio) * 0.85;
-};
-
 const getDistance = (p1, p2) => {
   return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
 };
@@ -54,6 +48,10 @@ class CanvasStage {
     });
     this.topLayer = new Konva.Layer();
 
+    this.anim = new Konva.Animation(function () {
+      // do nothing, animation just need to update the layer
+    }, this.topLayer);
+
     this.stage.add(this.topLayer);
     this.topLayer.add(this.mainTransformer);
     this.topLayer.add(this.selectionRect);
@@ -66,7 +64,10 @@ class CanvasStage {
     this.rotateFree = false;
     this.stageDrag = false;
     this.selectedShape;
-    this.lastPointerPos;
+    this.lastPointerPos = {
+      x: $(window).width() / 2,
+      y: $(window).height() / 2,
+    };
 
     // Zoom variables
     this.lastDist = 0;
@@ -76,38 +77,90 @@ class CanvasStage {
     this._init_events();
   }
 
-  add_img(url) {
-    const imageObj = new Image();
-    imageObj.src = url;
-    imageObj.onload = () => {
-      const too_big =
-        imageObj.height > $(window).height() ||
-        imageObj.width > $(window).width();
-      const ratio = too_big ? getRatio(this.stage, imageObj) : 1;
+  /////////////// Add media to stage ///////////////
 
-      const pos = this.stage.getPointerPosition();
-      const img_width = imageObj.width * ratio;
-      const img_height = imageObj.height * ratio;
-      const imageLayer = new Konva.Image({
-        x: this.lastPointerPos.x - img_width / 2,
-        y: this.lastPointerPos.y - img_height / 2,
-        image: imageObj,
-        width: img_width,
-        height: img_height,
-        name: "image",
+  add_media(url, type) {
+    const add = (media, dims, pos = false, id = "image") => {
+      pos = pos || {
+        x: this.lastPointerPos.x - dims.w / 2,
+        y: this.lastPointerPos.y - dims.h / 2,
+      };
+
+      const layer = new Konva.Image({
+        x: pos.x,
+        y: pos.y,
+        image: media,
+        width: dims.w,
+        height: dims.h,
+        name: id,
         draggable: true,
       });
-      this.topLayer.add(imageLayer);
-      this.mainTransformer.nodes([imageLayer]);
+
+      this.topLayer.add(layer);
+      this.topLayer.draw();
+      this.mainTransformer.nodes([layer]);
       this.mainTransformer.moveToTop();
+
+      return layer;
     };
+
+    const loadStr = type === "image" ? "load" : "loadedmetadata";
+    const [width, height] =
+      type === "image" ? ["width", "height"] : ["videoWidth", "videoHeight"];
+    let mediaObj =
+      type === "image" ? new Image() : document.createElement("video");
+    mediaObj.src = url;
+
+    $(mediaObj).on(loadStr, () => {
+      const new_size = this._get_scaled_size({
+        w: mediaObj[width],
+        h: mediaObj[height],
+      });
+      const layer = add(
+        mediaObj,
+        { w: new_size.w, h: new_size.h },
+        false,
+        type
+      );
+
+      if (type === "video") {
+        mediaObj.play();
+        this.anim.start();
+        mediaObj.pause();
+        this.video_play_hovered(mediaObj, layer);
+      }
+    });
   }
 
-  file_2_img(file) {
+  file_2_url(file, type) {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = () => this.add_img(reader.result);
+    reader.onload = () => this.add_media(reader.result, type);
   }
+
+  url_2_canvas(url) {
+    try {
+      url = new URL(url); // Check if url is 'valid'
+    } catch (_) {
+      return false;
+    }
+    let resp;
+    const request = new XMLHttpRequest();
+    request.open("GET", url, true);
+    request.responseType = "blob";
+    request.onload = () => {
+      const reader = new FileReader();
+      reader.readAsDataURL(request.response);
+      reader.onload = (e) => {
+        resp = e.target.result;
+        if (resp.includes("data:image")) this.add_media(url, "image");
+        else if (resp.includes("data:video")) this.add_media(url, "video");
+      };
+    };
+    request.send();
+  }
+
+  /////////////// Toggle functions on stage ///////////////
 
   toggle_rotation() {
     this.mainTransformer.rotationSnapTolerance(this.rotateFree ? 0 : 5);
@@ -119,6 +172,7 @@ class CanvasStage {
     if (this.selectedShape === undefined) return;
 
     for (let shape of this.selectedShape) shape.destroy();
+    this.selectedShape = [];
     this.mainTransformer.nodes([]);
     this.topLayer.draw();
   }
@@ -131,12 +185,55 @@ class CanvasStage {
     }
   }
 
+  duplicate_selected() {
+    if (this.selectedShape !== undefined && this.selectedShape.length) {
+      const percentW = ($(window).width() / 100) * 10;
+      const percentH = ($(window).height() / 100) * 10;
+      const shape = this.selectedShape[0];
+      const pos = shape.position();
+      const clone = shape.clone({ x: pos.x - percentW, y: pos.y + percentH });
+
+      this.topLayer.add(clone);
+      this.mainTransformer.nodes([clone]);
+      this.mainTransformer.moveToTop();
+    }
+  }
+
+  video_play_selected() {
+    if (this.selectedShape !== undefined && this.selectedShape.length) {
+      const media = this.selectedShape[0].image();
+
+      if (media.nodeName === "VIDEO") {
+        if (media.paused) {
+          media.play();
+          this.anim.start();
+        } else {
+          media.pause();
+          this.anim.stop();
+        }
+      }
+    }
+  }
+
   fit_stage() {
     this.stage.width($(window).width());
     this.stage.height($(window).height());
   }
 
-  // Zoom and selection eventListeners
+  video_play_hovered(video, videoLayer) {
+    videoLayer.on("mouseover", () => {
+      video.play();
+      this.anim.start();
+    });
+
+    videoLayer.on("mouseout", () => {
+      video.pause();
+      this.anim.stop();
+    });
+  }
+
+  /////////////// Zoom and selection eventListeners ///////////////
+
   _init_select_zoom() {
     if (!this.isTouch) this.stage.on("wheel", (e) => this._wheel_zoom(e, this));
 
@@ -157,7 +254,6 @@ class CanvasStage {
     });
 
     this.stage.on("mousemove touchmove", (e) => {
-
       if (this.isTouch) this._pinch_zoom_start(e);
 
       if (!this.selectionRect.visible()) return;
@@ -180,19 +276,19 @@ class CanvasStage {
 
       setTimeout(() => this.selectionRect.visible(false));
 
-      const shapes = this.stage.find(".image");
+      const shapes = this.stage.find(".image, .video");
       const box = this.selectionRect.getClientRect();
       const selected = shapes.filter((shape) => {
         if (Konva.Util.haveIntersection(box, shape.getClientRect()))
           return shape;
+        // console.log(shape)
       });
       this.selectedShape = selected;
       this.mainTransformer.nodes(selected);
     });
 
     this.stage.on("click tap", (e) => {
-
-      console.log(e.target)
+      // console.log(e.target)
       if (this.selectionRect.visible()) return;
 
       if (e.target === this.stage) {
@@ -200,7 +296,7 @@ class CanvasStage {
         return;
       }
 
-      if (!e.target.hasName("image")) return;
+      // if (!e.target.hasName("image")) return;
 
       const metaPressed = e.evt.shiftKey || e.evt.ctr1lKey || e.evt.metaKey;
       const isSelected = this.mainTransformer.nodes().indexOf(e.target) >= 0;
@@ -221,7 +317,6 @@ class CanvasStage {
 
   _wheel_zoom(e, self) {
     e.evt.preventDefault();
-    // console.log(this.scaleX());
     const oldScale = self.stage.scaleX();
     const pointer = self.stage.getPointerPosition();
     const mousePointTo = {
@@ -288,7 +383,8 @@ class CanvasStage {
     this.lastCenter = null;
   }
 
-  // Window events
+  /////////////// Window and Stage events ///////////////
+
   _init_events() {
     // Register key-hold eventListeners
     if (!this.isTouch) {
@@ -299,6 +395,11 @@ class CanvasStage {
         if (e.key === "r" && e.type === "keydown") {
           this.rotateAct = !this.rotateAct;
           this.toggle_rotation();
+        }
+
+        if (e.key === "d" && e.ctrlKey && e.type === "keydown") {
+          e.preventDefault();
+          this.duplicate_selected();
         }
 
         if (e.key === "Backspace") this.delete_selected();
@@ -317,18 +418,41 @@ class CanvasStage {
       const file = e.dataTransfer.files[0];
 
       if (file) {
-        if (file.type.startsWith("image/")) {
-          this.file_2_canvas(file);
+        const type = file.type.slice(0, 5);
+        if (type === "video" || type === "image") {
+          this.file_2_url(file, type);
         }
       } else {
         const content = $(e.dataTransfer.getData("text/html"));
+        // console.log(e);
         if (content.attr("src")) {
-          this.add_img(content.attr("src"));
+          this.add_media(content.attr("src"), "image");
         }
       }
     });
 
     $(window).on("resize", (e) => this.fit_stage());
+
+    // this.stage.on("dblclick", () => console.log("hi"))
+  }
+
+  /////////////// Helper methods ///////////////
+
+  _get_ratio(layerSize) {
+    const hRatio = this.stage.width() / layerSize.w;
+    const vRatio = this.stage.height() / layerSize.h;
+    return Math.min(hRatio, vRatio) * 0.85;
+  }
+
+  _get_scaled_size(layerSize) {
+    const too_big =
+      layerSize.h > $(window).height() || layerSize.w > $(window).width();
+    const ratio = too_big ? this._get_ratio(layerSize) : 1;
+
+    return {
+      w: layerSize.w * ratio,
+      h: layerSize.h * ratio,
+    };
   }
 }
 
