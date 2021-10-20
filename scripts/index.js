@@ -120,7 +120,6 @@ $(".moveTT").on("click", (e) => {
   btns_presser[helpers.getClickedClass(e.target)].restart();
 });
 
-// $(document).on("click", e => console.log(e.target))
 
 // Activate/display buttons on markup
 await $(".settingsBtn").css({ display: "flex" });

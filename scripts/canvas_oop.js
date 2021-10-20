@@ -146,15 +146,15 @@ class CanvasStage {
     }
     let resp;
     const request = new XMLHttpRequest();
-    request.open("GET", url, true);
+    request.open("GET", url.href, true);
     request.responseType = "blob";
     request.onload = () => {
       const reader = new FileReader();
       reader.readAsDataURL(request.response);
       reader.onload = (e) => {
         resp = e.target.result;
-        if (resp.includes("data:image")) this.add_media(url, "image");
-        else if (resp.includes("data:video")) this.add_media(url, "video");
+        if (resp.includes("data:image")) this.add_media(url.href, "image");
+        else if (resp.includes("data:video")) this.add_media(url.href, "video");
       };
     };
     request.send();
@@ -281,14 +281,12 @@ class CanvasStage {
       const selected = shapes.filter((shape) => {
         if (Konva.Util.haveIntersection(box, shape.getClientRect()))
           return shape;
-        // console.log(shape)
       });
       this.selectedShape = selected;
       this.mainTransformer.nodes(selected);
     });
 
     this.stage.on("click tap", (e) => {
-      // console.log(e.target)
       if (this.selectionRect.visible()) return;
 
       if (e.target === this.stage) {
@@ -409,6 +407,14 @@ class CanvasStage {
 
     $(window).on("dragover", (e) => {
       e.preventDefault();
+      $(".dropzone").addClass("active");
+    });
+
+    $(window).on("dragleave", (e) => {
+      if (e.originalEvent.pageX != 0 || e.originalEvent.pageY != 0) {
+        return false;
+      }
+      $(".dropzone").removeClass("active");
     });
 
     // Jquery doesn't provide 'e.DataTransfer'
@@ -416,6 +422,7 @@ class CanvasStage {
       this.lastPointerPos = { x: e.pageX, y: e.pageY };
       e.preventDefault();
       const file = e.dataTransfer.files[0];
+      $(".dropzone").removeClass("active");
 
       if (file) {
         const type = file.type.slice(0, 5);
@@ -423,15 +430,26 @@ class CanvasStage {
           this.file_2_url(file, type);
         }
       } else {
-        const content = $(e.dataTransfer.getData("text/html"));
-        // console.log(e);
+        let content = $(e.dataTransfer.getData("text/html"));
         if (content.attr("src")) {
           this.add_media(content.attr("src"), "image");
+          return;
         }
+
+        content = e.dataTransfer.getData("text");
+        this.url_2_canvas(content);
       }
     });
 
     $(window).on("resize", (e) => this.fit_stage());
+
+    // DEBUG 
+    // $(window).on("click", () => {
+    //   const shapes = this.stage.find(".image, .video");
+    //   const selected = shapes.filter((shape) => {
+    //       console.log(shape);
+    //   });
+    // });
 
     // this.stage.on("dblclick", () => console.log("hi"))
   }

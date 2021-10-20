@@ -19,7 +19,7 @@
 
   --bg-color: #090820;
 
-  --active-btn-col: #FF007F;
+  --active-btn-col: #ff007f;
 
   --icons-btn-size: 3rem;
   --jiggle-rotation: 9deg;
@@ -34,15 +34,44 @@ body {
   color: black;
 }
 
+.dropzone {
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(237, 245, 255, 0.2);
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+
+  &.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .border {
+    width: 2.5vh;
+    height: 2.5vh;
+    border: 1px rgba(0, 0, 0, 0.5) dotted;
+    transform: scale(15) translateY(-5%) !important;
+    border-radius: 15%;
+    @include centerAbsolute;
+  }
+
+  .text {
+    @include centerAbsolute;
+  }
+}
+
 .optionsButtons {
   @include rightCornerPosition;
   z-index: 5;
   pointer-events: none;
 
   .linkInputWrapper {
-    .linkInput{
+    .linkInput {
       border-radius: 5vh;
-      pointer-events:visible;
+      pointer-events: visible;
     }
     transition: 0.5s;
     overflow: hidden;
@@ -62,14 +91,14 @@ body {
     gap: 1vh;
   }
 
-  .settingsBtnSpacer{
+  .settingsBtnSpacer {
     width: 25%;
     height: 1vh;
     border-top: 1px #80808059 solid;
   }
 
   .settingsBtn {
-    &.active{
+    &.active {
       background-color: var(--active-btn-col);
     }
     transition: background-color 1s;

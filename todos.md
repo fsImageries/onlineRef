@@ -20,6 +20,7 @@
 - [ ] double click on stage to change color and stage settings
 - [ ] embed youtube videos
 - [ ] implement dragNdrop overlay
+- [ ] change fonts
 
 
 ## Big ones
