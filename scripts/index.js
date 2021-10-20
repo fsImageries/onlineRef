@@ -116,7 +116,6 @@ $(".rotateTrans").on("click", (e) => {
 
 $(".moveTT").on("click", (e) => {
   Stage.stage.moveTT_selected();
-  Stage.stage.duplicate_selected();
   btns_presser[helpers.getClickedClass(e.target)].restart();
 });
 
