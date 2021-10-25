@@ -90,6 +90,14 @@ $(".moveDrag").on("click", (e) => {
   Stage.stage.stage.draggable(!Stage.stage.stage.draggable());
 });
 
+$(".guides").on("click", (e) => {
+  helpers.toggleClass(".guides", "active");
+  btns_presser[helpers.getClickedClass(e.target)].restart();
+
+  Stage.stage.guidesAct = !Stage.stage.guidesAct;
+  // Stage.stage.stage.draggable(!Stage.stage.stage.draggable());
+});
+
 ///////////////////////////////////////////////////////////////////////////////
 
 $(".scaleTrans").on("click", (e) => {

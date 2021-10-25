@@ -18,13 +18,16 @@
 - [x] place images where mouse drops
 - [x] ctrl+d for duplication
 - [ ] double click on stage to change color and stage settings
-- [ ] embed youtube videos
-- [ ] implement dragNdrop overlay
-- [ ] change fonts
-
+- [x] implement dragNdrop overlay
+- [ ] change fonts on dragNdrop overlay
+- [x] when video gets duplicated both copies play when hovered
+- [ ] tool-buttons need new rework because too much
+- [ ] shortcuts don't activate ui
 
 ## Big ones
+
+- [ ] embed youtube videos
 - [ ] Layout (in grids)
 - [ ] write up help menu
-- [ ] implement guides & snaps for moving and scaling
+- [x] implement guides & snaps for moving
 - [ ] save function for canvas (ask if local media should be included)
