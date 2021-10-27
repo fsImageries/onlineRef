@@ -22,12 +22,14 @@
 - [ ] change fonts on dragNdrop overlay
 - [x] when video gets duplicated both copies play when hovered
 - [ ] tool-buttons need new rework because too much
-- [ ] shortcuts don't activate ui
+- [x] shortcuts don't activate ui (make ui reactive)
+- [ ] split up 'CanvasStage' to ease up functionality?
+- [ ] shortcut to enter link into input field (should be open with link inserted)
 
 ## Big ones
 
 - [ ] embed youtube videos
-- [ ] Layout (in grids)
+- [ ] Layout (in grids) || Grid overlay with snapping (https://codepen.io/pierrebleroux/pen/gGpvxJ?editors=0010)
 - [ ] write up help menu
 - [x] implement guides & snaps for moving
 - [ ] save function for canvas (ask if local media should be included)

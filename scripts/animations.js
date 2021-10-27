@@ -21,12 +21,12 @@ const btn_press = (selector, tl_conf) => {
     return tl
 }
 
-const btn_press_manger = (selectors, tl_conf) => {
+const btn_press_manger = (selector, tl_conf) => {
 
     const btn_mapper = {}
-    // for (let selector of selectors){
-    $(selectors).each(idx => {
-        const elem = $(selectors)[idx]
+    // for (let selector of selector){
+    $(selector).each(idx => {
+        const elem = $(selector)[idx]
         const tl = btn_press(elem, tl_conf)
 
         const name = elem.className.replaceAll("settingsBtn","").replaceAll("active","").replaceAll(" ","")

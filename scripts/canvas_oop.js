@@ -1,5 +1,7 @@
 import { isTouchDevice } from "./helpers.js";
 
+// Helpers
+
 const getDistance = (p1, p2) => {
   return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
 };
@@ -15,7 +17,7 @@ const getObjectSnappingEdges = (node) => {
   // what points of the object will trigger to snapping?
   // it can be just center of the object
   // but we will enable all edges and center
-  var box = node.getClientRect();
+  let box = node.getClientRect();
   var absPos = node.absolutePosition();
 
   return {
@@ -114,6 +116,31 @@ const getGuides = (lineGuideStops, itemBounds, guideOffset) => {
   return guides;
 };
 
+
+// Proxy
+
+const getProxy = (instance, mapper) => {
+  return new Proxy(instance, {
+    get: (target, prop, receiver) => {
+      if (target[prop] !== undefined) return Reflect.get(target, prop, receiver)
+  
+    },
+  
+    set: (target, prop, value) => {
+      if (mapper[prop] !== undefined){
+        target[prop] = value
+        mapper[prop](value)
+  
+        return true
+      }
+      return false
+    }
+  })
+}
+
+
+// Classes
+
 class StageSingleton {
   constructor() {
     if (StageSingleton.instance instanceof StageSingleton) {
@@ -173,6 +200,7 @@ class CanvasStage {
       x: $(window).width() / 2,
       y: $(window).height() / 2,
     };
+    
 
     // Zoom variables
     this.lastDist = 0;
@@ -237,10 +265,16 @@ class CanvasStage {
     });
   }
 
-  file_2_url(file, type) {
+  file_2_url(file, type=false) {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = () => this.add_media(reader.result, type);
+    reader.onload = () => {
+      if (!type){
+        if (reader.result.includes("video")) type = "video"
+        else if (reader.result.includes("image")) type = "image"
+        else return
+      }
+      this.add_media(reader.result, type)};
   }
 
   url_2_canvas(url) {
@@ -343,8 +377,9 @@ class CanvasStage {
     let x1, y1, x2, y2;
     this.stage.on("mousedown touchstart", (e) => {
       if (!this.isTouch) {
-        const key_check = e.evt.button === 1 || e.evt.altKey;
-        this.stage.draggable(key_check || this.stageDrag);
+        // const key_check = e.evt.button === 1 || e.evt.altKey;
+        // this.stage.draggable(key_check || this.stageDrag);
+        this.stage.draggable(this.stageDrag);
       }
 
       if (e.target !== this.stage) return;
@@ -487,35 +522,6 @@ class CanvasStage {
   /////////////// Window and Stage events ///////////////
 
   _init_events() {
-    // Register key-hold eventListeners
-    if (!this.isTouch) {
-      $(document).on("keyup keydown", (e) => {
-        this.multScale = e.shiftKey;
-        this.rotateFree = e.ctrlKey;
-        // this.guidesAct = e.ctrlKey;
-
-        if (e.type === "keydown") {
-          if (e.key === "r") {
-            this.rotateAct = !this.rotateAct;
-            this.toggle_rotation();
-          }
-
-          if (e.key === "d" && e.ctrlKey) {
-            e.preventDefault();
-            this.duplicate_selected();
-          }
-
-          if (e.key === "g") {
-            this.guidesAct = !this.guidesAct;
-            if (!this.guidesAct) this._remove_guides();
-          }
-        }
-
-        if (e.key === "Backspace") this.delete_selected();
-        if (this.topLayer !== undefined) this.toggle_rotation();
-      });
-    }
-
     $(window).on("dragover", (e) => {
       e.preventDefault();
       $(".dropzone").addClass("active");
@@ -561,12 +567,12 @@ class CanvasStage {
       this.topLayer.find(".guid-line").forEach((l) => l.destroy());
 
       // find possible snapping lines
-      var lineGuideStops = this._getLineGuideStops(e.target);
+      let lineGuideStops = this._getLineGuideStops(e.target);
       // find snapping points of current object
-      var itemBounds = getObjectSnappingEdges(e.target);
+      let itemBounds = getObjectSnappingEdges(e.target);
 
       // now find where can we snap current object
-      var guides = getGuides(lineGuideStops, itemBounds, this.guideOffset);
+      let guides = getGuides(lineGuideStops, itemBounds, this.guideOffset);
 
       // do nothing of no snapping
       if (!guides.length) {
@@ -575,7 +581,7 @@ class CanvasStage {
 
       this._drawGuides(guides);
 
-      var absPos = e.target.absolutePosition();
+      let absPos = e.target.absolutePosition();
       // now force object position
       guides.forEach((lg) => {
         switch (lg.snap) {
@@ -665,15 +671,15 @@ class CanvasStage {
   _getLineGuideStops(skipShape) {
     // were can we snap our objects?
     // we can snap to stage borders and the center of the stage
-    var vertical = [0, this.stage.width() / 2, this.stage.width()];
-    var horizontal = [0, this.stage.height() / 2, this.stage.height()];
+    let vertical = [0, this.stage.width() / 2, this.stage.width()];
+    let horizontal = [0, this.stage.height() / 2, this.stage.height()];
 
     // and we snap over edges and center of each object on the canvas
     this.stage.find(".image, .video").forEach((guideItem) => {
       if (guideItem === skipShape) {
         return;
       }
-      var box = guideItem.getClientRect();
+      let box = guideItem.getClientRect();
       // and we can snap to all edges of shapes
       vertical.push([box.x, box.x + box.width, box.x + box.width / 2]);
       horizontal.push([box.y, box.y + box.height, box.y + box.height / 2]);
@@ -687,7 +693,7 @@ class CanvasStage {
   _drawGuides(guides) {
     guides.forEach((lg) => {
       if (lg.orientation === "H") {
-        var line = new Konva.Line({
+        let line = new Konva.Line({
           points: [-6000, 0, 6000, 0],
           stroke: "rgb(0, 161, 255)",
           strokeWidth: 1,
@@ -700,7 +706,7 @@ class CanvasStage {
           y: lg.lineGuide,
         });
       } else if (lg.orientation === "V") {
-        var line = new Konva.Line({
+        let line = new Konva.Line({
           points: [0, -6000, 0, 6000],
           stroke: "rgb(0, 161, 255)",
           strokeWidth: 1,
@@ -717,4 +723,4 @@ class CanvasStage {
   }
 }
 
-export { StageSingleton };
+export { StageSingleton, getProxy };

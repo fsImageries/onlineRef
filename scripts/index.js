@@ -1,4 +1,4 @@
-import { StageSingleton } from "./canvas_oop.js";
+import { StageSingleton, getProxy } from "./canvas_oop.js";
 import * as helpers from "./helpers.js";
 import * as animate from "./animations.js";
 
@@ -31,8 +31,61 @@ const btns_presser = animate.btn_press_manger(".settingsBtn", {
   ease: Power4.easeOut,
 });
 
+
+// Register key-hold eventListeners
+
+if (!helpers.isTouchDevice()) {
+  $(document).on("keyup keydown", (e) => {
+    Stage.stage.multScale = e.shiftKey;
+    Stage.stage.rotateFree = e.ctrlKey;
+
+    if (e.type === "keydown") {
+      if (!e.ctrlKey) e.preventDefault();
+
+      if (e.key === "q" && e.ctrlKey) settingsAll_act()
+
+      if (e.key === "r") proxyStage.rotateAct = !proxyStage.rotateAct;
+
+      if (e.key === "d" && e.ctrlKey) Stage.stage.duplicate_selected();
+
+      if (e.altKey) proxyStage.stageDrag = !proxyStage.stageDrag;
+
+      if (e.key === "m") proxyStage.guidesAct = !proxyStage.guidesAct;
+    }
+
+    if (e.key === "Backspace") Stage.stage.delete_selected();
+    if (Stage.stage.topLayer !== undefined) Stage.stage.toggle_rotation();
+  });
+}
+
+
+// Fucntion buttons callbacks and setup
+
+const varChangeCallback = {
+  guidesAct: (value = true) => {
+    helpers.toggleClass(".guides", "active");
+    btns_presser["guides"].restart();
+    if (!value) Stage.stage._remove_guides();
+  },
+  rotateAct: () => {
+    helpers.toggleClass(".rotateTrans", "active");
+    helpers.toggleClass(".scaleTrans", "active");
+    btns_presser["scaleTrans"].restart();
+    btns_presser["rotateTrans"].restart();
+    Stage.stage.toggle_rotation();
+  },
+  stageDrag: () => {
+    helpers.toggleClass(".moveDrag", "active");
+    btns_presser["moveDrag"].restart();
+    Stage.stage.stage.draggable(!Stage.stage.stage.draggable());
+  },
+};
+
+const proxyStage = getProxy(Stage.stage, varChangeCallback);
+
+
 // Function buttons click handlers
-$(".settingsAll").on("click", () => {
+const settingsAll_act = () => {
   const class_name = $(".settingsAll").attr("class");
   helpers.toggleClass(".settingsAll", "active");
 
@@ -45,9 +98,25 @@ $(".settingsAll").on("click", () => {
     settingsAll_rot_anim.play();
     func_btns_anim.play();
   }
-});
+}
 
-$("#fileUp").on("change", (e) => Stage.stage.file_2_img(e.target.files[0]));
+$(".settingsAll").on("click", settingsAll_act)
+// () => {
+//   const class_name = $(".settingsAll").attr("class");
+//   helpers.toggleClass(".settingsAll", "active");
+
+//   if (class_name.includes("active")) {
+//     settingsAll_rot_anim.reverse();
+//     func_btns_anim.reverse();
+
+//     if ($(".linkAdd").hasClass("active")) $(".linkAdd").click();
+//   } else {
+//     settingsAll_rot_anim.play();
+//     func_btns_anim.play();
+//   }
+// });
+
+$("#fileUp").on("change", (e) => Stage.stage.file_2_url(e.target.files[0]));
 
 $(".linkAdd").on("click", (e) => {
   const opt_elem = $(".optionsButtons .linkInputWrapper");
@@ -82,51 +151,22 @@ $(".playVideo").on("click", (e) => {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-$(".moveDrag").on("click", (e) => {
-  helpers.toggleClass(".moveDrag", "active");
-  btns_presser[helpers.getClickedClass(e.target)].restart();
+$(".moveDrag").on("click",(e) => (proxyStage.stageDrag = !proxyStage.stageDrag));
 
-  Stage.stage.stageDrag = !Stage.stage.stageDrag;
-  Stage.stage.stage.draggable(!Stage.stage.stage.draggable());
-});
-
-$(".guides").on("click", (e) => {
-  helpers.toggleClass(".guides", "active");
-  btns_presser[helpers.getClickedClass(e.target)].restart();
-
-  Stage.stage.guidesAct = !Stage.stage.guidesAct;
-  // Stage.stage.stage.draggable(!Stage.stage.stage.draggable());
-});
+$(".guides").on("click", (e) => (proxyStage.guidesAct = !proxyStage.guidesAct));
 
 ///////////////////////////////////////////////////////////////////////////////
 
-$(".scaleTrans").on("click", (e) => {
-  if (Stage.stage.rotateAct) {
-    helpers.toggleClass(".rotateTrans", "active");
-    helpers.toggleClass(".scaleTrans", "active");
-    btns_presser[helpers.getClickedClass(e.target)].restart();
-  }
+$(".scaleTrans").on("click", (e) => (proxyStage.rotateAct = false));
 
-  Stage.stage.rotateAct = false;
-  Stage.stage.toggle_rotation();
-});
-
-$(".rotateTrans").on("click", (e) => {
-  if (!Stage.stage.rotateAct) {
-    helpers.toggleClass(".rotateTrans", "active");
-    helpers.toggleClass(".scaleTrans", "active");
-    btns_presser[helpers.getClickedClass(e.target)].restart();
-  }
-
-  Stage.stage.rotateAct = true;
-  Stage.stage.toggle_rotation();
-});
+$(".rotateTrans").on("click", (e) => (proxyStage.rotateAct = true));
 
 $(".moveTT").on("click", (e) => {
   Stage.stage.moveTT_selected();
   btns_presser[helpers.getClickedClass(e.target)].restart();
 });
 
-
 // Activate/display buttons on markup
-await $(".settingsBtn").css({ display: "flex" });
+$(window).on("load", () => {
+  $(".settingsBtn").css({ display: "flex" });
+});
