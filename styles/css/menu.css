@@ -46,7 +46,7 @@ body {
       -ms-flex-pack: center;
           justify-content: center;
   background-color: var(--raisin-black);
-  background-image: url("/static/blob_scatter.svg");
+  background-image: url("static/blob_scatter.svg");
   background-position: center;
   background-size: 700%;
   background-position-x: -45vh;
