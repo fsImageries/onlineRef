@@ -36,9 +36,11 @@ if (!helpers.isTouchDevice()) {
     if (e.key === "Backspace") Stage.stage.delete_selected();
     if (Stage.stage.topLayer !== undefined) Stage.stage.toggle_rotation();
   });
+} else {
+  $(".linkzone .content").css({flexDirection: "column"})
 }
 
-$(document).on("click", (e) => {
+$(document).on("click touchstart", (e) => {
   // Check if linkInput modal should be closed
   const isModal = $(e.target).closest(".linkzone").length === 0;
   const isLinkBtn = $(e.target).closest(".linkAdd").length === 0;

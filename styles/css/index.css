@@ -101,10 +101,7 @@ canvas {
   -webkit-transform: translate(-50%, -50%);
           transform: translate(-50%, -50%);
   overflow: auto;
-  background-image: url("../../static/layer_waves3.svg");
-  background-position: bottom;
-  background-size: 119%;
-  background-position-y: -37vh;
+  background: url("../../static/blob_scatter2.svg") 0 0 no-repeat;
   width: 50vw;
   height: 10vh;
   border-radius: 2vh;
@@ -133,14 +130,16 @@ canvas {
 }
 
 .linkzone .content div {
+  text-shadow: 0 0 1px #000;
+  white-space: nowrap;
   font-family: var(--roboto);
   font-weight: 400;
-  color: #d6d6d6;
+  color: #ebebeb;
   margin-right: 2vh;
 }
 
 .linkzone .content input {
-  width: 40vh;
+  width: 100%;
   background-color: white;
   border: none;
   border-radius: 1.5vh;
