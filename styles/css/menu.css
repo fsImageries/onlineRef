@@ -4,7 +4,7 @@
   --manatee: #a09cb0ff;
   --cadet-blue-crayola: #a3b9c9ff;
   --powder-blue: #abdae1ff;
-  --raisin-black: hsl(2, 16%, 20%);
+  --raisin-black: hsl(0, 5%, 10%);
   --xiketic: hsl(240, 31%, 6%);
   --majorelle-blue: hsl(260, 90%, 60%);
   --majorelle-blue-2: rgba(86, 86, 245, 0.35);
@@ -13,7 +13,7 @@
   --col2: var(--raisin-black);
   --col3: var(--xiketic);
   --col4: var(--majorelle-blue-2);
-  --btnW: 5vh;
+  --btnW: 7vh;
   --btnH: var(--btnW);
 }
 
@@ -31,22 +31,30 @@ body {
   z-index: 5;
   pointer-events: none;
   margin: 0.5% 1%;
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(55%, rgba(11, 11, 20, 0.521)), color-stop(75%, rgba(11, 17, 20, 0.521)), color-stop(150%, #7a3df5));
-  background: linear-gradient(180deg, rgba(11, 11, 20, 0.521) 55%, rgba(11, 17, 20, 0.521) 75%, #7a3df5 150%);
-  border: 0.001vh solid rgba(255, 255, 255, 0.05);
-  border-radius: 1vh;
+  border: 1px solid white;
+  border-radius: 2vh;
   float: right;
   overflow: hidden;
-  width: 5vh;
-  height: 5vh;
-  -webkit-transition: width 2s ease-in-out, height 2s ease-in-out;
-  transition: width 2s ease-in-out, height 2s ease-in-out;
+  width: var(--btnW);
+  height: var(--btnH);
+  -webkit-transition: width 2s ease-in-out, height 2s ease-in-out, border 2s ease-in-out;
+  transition: width 2s ease-in-out, height 2s ease-in-out, border 2s ease-in-out;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  background-color: var(--raisin-black);
+  background-image: url("/static/blob_scatter.svg");
+  background-position: center;
+  background-size: 700%;
+  background-position-x: -45vh;
+  background-position-y: -5vh;
 }
 
 .menuContainer.active {
+  border: 0px solid;
   width: calc(var(--btnW) + 2vh);
   height: 90vh;
 }
@@ -66,13 +74,13 @@ body {
 
 .menuContainer .settingsBtnSpacer {
   width: 0%;
-  height: 0.00vh;
-  background: var(--col1);
+  height: 0vh;
+  background: rgba(255, 255, 255, 0);
   border-radius: 5vh;
-  -webkit-transition: width 2s ease-in-out, height 2s ease-in-out, -webkit-transform 1s ease-in-out;
-  transition: width 2s ease-in-out, height 2s ease-in-out, -webkit-transform 1s ease-in-out;
-  transition: transform 1s ease-in-out, width 2s ease-in-out, height 2s ease-in-out;
-  transition: transform 1s ease-in-out, width 2s ease-in-out, height 2s ease-in-out, -webkit-transform 1s ease-in-out;
+  -webkit-transition: width 2s ease-in-out, height 2s ease-in-out, -webkit-transform 1s ease-in-out;
+  transition: width 2s ease-in-out, height 2s ease-in-out, -webkit-transform 1s ease-in-out;
+  transition: transform 1s ease-in-out, width 2s ease-in-out, height 2s ease-in-out;
+  transition: transform 1s ease-in-out, width 2s ease-in-out, height 2s ease-in-out, -webkit-transform 1s ease-in-out;
 }
 
 .menuContainer .menu {
@@ -122,8 +130,8 @@ body {
 }
 
 .menuContainer .menu .settingsBtn.active .iconWrapper {
-  background: -webkit-gradient(linear, left bottom, left top, color-stop(-100%, rgba(11, 11, 20, 0.521)), color-stop(150%, #fa3df5));
-  background: linear-gradient(0deg, rgba(11, 11, 20, 0.521) -100%, #fa3df5 150%);
+  background-color: white;
+  color: black;
 }
 
 .menuContainer .menu .settingsBtn .text {
@@ -133,9 +141,11 @@ body {
 .menuContainer .menu .settingsBtn .iconWrapper {
   width: var(--btnW);
   height: var(--btnH);
-  background: -webkit-gradient(linear, left bottom, left top, color-stop(-100%, rgba(11, 11, 20, 0.521)), color-stop(150%, #7a3df5));
-  background: linear-gradient(0deg, rgba(11, 11, 20, 0.521) -100%, #7a3df5 150%);
-  border-radius: 1vh;
+  background-color: black;
+  background-position: center;
+  background-size: 100%;
+  color: white;
+  border-radius: 2vh;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;

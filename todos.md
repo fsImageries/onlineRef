@@ -19,12 +19,13 @@
 - [x] ctrl+d for duplication
 - [ ] double click on stage to change color and stage settings
 - [x] implement dragNdrop overlay
-- [ ] change fonts on dragNdrop overlay
+- [x] change fonts on dragNdrop overlay
 - [x] when video gets duplicated both copies play when hovered
-- [ ] tool-buttons need new rework because too much
+- [x] tool-buttons need new rework because too much
 - [x] shortcuts don't activate ui (make ui reactive)
 - [ ] split up 'CanvasStage' to ease up functionality?
 - [ ] shortcut to enter link into input field (should be open with link inserted)
+- [ ] find consistent color design for buttons and overlays
 
 ## Big ones
 

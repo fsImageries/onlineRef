@@ -13,7 +13,7 @@
   --cadet-blue-crayola: #a3b9c9ff;
   --powder-blue: #abdae1ff;
 
-  --raisin-black: hsl(2, 16%, 20%);
+  --raisin-black: hsl(0, 5%, 10%);
   --xiketic: hsl(240, 31%, 6%);
   --majorelle-blue: hsl(260, 90%, 60%);
   --majorelle-blue-2: rgba(86, 86, 245, 0.35);
@@ -24,7 +24,7 @@
   --col3: var(--xiketic);
   --col4: var(--majorelle-blue-2);
 
-  --btnW: 5vh;
+  --btnW: 7vh;
   --btnH: var(--btnW);
 }
 
@@ -33,7 +33,7 @@ body {
   background-color: var(--col3);
 }
 
-.pushed{
+.pushed {
   // margin-left: 5vh;
   transform: translateX(5vh);
 }
@@ -42,28 +42,33 @@ body {
   z-index: 5;
   pointer-events: none;
   margin: 0.5% 1%;
-  background: linear-gradient(
-    180deg,
-    hsla(240, 29%, 6%, 0.521) 55%,
-    hsla(200, 29%, 6%, 0.521) 75%,
-    rgb(122, 61, 245) 150%
-  );
-  border: 0.001vh solid rgba(255, 255, 255, 0.05);
-  border-radius: 1vh;
+  // background: linear-gradient(180deg, rgba(11, 11, 20, 0.521) 55%, rgba(11, 17, 20, 0.521) 75%, #7a3df5 150%);
+  // border: 0.001vh solid rgba(255, 255, 255, 0.05);
+  border: 1px solid white;
+  border-radius: 2vh;
   float: right;
   overflow: hidden;
-  width: 5vh;
-  height: 5vh;
+  width: var(--btnW);
+  height: var(--btnH);
   // width: calc(var(--btnW) + 2vh);
   // height: 90vh;
-  transition: width 2s ease-in-out, height 2s ease-in-out;
+  transition: width 2s ease-in-out, height 2s ease-in-out, border 2s ease-in-out;
   display: flex;
+  justify-content: center;
+  background-color: var(--raisin-black);
+  background-image: url("/static/blob_scatter.svg");
+  background-position: center;
+  background-size: 700%;
+  background-position-x: -45vh;
+  background-position-y: -5vh;
 
   &.active {
-    .menu{
+    border: 0px solid;
+
+    .menu {
       padding: 0% 12%; // 12%
     }
-    .settingsBtnSpacer{
+    .settingsBtnSpacer {
       width: 100%;
       height: 0.05vh;
     }
@@ -78,10 +83,11 @@ body {
 
   .settingsBtnSpacer {
     width: 0%;
-    height: 0.00vh;
-    background: var(--col1);
+    height: 0vh;
+    background: rgba(255, 255, 255, 0);
     border-radius: 5vh;
-    transition: transform 1s ease-in-out, width 2s ease-in-out, height 2s ease-in-out;
+    transition: transform 1s ease-in-out, width 2s ease-in-out,
+      height 2s ease-in-out;
   }
 
   .menu {
@@ -92,23 +98,21 @@ body {
     transition: padding 1s ease-in-out;
     z-index: 5;
 
-    .settingsAll.active i{
-      transform: rotate(180deg);
+    .settingsAll {
+      &.active i {
+        transform: rotate(180deg);
+      }
     }
 
-    i{
+    i {
       transition: transform 1.5s ease-in-out;
     }
 
     .settingsBtn {
-      &.active .iconWrapper{
-        background: linear-gradient(
-          0deg,
-          hsla(240, 29%, 6%, 0.521) -100%,
-          rgb(250, 61, 245) 150%
-        );
+      &.active .iconWrapper {
+        background-color: white;
+        color: black;
       }
-
       cursor: pointer;
       pointer-events: auto;
       z-index: inherit;
@@ -122,16 +126,19 @@ body {
       }
 
       .iconWrapper {
-        // border: 0.25vh solid var(--col2);
+        // border: 0.01vh solid rgba(255, 255, 255, 0.3);
         width: var(--btnW);
         height: var(--btnH);
-        // background-color: var(--col1);
-        background: linear-gradient(
-          0deg,
-          hsla(240, 29%, 6%, 0.521) -100%,
-          rgb(122, 61, 245) 150%
-        );
-        border-radius: 1vh;
+        background-color: black;
+        background-position: center;
+        background-size: 100%;
+        // background: linear-gradient(
+        //   0deg,
+        //   hsla(240, 29%, 6%, 0.521) -100%,
+        //   rgb(122, 61, 245) 150%
+        // );
+        color: white; //#FF0066;
+        border-radius: 2vh;
         display: flex;
         align-items: center;
         justify-content: center;

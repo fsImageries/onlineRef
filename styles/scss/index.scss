@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
 @import "./mixins.scss";
 
 @keyframes jiggle {
@@ -10,6 +11,8 @@
 }
 
 :root {
+  --roboto: "Roboto", sans-serif;
+
   // Background color palette
   --dark-liver: #5b5863ff;
   --sonic-silver: #77767aff;
@@ -34,140 +37,92 @@ body {
   color: black;
 }
 
+canvas{
+  z-index: -1;
+}
+
 .dropzone {
   position: absolute;
   top: 0;
   width: 100vw;
   height: 100vh;
   background-color: rgba(237, 245, 255, 0.2);
+  background-image: url("/static/corner_blob_layered.svg");
+  background-size: cover;
+  background-position: center;
+  background-size: cover;
   z-index: 100;
   opacity: 0;
   visibility: hidden;
+  // opacity: 1;
+  // visibility: visible;
+  transition: transform 40s ease-in-out, opacity 0.3s ease-in-out,
+    visibility 0.5s ease-in-out;
+
+  &.active {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1.25);
+  }
+
+  .text {
+    div:nth-child(2n) {
+      font-weight: 900;
+    }
+    div {
+      display: inline-block;
+    }
+
+    text-align: center;
+    border: 1px dotted hsla(329, 38%, 43%, 0.258);
+    font-family: var(--roboto);
+    font-weight: 400;
+    color: #96446e;
+    @include centerAbsolute;
+  }
+}
+
+.linkzone {
+  position: absolute;
+  z-index: 100;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  overflow: auto;
+  background-image: url("/static/layer_waves3.svg");
+  background-position: bottom;
+  background-size: 119%;
+  background-position-y: -37vh;
+  width: 50vw;
+  height: 10vh;
+  border-radius: 2vh;
+  display: flex;
+  align-items: center;
+  padding-left: 2%;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease-in-out, visibility .25s ease-in-out;
 
   &.active {
     opacity: 1;
     visibility: visible;
   }
 
-  .border {
-    width: 2.5vh;
-    height: 2.5vh;
-    border: 1px rgba(0, 0, 0, 0.5) dotted;
-    transform: scale(15) translateY(-5%) !important;
-    border-radius: 15%;
-    @include centerAbsolute;
-  }
+  .content{
+    display: flex;
 
-  .text {
-    @include centerAbsolute;
+    div {
+      font-family: var(--roboto);
+      font-weight: 400;
+      color: rgb(214, 214, 214);
+      margin-right: 2vh;
+    }
+
+    input{
+      width: 40vh;
+      background-color: white;
+      border: none;
+      border-radius: 1.5vh;
+    }
   }
 }
-
-// .optionsButtons {
-//   @include rightCornerPosition;
-//   z-index: 5;
-//   pointer-events: none;
-
-//   .linkInputWrapper {
-//     .linkInput {
-//       border-radius: 5vh;
-//       pointer-events: visible;
-//     }
-//     transition: 0.5s;
-//     overflow: hidden;
-//   }
-
-//   .wrapper_bar {
-//     width: 100%;
-//   }
-
-//   .wrapper_div {
-//     &:nth-child(1) {
-//       z-index: 10;
-//     }
-//     pointer-events: none;
-//     display: flex;
-//     align-items: baseline;
-//     gap: 1vh;
-//   }
-
-//   .settingsBtnSpacer {
-//     width: 25%;
-//     height: 1vh;
-//     border-top: 1px #80808059 solid;
-//   }
-
-//   .settingsBtn {
-//     &.active {
-//       background-color: var(--active-btn-col);
-//     }
-//     transition: background-color 1s;
-//     pointer-events: auto;
-//     z-index: inherit;
-//     width: 100%;
-//     padding: 1%;
-//     margin-bottom: 1vh;
-//     -webkit-font-smoothing: subpixel-antialiased;
-//     backface-visibility: hidden;
-//     // transition: 500ms ease-in-out;
-//     // TODO only apply when no touch device detected
-//     // &:hover {
-//     //   animation: jiggle 500ms ease-in-out infinite;
-//     // }
-//     @include roundedIconFrame(--icons-btn-size);
-//     display: none;
-//   }
-//   .adder {
-//     font-weight: 900;
-//   }
-// }
-
-// .settingsPanel {
-//   @include rightCornerPosition;
-
-//   height: var(--rectangle-height);
-//   width: calc(var(--rectangle-height) / 2);
-//   background-color: white;
-//   border-radius: var(--rectangle-width-border-radius) /
-//     calc(var(--rectangle-width-border-radius) / 2);
-//   overflow: hidden;
-//   padding: 1%;
-
-//   #fileUp {
-//     display: none;
-//   }
-
-//   i {
-//     @include roundedIconFrame(--icons-btn-size, black, white);
-//   }
-
-//   .inputLabel {
-//     cursor: pointer;
-//     text-align: center;
-//     margin-top: 2.5vh;
-//     width: 100%;
-//     display: block;
-//     border-left: 0px;
-//     border-right: 0;
-//     border-top: 1px solid;
-//     border-bottom: 1px solid;
-//   }
-
-//   .icon {
-//     display: flex;
-//     justify-content: center;
-//   }
-
-//   .inputLabel::placeholder {
-//     // font-family: Arial, Helvetica, sans-serif;
-//   }
-
-//   .close {
-//     position: absolute;
-//     bottom: 0;
-//     left: 50%;
-//     margin-bottom: 2vh;
-//     transform: translateX(-50%);
-//     @include roundedIconFrame(--icons-btn-size, black, white);
-//   }
-// }
