@@ -47,7 +47,7 @@ canvas{
   width: 100vw;
   height: 100vh;
   background-color: rgba(237, 245, 255, 0.2);
-  background-image: url("/static/corner_blob_layered.svg");
+  background-image: url("../../static/corner_blob_layered.svg");
   background-size: cover;
   background-position: center;
   background-size: cover;
@@ -89,7 +89,7 @@ canvas{
   top: 50%;
   transform: translate(-50%, -50%);
   overflow: auto;
-  background-image: url("/static/layer_waves3.svg");
+  background-image: url("../../static/layer_waves3.svg");
   background-position: bottom;
   background-size: 119%;
   background-position-y: -37vh;
