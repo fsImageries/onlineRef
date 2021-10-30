@@ -63,111 +63,111 @@ body {
   }
 }
 
-.optionsButtons {
-  @include rightCornerPosition;
-  z-index: 5;
-  pointer-events: none;
+// .optionsButtons {
+//   @include rightCornerPosition;
+//   z-index: 5;
+//   pointer-events: none;
 
-  .linkInputWrapper {
-    .linkInput {
-      border-radius: 5vh;
-      pointer-events: visible;
-    }
-    transition: 0.5s;
-    overflow: hidden;
-  }
+//   .linkInputWrapper {
+//     .linkInput {
+//       border-radius: 5vh;
+//       pointer-events: visible;
+//     }
+//     transition: 0.5s;
+//     overflow: hidden;
+//   }
 
-  .wrapper_bar {
-    width: 100%;
-  }
+//   .wrapper_bar {
+//     width: 100%;
+//   }
 
-  .wrapper_div {
-    &:nth-child(1) {
-      z-index: 10;
-    }
-    pointer-events: none;
-    display: flex;
-    align-items: baseline;
-    gap: 1vh;
-  }
+//   .wrapper_div {
+//     &:nth-child(1) {
+//       z-index: 10;
+//     }
+//     pointer-events: none;
+//     display: flex;
+//     align-items: baseline;
+//     gap: 1vh;
+//   }
 
-  .settingsBtnSpacer {
-    width: 25%;
-    height: 1vh;
-    border-top: 1px #80808059 solid;
-  }
+//   .settingsBtnSpacer {
+//     width: 25%;
+//     height: 1vh;
+//     border-top: 1px #80808059 solid;
+//   }
 
-  .settingsBtn {
-    &.active {
-      background-color: var(--active-btn-col);
-    }
-    transition: background-color 1s;
-    pointer-events: auto;
-    z-index: inherit;
-    width: 100%;
-    padding: 1%;
-    margin-bottom: 1vh;
-    -webkit-font-smoothing: subpixel-antialiased;
-    backface-visibility: hidden;
-    // transition: 500ms ease-in-out;
-    // TODO only apply when no touch device detected
-    // &:hover {
-    //   animation: jiggle 500ms ease-in-out infinite;
-    // }
-    @include roundedIconFrame(--icons-btn-size);
-    display: none;
-  }
-  .adder {
-    font-weight: 900;
-  }
-}
+//   .settingsBtn {
+//     &.active {
+//       background-color: var(--active-btn-col);
+//     }
+//     transition: background-color 1s;
+//     pointer-events: auto;
+//     z-index: inherit;
+//     width: 100%;
+//     padding: 1%;
+//     margin-bottom: 1vh;
+//     -webkit-font-smoothing: subpixel-antialiased;
+//     backface-visibility: hidden;
+//     // transition: 500ms ease-in-out;
+//     // TODO only apply when no touch device detected
+//     // &:hover {
+//     //   animation: jiggle 500ms ease-in-out infinite;
+//     // }
+//     @include roundedIconFrame(--icons-btn-size);
+//     display: none;
+//   }
+//   .adder {
+//     font-weight: 900;
+//   }
+// }
 
-.settingsPanel {
-  @include rightCornerPosition;
+// .settingsPanel {
+//   @include rightCornerPosition;
 
-  height: var(--rectangle-height);
-  width: calc(var(--rectangle-height) / 2);
-  background-color: white;
-  border-radius: var(--rectangle-width-border-radius) /
-    calc(var(--rectangle-width-border-radius) / 2);
-  overflow: hidden;
-  padding: 1%;
+//   height: var(--rectangle-height);
+//   width: calc(var(--rectangle-height) / 2);
+//   background-color: white;
+//   border-radius: var(--rectangle-width-border-radius) /
+//     calc(var(--rectangle-width-border-radius) / 2);
+//   overflow: hidden;
+//   padding: 1%;
 
-  #fileUp {
-    display: none;
-  }
+//   #fileUp {
+//     display: none;
+//   }
 
-  i {
-    @include roundedIconFrame(--icons-btn-size, black, white);
-  }
+//   i {
+//     @include roundedIconFrame(--icons-btn-size, black, white);
+//   }
 
-  .inputLabel {
-    cursor: pointer;
-    text-align: center;
-    margin-top: 2.5vh;
-    width: 100%;
-    display: block;
-    border-left: 0px;
-    border-right: 0;
-    border-top: 1px solid;
-    border-bottom: 1px solid;
-  }
+//   .inputLabel {
+//     cursor: pointer;
+//     text-align: center;
+//     margin-top: 2.5vh;
+//     width: 100%;
+//     display: block;
+//     border-left: 0px;
+//     border-right: 0;
+//     border-top: 1px solid;
+//     border-bottom: 1px solid;
+//   }
 
-  .icon {
-    display: flex;
-    justify-content: center;
-  }
+//   .icon {
+//     display: flex;
+//     justify-content: center;
+//   }
 
-  .inputLabel::placeholder {
-    // font-family: Arial, Helvetica, sans-serif;
-  }
+//   .inputLabel::placeholder {
+//     // font-family: Arial, Helvetica, sans-serif;
+//   }
 
-  .close {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    margin-bottom: 2vh;
-    transform: translateX(-50%);
-    @include roundedIconFrame(--icons-btn-size, black, white);
-  }
-}
+//   .close {
+//     position: absolute;
+//     bottom: 0;
+//     left: 50%;
+//     margin-bottom: 2vh;
+//     transform: translateX(-50%);
+//     @include roundedIconFrame(--icons-btn-size, black, white);
+//   }
+// }

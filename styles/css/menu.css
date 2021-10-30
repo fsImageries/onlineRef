@@ -1,0 +1,150 @@
+:root {
+  --french-bistre: #776d5aff;
+  --cinereous: #987d7cff;
+  --manatee: #a09cb0ff;
+  --cadet-blue-crayola: #a3b9c9ff;
+  --powder-blue: #abdae1ff;
+  --raisin-black: hsl(2, 16%, 20%);
+  --xiketic: hsl(240, 31%, 6%);
+  --majorelle-blue: hsl(260, 90%, 60%);
+  --majorelle-blue-2: rgba(86, 86, 245, 0.35);
+  --magnolia: #e6e6f0ff;
+  --col1: var(--majorelle-blue);
+  --col2: var(--raisin-black);
+  --col3: var(--xiketic);
+  --col4: var(--majorelle-blue-2);
+  --btnW: 5vh;
+  --btnH: var(--btnW);
+}
+
+body {
+  margin: 0;
+  background-color: var(--col3);
+}
+
+.pushed {
+  -webkit-transform: translateX(5vh);
+          transform: translateX(5vh);
+}
+
+.menuContainer {
+  z-index: 5;
+  pointer-events: none;
+  margin: 0.5% 1%;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(55%, rgba(11, 11, 20, 0.521)), color-stop(75%, rgba(11, 17, 20, 0.521)), color-stop(150%, #7a3df5));
+  background: linear-gradient(180deg, rgba(11, 11, 20, 0.521) 55%, rgba(11, 17, 20, 0.521) 75%, #7a3df5 150%);
+  border: 0.001vh solid rgba(255, 255, 255, 0.05);
+  border-radius: 1vh;
+  float: right;
+  overflow: hidden;
+  width: 5vh;
+  height: 5vh;
+  -webkit-transition: width 2s ease-in-out, height 2s ease-in-out;
+  transition: width 2s ease-in-out, height 2s ease-in-out;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.menuContainer.active {
+  width: calc(var(--btnW) + 2vh);
+  height: 90vh;
+}
+
+.menuContainer.active .menu {
+  padding: 0% 12%;
+}
+
+.menuContainer.active .settingsBtnSpacer {
+  width: 100%;
+  height: 0.05vh;
+}
+
+.menuContainer #fileUp {
+  display: none;
+}
+
+.menuContainer .settingsBtnSpacer {
+  width: 0%;
+  height: 0.00vh;
+  background: var(--col1);
+  border-radius: 5vh;
+  -webkit-transition: width 2s ease-in-out, height 2s ease-in-out, -webkit-transform 1s ease-in-out;
+  transition: width 2s ease-in-out, height 2s ease-in-out, -webkit-transform 1s ease-in-out;
+  transition: transform 1s ease-in-out, width 2s ease-in-out, height 2s ease-in-out;
+  transition: transform 1s ease-in-out, width 2s ease-in-out, height 2s ease-in-out, -webkit-transform 1s ease-in-out;
+}
+
+.menuContainer .menu {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  gap: 1vh;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-transition: padding 1s ease-in-out;
+  transition: padding 1s ease-in-out;
+  z-index: 5;
+}
+
+.menuContainer .menu .settingsAll.active i {
+  -webkit-transform: rotate(180deg);
+          transform: rotate(180deg);
+}
+
+.menuContainer .menu i {
+  -webkit-transition: -webkit-transform 1.5s ease-in-out;
+  transition: -webkit-transform 1.5s ease-in-out;
+  transition: transform 1.5s ease-in-out;
+  transition: transform 1.5s ease-in-out, -webkit-transform 1.5s ease-in-out;
+}
+
+.menuContainer .menu .settingsBtn {
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: inherit;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  gap: 1vh;
+  -webkit-transition: -webkit-transform 1s ease-in-out;
+  transition: -webkit-transform 1s ease-in-out;
+  transition: transform 1s ease-in-out;
+  transition: transform 1s ease-in-out, -webkit-transform 1s ease-in-out;
+}
+
+.menuContainer .menu .settingsBtn.active .iconWrapper {
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(-100%, rgba(11, 11, 20, 0.521)), color-stop(150%, #fa3df5));
+  background: linear-gradient(0deg, rgba(11, 11, 20, 0.521) -100%, #fa3df5 150%);
+}
+
+.menuContainer .menu .settingsBtn .text {
+  font-family: var(--roboto);
+}
+
+.menuContainer .menu .settingsBtn .iconWrapper {
+  width: var(--btnW);
+  height: var(--btnH);
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(-100%, rgba(11, 11, 20, 0.521)), color-stop(150%, #7a3df5));
+  background: linear-gradient(0deg, rgba(11, 11, 20, 0.521) -100%, #7a3df5 150%);
+  border-radius: 1vh;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-transition: 1s ease-in-out;
+  transition: 1s ease-in-out;
+}

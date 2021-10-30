@@ -1,0 +1,142 @@
+@import "./mixins.scss";
+
+@mixin setSize($height, $width) {
+  height: $height;
+  width: $width;
+  padding: 0% 5vh;
+}
+
+:root {
+  --french-bistre: #776d5aff;
+  --cinereous: #987d7cff;
+  --manatee: #a09cb0ff;
+  --cadet-blue-crayola: #a3b9c9ff;
+  --powder-blue: #abdae1ff;
+
+  --raisin-black: hsl(2, 16%, 20%);
+  --xiketic: hsl(240, 31%, 6%);
+  --majorelle-blue: hsl(260, 90%, 60%);
+  --majorelle-blue-2: rgba(86, 86, 245, 0.35);
+  --magnolia: #e6e6f0ff;
+
+  --col1: var(--majorelle-blue);
+  --col2: var(--raisin-black);
+  --col3: var(--xiketic);
+  --col4: var(--majorelle-blue-2);
+
+  --btnW: 5vh;
+  --btnH: var(--btnW);
+}
+
+body {
+  margin: 0;
+  background-color: var(--col3);
+}
+
+.pushed{
+  // margin-left: 5vh;
+  transform: translateX(5vh);
+}
+
+.menuContainer {
+  z-index: 5;
+  pointer-events: none;
+  margin: 0.5% 1%;
+  background: linear-gradient(
+    180deg,
+    hsla(240, 29%, 6%, 0.521) 55%,
+    hsla(200, 29%, 6%, 0.521) 75%,
+    rgb(122, 61, 245) 150%
+  );
+  border: 0.001vh solid rgba(255, 255, 255, 0.05);
+  border-radius: 1vh;
+  float: right;
+  overflow: hidden;
+  width: 5vh;
+  height: 5vh;
+  // width: calc(var(--btnW) + 2vh);
+  // height: 90vh;
+  transition: width 2s ease-in-out, height 2s ease-in-out;
+  display: flex;
+
+  &.active {
+    .menu{
+      padding: 0% 12%; // 12%
+    }
+    .settingsBtnSpacer{
+      width: 100%;
+      height: 0.05vh;
+    }
+
+    width: calc(var(--btnW) + 2vh);
+    height: 90vh;
+  }
+
+  #fileUp {
+    display: none;
+  }
+
+  .settingsBtnSpacer {
+    width: 0%;
+    height: 0.00vh;
+    background: var(--col1);
+    border-radius: 5vh;
+    transition: transform 1s ease-in-out, width 2s ease-in-out, height 2s ease-in-out;
+  }
+
+  .menu {
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+    align-items: center;
+    transition: padding 1s ease-in-out;
+    z-index: 5;
+
+    .settingsAll.active i{
+      transform: rotate(180deg);
+    }
+
+    i{
+      transition: transform 1.5s ease-in-out;
+    }
+
+    .settingsBtn {
+      &.active .iconWrapper{
+        background: linear-gradient(
+          0deg,
+          hsla(240, 29%, 6%, 0.521) -100%,
+          rgb(250, 61, 245) 150%
+        );
+      }
+
+      cursor: pointer;
+      pointer-events: auto;
+      z-index: inherit;
+      display: flex;
+      align-items: center;
+      gap: 1vh;
+      transition: transform 1s ease-in-out;
+
+      .text {
+        font-family: var(--roboto);
+      }
+
+      .iconWrapper {
+        // border: 0.25vh solid var(--col2);
+        width: var(--btnW);
+        height: var(--btnH);
+        // background-color: var(--col1);
+        background: linear-gradient(
+          0deg,
+          hsla(240, 29%, 6%, 0.521) -100%,
+          rgb(122, 61, 245) 150%
+        );
+        border-radius: 1vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 1s ease-in-out;
+      }
+    }
+  }
+}

@@ -21,9 +21,10 @@
 - [ ] embed youtube videos
 - [ ] implement dragNdrop overlay
 - [ ] change fonts
-
+- [ ] when video gets duplicated both copies play when hovered
 
 ## Big ones
+
 - [ ] Layout (in grids)
 - [ ] write up help menu
 - [ ] implement guides & snaps for moving and scaling

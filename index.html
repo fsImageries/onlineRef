@@ -17,6 +17,7 @@
     />
 
     <link rel="stylesheet" href="styles/css/index.css" />
+    <link rel="stylesheet" href="/styles/css/menu.css">
 
     <script defer src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script defer src="https://unpkg.com/konva@8/konva.min.js"></script>
@@ -33,7 +34,7 @@
     </div>
 
 
-    <div class="optionsButtons">
+    <!-- <div class="optionsButtons">
         <div class="wrapper_div">
           <div class="wrapper_bar"></div>
           <div class="settingsBtn settingsAll" style="width: 100%;">
@@ -53,7 +54,6 @@
           <div class="linkInputWrapper">
             <input class="linkInput" class="settingsBtn" type="text">
           </div>
-
           <div class="settingsBtn linkAdd">
             <i class="fas fa-link"></i>
           </div>
@@ -120,8 +120,71 @@
             <i class="fas fa-question"></i>
           </div>
         </div>
+      </div> -->
+    
+      <div class="menuContainer">
+        <div class="menu">
+          <div class="settingsBtn settingsAll">
+            <div class="iconWrapper">
+              <i class="fas fa-sliders-h"></i>
+            </div>
+          </div>
+  
+          <div class="settingsBtn help">
+            <div class="iconWrapper"><i class="fas fa-question"></i></div>
+          </div>
+  
+          <div class="settingsBtnSpacer"></div>
+  
+          <div class="settingsBtn">
+            <label for="fileUp" class="iconWrapper fileUp" style="cursor: pointer;">
+              <input id="fileUp" type="file" style="display: none" />
+              <i class="far fa-file-image"></i>
+            </label>
+          </div>
+  
+          <div class="settingsBtn linkAdd">
+            <div class="iconWrapper"><i class="fas fa-link"></i></div>
+          </div>
+  
+          <div class="settingsBtn playVideo">
+            <div class="iconWrapper"><i class="fas fa-play"></i></div>
+          </div>
+  
+          <div class="settingsBtnSpacer"></div>
+  
+          <div class="settingsBtn moveDrag active">
+            <div class="iconWrapper">
+              <i class="fas fa-mouse-pointer"></i>
+            </div>
+          </div>
+  
+          <div class="settingsBtn guides">
+            <div class="iconWrapper"><i class="fas fa-magnet"></i></div>
+          </div>
+  
+          <div class="settingsBtnSpacer"></div>
+  
+          <div class="settingsBtn scaleTrans active">
+            <div class="iconWrapper">
+              <i class="fas fa-expand-arrows-alt"></i>
+            </div>
+          </div>
+  
+          <div class="settingsBtn rotateTrans">
+            <div class="iconWrapper">
+              <i class="fas fa-undo"></i>
+            </div>
+          </div>
+  
+          <div class="settingsBtn moveTT">
+            <div class="iconWrapper">
+              <i class="fas fa-arrow-up"></i>
+            </div>
+          </div>
+          <!--  -->
+        </div>
       </div>
-    </div>
 
 
     <div class="canvasParent">
