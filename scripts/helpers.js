@@ -29,4 +29,22 @@ const getClickedClass = (elem) => {
   ]);
 };
 
-export { isTouchDevice, toggleClass, getClickedClass };
+
+const download =(data, fileName, contentType="text/plain") => {
+  let a = document.createElement("a");
+  let file = new Blob([data], {type: contentType});
+  a.href = URL.createObjectURL(file);
+  a.download = fileName;
+  a.click();
+}
+
+const loadJsonFile = (file, callback) => {
+  const reader = new FileReader();
+  reader.onload = () => {
+    const data = JSON.parse(reader.result)
+    callback(data)
+  };
+  reader.readAsText(file)
+}
+
+export { isTouchDevice, toggleClass, getClickedClass, download, loadJsonFile };

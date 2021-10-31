@@ -116,28 +116,26 @@ const getGuides = (lineGuideStops, itemBounds, guideOffset) => {
   return guides;
 };
 
-
 // Proxy
 
 const getProxy = (instance, mapper) => {
   return new Proxy(instance, {
     get: (target, prop, receiver) => {
-      if (target[prop] !== undefined) return Reflect.get(target, prop, receiver)
-  
+      if (target[prop] !== undefined)
+        return Reflect.get(target, prop, receiver);
     },
-  
-    set: (target, prop, value) => {
-      if (mapper[prop] !== undefined){
-        target[prop] = value
-        mapper[prop](value)
-  
-        return true
-      }
-      return false
-    }
-  })
-}
 
+    set: (target, prop, value) => {
+      if (mapper[prop] !== undefined) {
+        target[prop] = value;
+        mapper[prop](value);
+
+        return true;
+      }
+      return false;
+    },
+  });
+};
 
 // Classes
 
@@ -200,7 +198,6 @@ class CanvasStage {
       x: $(window).width() / 2,
       y: $(window).height() / 2,
     };
-    
 
     // Zoom variables
     this.lastDist = 0;
@@ -212,7 +209,7 @@ class CanvasStage {
 
   /////////////// Add media to stage ///////////////
 
-  add_media(url, type, pos=false) {
+  add_media(url, type, pos = false) {
     const add = (media, dims, pos = false, id = "image") => {
       pos = pos || {
         x: this.lastPointerPos.x - dims.w / 2,
@@ -249,12 +246,7 @@ class CanvasStage {
         w: mediaObj[width],
         h: mediaObj[height],
       });
-      const layer = add(
-        mediaObj,
-        { w: new_size.w, h: new_size.h },
-        pos,
-        type
-      );
+      const layer = add(mediaObj, { w: new_size.w, h: new_size.h }, pos, type);
 
       if (type === "video") {
         mediaObj.play();
@@ -265,16 +257,17 @@ class CanvasStage {
     });
   }
 
-  file_2_url(file, type=false) {
+  file_2_url(file, type = false) {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = () => {
-      if (!type){
-        if (reader.result.includes("video")) type = "video"
-        else if (reader.result.includes("image")) type = "image"
-        else return
+    reader.onload = (e) => {
+      if (!type) {
+        if (reader.result.includes("video")) type = "video";
+        else if (reader.result.includes("image")) type = "image";
+        else return;
       }
-      this.add_media(reader.result, type)};
+      this.add_media(reader.result, type);
+    };
   }
 
   url_2_canvas(url) {
@@ -297,6 +290,29 @@ class CanvasStage {
       };
     };
     request.send();
+  }
+
+  /////////////// Download stage state ///////////////
+  get_state() {
+    let states = {Stage: {states: [], stage: []}}
+    const shapes = this.stage.find(".image, .video"); // find important shapes
+    shapes.filter((shape) => {
+      const attrs = shape.attrs;
+      states.Stage.states.push([attrs.image.src, attrs.name, { x: attrs.x, y: attrs.y }]);
+    });
+    [this.stage.position(), this.stage.scale()].forEach((elem) => {states.Stage.stage.push(elem)})
+
+    return states;
+  }
+
+  set_state(Stage) {
+    const states = Stage.states
+    for (let i = 0; i<states.length;i++) {
+      const s = states[i]
+      this.add_media(s[0], s[1], s[2])
+    }
+    this.stage.position(Stage.stage[0])
+    this.stage.scale(Stage.stage[1])
   }
 
   /////////////// Toggle functions on stage ///////////////
@@ -331,8 +347,10 @@ class CanvasStage {
       const shape = this.selectedShape[0];
       const pos = shape.position();
 
-      this.add_media(shape.image().src, shape.name(), { x: pos.x - percentW, y: pos.y + percentH })
-
+      this.add_media(shape.image().src, shape.name(), {
+        x: pos.x - percentW,
+        y: pos.y + percentH,
+      });
     }
   }
 

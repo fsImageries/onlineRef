@@ -15,6 +15,8 @@
   --col4: var(--majorelle-blue-2);
   --btnW: 7vh;
   --btnH: var(--btnW);
+  --speed-mult: .8
+;
 }
 
 body {
@@ -37,8 +39,8 @@ body {
   overflow: hidden;
   width: var(--btnW);
   height: var(--btnH);
-  -webkit-transition: width 2s ease-in-out, height 2s ease-in-out, border 2s ease-in-out;
-  transition: width 2s ease-in-out, height 2s ease-in-out, border 2s ease-in-out;
+  -webkit-transition: width calc(2s * var(--speed-mult)) ease-in-out, height calc(2s * var(--speed-mult)) ease-in-out, border calc(2s * var(--speed-mult)) ease-in-out;
+  transition: width calc(2s * var(--speed-mult)) ease-in-out, height calc(2s * var(--speed-mult)) ease-in-out, border calc(2s * var(--speed-mult)) ease-in-out;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -77,10 +79,10 @@ body {
   height: 0vh;
   background: rgba(255, 255, 255, 0);
   border-radius: 5vh;
-  -webkit-transition: width 2s ease-in-out, height 2s ease-in-out, -webkit-transform 1s ease-in-out;
-  transition: width 2s ease-in-out, height 2s ease-in-out, -webkit-transform 1s ease-in-out;
-  transition: transform 1s ease-in-out, width 2s ease-in-out, height 2s ease-in-out;
-  transition: transform 1s ease-in-out, width 2s ease-in-out, height 2s ease-in-out, -webkit-transform 1s ease-in-out;
+  -webkit-transition: width calc(1s * var(--speed-mult)) ease-in-out, height 2s ease-in-out, -webkit-transform calc(1s * var(--speed-mult)) ease-in-out;
+  transition: width calc(1s * var(--speed-mult)) ease-in-out, height 2s ease-in-out, -webkit-transform calc(1s * var(--speed-mult)) ease-in-out;
+  transition: transform calc(1s * var(--speed-mult)) ease-in-out, width calc(1s * var(--speed-mult)) ease-in-out, height 2s ease-in-out;
+  transition: transform calc(1s * var(--speed-mult)) ease-in-out, width calc(1s * var(--speed-mult)) ease-in-out, height 2s ease-in-out, -webkit-transform calc(1s * var(--speed-mult)) ease-in-out;
 }
 
 .menuContainer .menu {
@@ -95,9 +97,16 @@ body {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  -webkit-transition: padding 1s ease-in-out;
-  transition: padding 1s ease-in-out;
+  -webkit-transition: padding calc(1s * var(--speed-mult)) ease-in-out;
+  transition: padding calc(1s * var(--speed-mult)) ease-in-out;
   z-index: 5;
+  pointer-events: painted;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.menuContainer .menu::-webkit-scrollbar {
+  width: 0;
 }
 
 .menuContainer .menu .settingsAll.active i {
@@ -106,10 +115,10 @@ body {
 }
 
 .menuContainer .menu i {
-  -webkit-transition: -webkit-transform 1.5s ease-in-out;
-  transition: -webkit-transform 1.5s ease-in-out;
-  transition: transform 1.5s ease-in-out;
-  transition: transform 1.5s ease-in-out, -webkit-transform 1.5s ease-in-out;
+  -webkit-transition: -webkit-transform calc(1.5s * var(--speed-mult)) ease-in-out;
+  transition: -webkit-transform calc(1.5s * var(--speed-mult)) ease-in-out;
+  transition: transform calc(1.5s * var(--speed-mult)) ease-in-out;
+  transition: transform calc(1.5s * var(--speed-mult)) ease-in-out, -webkit-transform calc(1.5s * var(--speed-mult)) ease-in-out;
 }
 
 .menuContainer .menu .settingsBtn {
@@ -123,10 +132,10 @@ body {
       -ms-flex-align: center;
           align-items: center;
   gap: 1vh;
-  -webkit-transition: -webkit-transform 1s ease-in-out;
-  transition: -webkit-transform 1s ease-in-out;
-  transition: transform 1s ease-in-out;
-  transition: transform 1s ease-in-out, -webkit-transform 1s ease-in-out;
+  -webkit-transition: -webkit-transform calc(1s * var(--speed-mult)) ease-in-out;
+  transition: -webkit-transform calc(1s * var(--speed-mult)) ease-in-out;
+  transition: transform calc(1s * var(--speed-mult)) ease-in-out;
+  transition: transform calc(1s * var(--speed-mult)) ease-in-out, -webkit-transform calc(1s * var(--speed-mult)) ease-in-out;
 }
 
 .menuContainer .menu .settingsBtn.active .iconWrapper {
@@ -155,6 +164,6 @@ body {
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
-  -webkit-transition: 1s ease-in-out;
-  transition: 1s ease-in-out;
+  -webkit-transition: calc(1s * var(--speed-mult)) ease-in-out;
+  transition: calc(1s * var(--speed-mult)) ease-in-out;
 }

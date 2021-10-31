@@ -17,15 +17,16 @@
 - [x] scales images down when bigger than window
 - [x] place images where mouse drops
 - [x] ctrl+d for duplication
-- [ ] double click on stage to change color and stage settings
 - [x] implement dragNdrop overlay
 - [x] change fonts on dragNdrop overlay
 - [x] when video gets duplicated both copies play when hovered
 - [x] tool-buttons need new rework because too much
 - [x] shortcuts don't activate ui (make ui reactive)
+- [x] find consistent color design for buttons and overlays
+- [ ] double click on stage to change color and stage settings
 - [ ] split up 'CanvasStage' to ease up functionality?
 - [ ] shortcut to enter link into input field (should be open with link inserted)
-- [ ] find consistent color design for buttons and overlays
+- [ ] add tooltips to function buttons
 
 ## Big ones
 
@@ -33,4 +34,4 @@
 - [ ] Layout (in grids) || Grid overlay with snapping (https://codepen.io/pierrebleroux/pen/gGpvxJ?editors=0010)
 - [ ] write up help menu
 - [x] implement guides & snaps for moving
-- [ ] save function for canvas (ask if local media should be included)
+- [x] save function for canvas (ask if local media should be included)

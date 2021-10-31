@@ -6,10 +6,12 @@ const Stage = new StageSingleton();
 
 // Animations
 
+let speedMult = $(":root").css("--speed-mult")
+
 const btns_entrance = animate.anim_temp(
   ".settingsBtn:not(:nth-child(1)), .settingsSpacer",
-  { duration: 0.1 },
-  { x: 100, ease: Power0.easeNone, delay: -0.6, stagger: 0.1 },
+  { duration: 0.1 * speedMult },
+  { x: 100, ease: Power0.easeNone, delay: -.6 / speedMult , stagger: 0.1 * speedMult},
   true
 );
 
@@ -48,7 +50,7 @@ $(document).on("click touchstart", (e) => {
     $(".linkAdd").click()
 });
 
-// Fucntion buttons callbacks and setup
+// Function buttons callbacks and setup
 
 const varChangeCallback = {
   guidesAct: (value = true) => {
@@ -80,19 +82,24 @@ const settingsAll_act = () => {
 
 $(".settingsAll").on("click", settingsAll_act);
 
-$("#fileUp").on("change", (e) => Stage.stage.file_2_url(e.target.files[0]));
+$("#fileUp").on("change", (e) => {
+  const file = e.target.files[0]
+  if (file.type === "application/json") {
+    helpers.loadJsonFile(file, (data) => {
+      if (data["Stage"] !== undefined){
+        Stage.stage.set_state(data.Stage)
+      }
+    })
+  } else Stage.stage.file_2_url(file)
+});
+
+$(".fileDown").on("click", (e) => {
+  const data = JSON.stringify(Stage.stage.get_state())
+  helpers.download(data, "stage_state.json")
+})
 
 $(".linkAdd").on("click", (e) => {
   $(".linkzone, .linkAdd").toggleClass("active");
-  // $(".linkAdd").toggleClass
-
-  // const opt_elem = $(".optionsButtons .linkInputWrapper");
-  // const class_name = opt_elem.attr("class");
-  // helpers.toggleClass(".optionsButtons .linkInputWrapper", "active");
-  // helpers.toggleClass(".linkAdd", "active");
-
-  // if (class_name.includes("active")) link_input_anim.reverse();
-  // else link_input_anim.play();
 });
 
 $("#linkInput").on("keydown", (e) => {
@@ -102,20 +109,6 @@ $("#linkInput").on("keydown", (e) => {
     $("#linkInput").val("");
   }
 });
-
-// $(".linkInput").on("keydown", (e) => {
-//   if (e.key === "Enter") {
-//     // TODO Validate ULR input
-//     // Stage.stage.add_img($(".linkInput").val());
-//     const wu = Stage.stage.url_2_canvas($(".linkInput").val());
-//     link_input_anim.reverse();
-//     helpers.toggleClass(".optionsButtons .linkInputWrapper", "active");
-//     helpers.toggleClass(".linkAdd", "active");
-
-//     if ($(".linkAdd").hasClass("active")) $(".linkAdd").click();
-//     $(".linkInput").val("");
-//   }
-// });
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -146,3 +139,6 @@ $(".moveTT").on("click", (e) => {
 $(window).on("load", () => {
   $(".settingsBtn").css({ display: "flex" });
 });
+
+
+window.Stage = Stage.stage
