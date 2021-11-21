@@ -44,13 +44,12 @@ const build_img = async (src, config, imageProps = null) => {
 };
 
 const add_media = (src, config, pointer) => {
-  // const pointer = stage.getPointerPosition();
-  return build_img(src, config, pointer());
+  return build_img(src, config, pointer);
 };
 
 const file_2_url = async (file, config, pointer) => {
   const fileurl = await get_fileURL(file);
-  return build_img(fileurl, config, pointer());
+  return build_img(fileurl, config, pointer);
 };
 
 const get_fileURL = (file) => {
@@ -62,4 +61,36 @@ const get_fileURL = (file) => {
   });
 };
 
-export { build_img, add_media, file_2_url };
+const fetch_file = async (url) => {
+  try {
+    const resp = await fetch(url);
+    const blob = await resp.blob();
+    return blob;
+  } catch (_) {
+    return null;
+  }
+};
+
+const get_srcURL = (html) => {
+  let e = document.createElement("div");
+  let r = document.createRange();
+  r.selectNodeContents(e);
+  let f = r.createContextualFragment(html);
+  e.appendChild(f);
+  try {
+    return e.firstElementChild.src;
+  } catch (_) {
+    return false;
+  }
+};
+
+const awaitAllFiles = (files, config, pointer) => {
+  return Promise.all(
+    Object.values(files).map(async (file) => {
+      const ret = await file_2_url(file, config, pointer);
+      return ret;
+    })
+  );
+};
+
+export { build_img, add_media, file_2_url, fetch_file, get_srcURL, get_fileURL, awaitAllFiles };

@@ -1,5 +1,8 @@
 import React from "react";
 
+// selection straight up stolen from :* :
+// https://codesandbox.io/s/react-konva-multiple-selection-tgggi
+
 const updateSelectionRect = (selectionRectRef, selection) => {
   const node = selectionRectRef.current;
   node.setAttrs({
@@ -25,7 +28,7 @@ const checkDeselect = (e, trRef, selectShape, setNodes) => {
 };
 
 const onMouseDown = (e, selection, selectionRectRef) => {
-  const isElement = e.target.findAncestor(".elements-container");
+  const isElement = e.target.hasName("image")
   const isTransformer = e.target.findAncestor("Transformer");
   if (isElement || isTransformer) {
     return;
@@ -50,33 +53,28 @@ const onMouseMove = (e, selection, selectionRectRef) => {
   updateSelectionRect(selectionRectRef, selection);
 };
 
-const onMouseUp = (trRef, layerRef, selectionRectRef, selection, Konva) => {
-  //   oldPos.current = null;
+const onMouseUp = (trRef, layerRef, selectionRectRef, selection, setNodes) => {
   if (!selection.current.visible) {
     return;
   }
   const selBox = selectionRectRef.current.getClientRect();
 
   const elements = [];
-  layerRef.current.find(".image, .video").forEach((elementNode) => {
+  layerRef.current.find(".image").forEach((elementNode) => {
     const elBox = elementNode.getClientRect();
-    // console.log(elBox);
     if (Konva.Util.haveIntersection(selBox, elBox)) {
       elements.push(elementNode);
     }
   });
   trRef.current.nodes(elements);
+  setNodes(trRef.current.nodes())
   selection.current.visible = false;
   // disable click event
-  Konva.listenClickTap = false;
+  window.Konva.listenClickTap = false;
   updateSelectionRect(selectionRectRef, selection);
 };
 
 const onClickTap = (e, layerRef, trRef, selectShape, setNodes) => {
-  // if we are selecting with rect, do nothing
-  //   if (selectionRectangle.visible()) {
-  //     return;
-  //   }
   let stage = e.target.getStage();
   let layer = layerRef.current;
   let tr = trRef.current;
@@ -90,7 +88,7 @@ const onClickTap = (e, layerRef, trRef, selectShape, setNodes) => {
   }
 
   // do nothing if clicked NOT on our rectangles
-  if (!e.target.hasName(".image, .video")) {
+  if (!e.target.hasName("image")) {
     return;
   }
 
@@ -109,24 +107,26 @@ const onClickTap = (e, layerRef, trRef, selectShape, setNodes) => {
     // remove node from array
     nodes.splice(nodes.indexOf(e.target), 1);
     tr.nodes(nodes);
+    
   } else if (metaPressed && !isSelected) {
     // add the node into selection
     const nodes = tr.nodes().concat([e.target]);
     tr.nodes(nodes);
   }
+  setNodes(tr.nodes())
   layer.draw();
 };
 
 const onLayerSelect = (e, index, trRef, nodesArray, setNodes, selectShape) => {
-  if (e.current !== undefined) {
-    let temp = nodesArray;
-    if (!nodesArray.includes(e.current)) temp.push(e.current);
-    setNodes(temp);
-    trRef.current.nodes(nodesArray);
-    trRef.current.nodes(nodesArray);
-    trRef.current.getLayer().batchDraw();
-  }
-  selectShape(index);
+  // if (e.current !== undefined) {
+  //   // let temp = nodesArray;
+  //   // if (!nodesArray.includes(e.current)) temp.push(e.current);
+  //   // setNodes(temp);
+  //   setNodes([e.current]);
+  //   trRef.current.nodes([e.current]);
+  //   trRef.current.getLayer().batchDraw();
+  // }
+  // selectShape(index);
 };
 
 const onLayerChange = (newAttrs, index, media, setMedia) => {

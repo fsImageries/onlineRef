@@ -1,26 +1,21 @@
-import React, { useState, useEffect, useRef, useReducer } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { Stage, Layer, Transformer, Rect } from "react-konva";
+import $ from "jquery";
+import { gsap } from "gsap";
 
 import "styles.scss";
 import img from "Beware_the_Goddess.jpg";
+import bg_img from "images/bg_scatter2.svg";
 
 import URLImage from "components/URLImage";
+import ToolBar from "components/ToolBar";
+import DropZoneSVG from "components/DropZoneSVG";
+import LinkField from "components/LinkField";
+
 import * as selection from "js/selection";
-import * as imgHelp from "js/imageHelpers";
 import * as dragDrop from "js/dragDrop";
-
-const build_img = (src) => {
-  const props = { x: 0, y: 0, src: src };
-  const image = new window.Image();
-  image.src = src;
-  props.width = image ? image.width : 0;
-  props.height = image ? image.height : 0;
-  return props;
-};
-
-const img_reducer = (state, action) => {
-  return { count: state.count + 1 };
-};
+import * as imgHelp from "js/imageHelpers";
+import * as menuBtns from "js/menuBtns";
 
 const useEventState = (init) => {
   const [state, _setState] = useState(init);
@@ -54,42 +49,98 @@ const App = () => {
     x2: 0,
     y2: 0,
   });
-  const Konva = window.Konva;
 
-  const get_pointer = () => stageRef.current.getPointerPosition();
+  const dropCon = useRef({ right: null, left: null });
+  const animDropSvg = (rev = false) => {
+    if (rev) {
+      dropCon.current.left.reverse();
+      dropCon.current.right.reverse();
+    } else {
+      dropCon.current.left.play();
+      dropCon.current.right.play();
+    }
+  };
+
+  const linkCon = useRef({ svgTl: null, input: null });
+  const toolBtnFuncs = [
+    () => {},
+    () => menuBtns.get_fileDialog(media.current, setMedia, config),
+    () => {},
+    () => {
+      linkCon.current.input.play();
+      linkCon.current.svgTl.play();
+    },
+  ];
 
   useEffect(() => {
     const resizeHandler = (e) => {
       setConfig({ ...config, w: window.innerWidth, h: window.innerHeight });
     };
+    $(":root").css("--bg-img", `url(${bg_img})`);
 
-    const dragoverHandler = (e) => e.preventDefault();
-
-    window.addEventListener("dragover", dragoverHandler);
-    window.addEventListener("drop", (e) =>
-      dragDrop.dropHandler(e, media.current, setMedia, config, get_pointer)
-    );
-    window.addEventListener("resize", resizeHandler);
-
-    return () => {
-      window.removeEventListener("dragover", dragoverHandler);
-      window.removeEventListener("drop", dropHandler);
-      window.removeEventListener("resize", resizeHandler);
+    const dragoverHandler = (e) => {
+      animDropSvg();
+      e.preventDefault();
     };
+
+    const dragleaveHandler = (e) => {
+      animDropSvg(true);
+    };
+
+    const dropHandler = (e) => {
+      e.preventDefault();
+      animDropSvg(true);
+      dragDrop.dropHandler(e, media.current, setMedia, config, {
+        x: e.pageX,
+        y: e.pageY,
+      });
+    };
+
+    const handleListeners = (del=false) =>{
+      window[del ? "removeEventListener" : "addEventListener"]("dragover", dragoverHandler);
+      window[del ? "removeEventListener" : "addEventListener"]("drop", dropHandler);
+      window[del ? "removeEventListener" : "addEventListener"]("dragleave", dragleaveHandler);
+      window[del ? "removeEventListener" : "addEventListener"]("resize", resizeHandler);
+    }
+
+    handleListeners()
+    return () => handleListeners(del=true);
   }, []);
 
+  const borderWidth = () => {
+    console.log("hi", nodesArray.length)
+    return nodesArray.length > 1 ? 0.25 : 0
+  }
+
+  // console.log(nodesArray.length)
+  const [pos, setPos] = useState({});
+  const url = "https://art.art/wp-content/uploads/2021/09/jamesnielsen_art.jpg";
   return (
     <>
+      <LinkField controller={linkCon} />
+      <ToolBar funcs={toolBtnFuncs} />
+      <div className="dropZone">
+        <DropZoneSVG isRight={true} controller={dropCon} />
+        <DropZoneSVG isRight={false} controller={dropCon} />
+      </div>
+
       <Stage
         ref={stageRef}
         width={config.width}
         height={config.height}
         onDblClick={async (e) => {
-          const wu = await imgHelp.add_media(img, config, get_pointer);
-          setMedia([...media.current, wu]);
-          console.log(media.current);
+          // const ret = await imgHelp.build_img(url, config);
+          // setMedia([ret]);
+          // console.log("H");
+          // dropCon.current.right.play();
+          // dropCon.current.left.play();
+          // console.log(e.evt.pageX, e.evt.pageY);
+          // console.log(stageRef.current.getPointerPosition());
+          // setPos(stageRef.current.getRelativePointerPosition());
+          linkCon.current.svgTl.play();
+          linkCon.current.input.play();
+          // $(".linkInput").toggleClass("active")
         }}
-        // onDblClick={() => setMedia([...media, "https://konvajs.org/assets/yoda.jpg"])}
         onTouchStart={(e) =>
           selection.checkDeselect(e, trRef, selectShape, setNodes)
         }
@@ -105,14 +156,15 @@ const App = () => {
             layerRef,
             selectionRectRef,
             curSelection,
-            Konva
-          )
+            setNodes
+            )
         }
         onClick={(e) =>
           selection.onClickTap(e, layerRef, trRef, selectShape, setNodes)
         }
       >
         <Layer ref={layerRef}>
+          {/* <Rect {...pos} width={100} height={100} fill="red" /> */}
           {media.current.map((item, index) => {
             return (
               <URLImage
@@ -136,6 +188,7 @@ const App = () => {
                     setMedia
                   )
                 }
+                idx={index}
                 key={index}
               />
             );
@@ -149,6 +202,19 @@ const App = () => {
               }
               return newBox;
             }}
+            borderStrokeWidth={borderWidth()}
+            {...{
+              name:"transformer",
+              borderStroke: "#00d0ff",
+              anchorSize: 7.5,
+              anchorStrokeWidth: 1,
+              anchorStroke: "#b5b5b5",
+              anchorCornerRadius: 50,
+              rotationSnapTolerance: 0,
+              rotationSnaps: [0, 45, 90, 135, 180, -45, -90, -135, -180],
+              rotateAnchorOffset: 0,
+              rotateEnabled: false,
+              resizeEnabled: true}}
           />
           <Rect fill="rgba(0,0,255,0.5)" ref={selectionRectRef} />
         </Layer>

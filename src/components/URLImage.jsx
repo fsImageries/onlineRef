@@ -3,17 +3,17 @@ import { Image } from "react-konva";
 import useImage from "use-image";
 
 
-const URLImage = ({imageProps, onSelect, onChange }) => {
+const URLImage = ({imageProps, onSelect, onChange, idx }) => {
     const [image] = useImage(imageProps.src);
     const shapeRef = useRef();
   
-    // console.log(imageProps)
     return (
     <Image 
       {...imageProps}
   
       image={image} 
-      name="image" 
+      name={`image`} 
+      // className={`image${idx}`} 
       draggable
       onClick={() => onSelect(shapeRef)}
       onTap={() => onSelect(shapeRef)}

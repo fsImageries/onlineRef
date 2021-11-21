@@ -1,3 +1,206 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css");
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@mixin frostedGlass(
+  $bgCol: (
+    255,
+    255,
+    255,
+  ),
+  $alpha: 0.5
+) {
+  background: rgba($bgCol, $alpha);
+  box-shadow: 0 8px 32px 0 hsla(236, 63%, 20%, 0.37);
+  backdrop-filter: blur(50px);
+  //   -webkit-backdrop-filter: blur(5px);
+}
+
+@mixin flexCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin absCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+:root {
+  --roboto: "Roboto", sans-serif;
+  --montserrat: 'Montserrat', sans-serif;
+
+  // Background color palette
+  --dark-liver: #5b5863ff;
+  --sonic-silver: #77767aff;
+  --persian-indigo: #32156bff;
+  --medium-purple: #9d6dfcff;
+  --ultramarine: #5612deff;
+
+  --bg-color: 9, 8, 32;
+  --bg-color2: 10, 10, 20;
+
+  --frostedWhite: 255, 255, 255;
+
+  --bg-img: none;
+  --bg-menu: none;
+}
+
 body {
-    overflow: hidden;
+  overflow: hidden;
+  margin: 0;
+  background-image: var(--bg-img);
+  background-color: rgba(var(--bg-color2), 1);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+#root {
+  @include absCenter;
+  @include frostedGlass(var(--bg-color2), 0.95);
+
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+}
+
+svg {
+  z-index: -1;
+}
+
+.dropZone {
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.toolBarBg {
+  --btn-size: 8vh;
+  --br: calc(var(--btn-size) / 3.33);
+
+  --trans-main: 1s;
+
+  width: calc(var(--btn-size) + 3vh);
+  height: auto;
+  max-height: 90vh;
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-image: var(--bg-menu);
+  background-size: contain;
+  background-attachment: fixed;
+  margin: 1vh 2vh;
+  border-radius: var(--br);
+  overflow-x: hidden;
+  transition: width var(--trans-main) ease-in-out,
+    max-height var(--trans-main) ease-in-out,
+    margin var(--trans-main) ease-in-out;
+
+  z-index: 9999999;
+
+  &::-webkit-scrollbar {
+    width: 0;
+  }
+
+  &.hide {
+    overflow-y: hidden;
+    width: var(--btn-size);
+    max-height: var(--btn-size);
+    margin: 2vh 3vh;
+  }
+
+  .toolBar {
+    @include frostedGlass(var(--frostedWhite), 0.05);
+    @include flexCenter;
+
+    overflow-y: scroll;
+    z-index: 1;
+    justify-content: start;
+    flex-direction: column;
+    padding: 1vh 0;
+    transition: padding var(--trans-main) ease-in-out;
+
+    &::-webkit-scrollbar {
+      width: 0;
+    }
+
+    &.hide {
+      padding: 0;
+      .toolItem {
+        margin: 0;
+      }
+    }
+
+    .toolItem {
+      @include flexCenter;
+      @include frostedGlass(var(--frostedWhite), 0.1);
+
+      z-index: 999999;
+      cursor: pointer;
+      margin: 0.5vh 0;
+      width: var(--btn-size);
+      height: var(--btn-size);
+      border-radius: var(--br);
+      transition: margin var(--trans-main) ease-in-out;
+      i {
+        z-index: inherit;
+        color: white;
+      }
+    }
+
+    .settingsAll {
+      i {
+        transition: transform var(--trans-main) ease-in-out;
+        transform: rotate(0deg);
+      }
+      &.hide i {
+        transform: rotate(180deg);
+      }
+    }
+  }
+}
+
+.linkField{
+  @include absCenter;
+  background: rgba(var(--bg-color2), 0.7);
+  backdrop-filter: blur(10px);
+  width: 100%;
+  height: 100%;
+  z-index: 7;
+
+  .linkText{
+    @include absCenter;
+    background: linear-gradient(45deg, #333 55%, rgb(56, 56, 56) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: var(--montserrat);
+    font-size: 1rem;
+    top: 41%;
+    text-align: center;
+    opacity: 1;
+  }
+
+  .linkInput{
+    @include absCenter;
+    z-index: 7;
+    top: 45%;
+    border-radius: 2vh;
+    border: 1px white solid;
+    background-color: rgba(255, 255, 255, 0);
+  }
+
+
+  .linkFieldSvg{
+    @include absCenter;
+    // z-index: 5;
+    // pointer-events: none;
+    transform: translate(-50%, -50%) scale(1.5);
+  }
 }
