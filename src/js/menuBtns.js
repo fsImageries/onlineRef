@@ -6,7 +6,7 @@ const get_fileDialog = (media, setMedia, config) => {
   input.attr("type", "file");
   input.prop("multiple", true)
   input.on("change", async () => {
-    const filesAttrs = await imgHelp.awaitAllFiles(input.prop("files"), config, {x:0, y:0});
+    const filesAttrs = await imgHelp.awaitAllFiles(input.prop("files"), config);
     setMedia([...media, ...filesAttrs]);
   });
 
@@ -14,6 +14,5 @@ const get_fileDialog = (media, setMedia, config) => {
   return false; // avoiding navigation
 };
 
-const fileHandler = (handler) => {};
 
 export { get_fileDialog };

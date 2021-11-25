@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import React, { useState, useEffect, useRef, useReducer } from "react";
 import { Stage, Layer, Transformer, Rect } from "react-konva";
 import $ from "jquery";
-import { gsap } from "gsap";
 
 import "styles.scss";
 import img from "Beware_the_Goddess.jpg";
 import bg_img from "images/bg_scatter2.svg";
 
 import URLImage from "components/URLImage";
+import URLVideo from "components/URLVideo";
 import ToolBar from "components/ToolBar";
 import DropZoneSVG from "components/DropZoneSVG";
 import LinkField from "components/LinkField";
@@ -28,27 +28,73 @@ const useEventState = (init) => {
   return [stateRef, setState];
 };
 
+let icons = [
+  "fas fa-sliders-h",
+  // add html spacer between
+  "fas fa-question",
+  "far fa-file-image",
+  "fas fa-file-download",
+  "fas fa-link",
+  "fas fa-play",
+  // "fas fa-mouse-pointer",
+  "fas fa-arrows-alt",
+  "fas fa-magnet",
+  "fas fa-expand-arrows-alt",
+  "fas fa-undo",
+  "fas fa-arrow-up",
+];
+
+let curSelectionInitial = {
+  visible: false,
+  x1: 0,
+  y1: 0,
+  x2: 0,
+  y2: 0,
+};
+
+const active_reducer = (isActive, action) => {
+  const temp = isActive.slice();
+  temp[action.idx] = action.act;
+  return temp;
+};
+
+const func_btn_active_swtich = (action) => {
+  if (!action.notAct) action.setActive({ idx: action.idx, act: action.act });
+  return action.act;
+};
+
+const stageStatesReducer = (states, action) => {
+  if (!action.notAct) action.setActive({ idx: action.actIdx, act: action.act });
+
+  let temp = Object.entries(states);
+  const [prop, _] = temp[action.idx];
+  states[prop] = action.act;
+  return states;
+};
+
 const App = () => {
   const [media, setMedia] = useEventState([]);
-  const [config, setConfig] = useState({
+  const [config, setConfig] = useEventState({
     width: window.innerWidth,
     height: window.innerHeight,
+    x: 0,
+    y: 0,
   });
 
   const [selectedId, selectShape] = useState(null);
-  const [nodesArray, setNodes] = useState([]);
+  // const [nodesArray, setNodes] = useState([]);
+  const [nodesArray, setNodes] = useEventState([]);
 
   const stageRef = useRef();
   const layerRef = useRef();
   const trRef = useRef();
   const selectionRectRef = useRef();
-  const curSelection = useRef({
-    visible: false,
-    x1: 0,
-    y1: 0,
-    x2: 0,
-    y2: 0,
-  });
+  const curSelection = useRef({ ...curSelectionInitial });
+
+  const [isActive, setActive] = useReducer(
+    active_reducer,
+    new Array(icons.length).fill(false)
+  );
 
   const dropCon = useRef({ right: null, left: null });
   const animDropSvg = (rev = false) => {
@@ -61,22 +107,187 @@ const App = () => {
     }
   };
 
-  const linkCon = useRef({ svgTl: null, input: null });
+  const linkCon = useRef({
+    svgTl: null,
+    input: null,
+    setActive: (val) => setActive({ idx: 3, act: val }),
+    isActive: isActive[3],
+  });
+  const inputHandler = async (e, ref) => {
+    if (e.key === "Enter") {
+      const src = ref.value;
+      const url = await imgHelp.test_url(src);
+
+      linkCon.current.anim(false);
+      ref.value = "";
+      if (!url) return;
+      const img = await imgHelp.build_img(url, config.current);
+      setMedia([...media.current, img]);
+    }
+  };
+  const menuBtnCon = useRef({ anim: null });
+
+  const [stageStates, setStageStates] = useReducer(
+    (states, action) => {
+      action = { ...action, setActive: setActive };
+      return stageStatesReducer(states, action);
+    },
+    {
+      stageDrag: false,
+      isResize: false,
+      isRot: false,
+      rotateFree: false,
+    }
+  );
+
+  const setDrag = (val) => {
+    const action = { act: val, actIdx: 5, idx: 0 };
+    if (val) curSelection.current = { ...curSelectionInitial };
+    setStageStates(action);
+  };
+
+  const setResize = (val) => {
+    const action = { act: val, actIdx: 7, idx: 1 };
+    setStageStates(action);
+  };
+
+  const setRot = (val) => {
+    const action = { act: val, actIdx: 8, idx: 2 };
+    setStageStates(action);
+  };
+
+  const setRotateFree = (val) => {
+    const action = { act: val, idx: 3 };
+    setStageStates(action);
+  };
+
   const toolBtnFuncs = [
     () => {},
-    () => menuBtns.get_fileDialog(media.current, setMedia, config),
+    () => menuBtns.get_fileDialog(media.current, setMedia, config.current),
     () => {},
     () => {
-      linkCon.current.input.play();
-      linkCon.current.svgTl.play();
+      linkCon.current.anim();
+    },
+    () => {},
+    () => {
+      setDrag(!stageStates.stageDrag);
+    },
+    () => {},
+    () => {
+      setResize(!stageStates.isResize);
+      if (stageStates.isRot) setRot(false);
+    },
+    () => {
+      setRot(!stageStates.isRot);
+      if (stageStates.isResize) setResize(false);
+    },
+    () => {
+      const cur = nodesArray.current[0];
+      if (cur === undefined) return;
+      const curIdx = media.current.findIndex(
+        (elem) => cur.attrs.id === elem.id
+      );
+
+      if (curIdx >= 0) {
+        const temp = media.current.filter((_, idx) => idx !== curIdx);
+        setMedia([...temp, media.current[curIdx]]);
+      }
     },
   ];
 
+  const duplicate_selected = async (nodesArray) => {
+    const newMedia = await Promise.all(
+      nodesArray.map(async (node) => {
+        const curMedia = media.current.filter(
+          (elem) => elem.id === node.attrs.id
+        )[0];
+
+        const x = curMedia.x - 50;
+        const y = curMedia.y - 50;
+
+        const ret = await imgHelp.build_img(curMedia.src, config.current, {
+          x: x,
+          y: y,
+          width: curMedia.width,
+          height: curMedia.height,
+          noMod: true,
+        });
+        return ret;
+      })
+    );
+
+    setMedia([...media.current, ...newMedia]);
+  };
+
+  const delete_selected = () => {
+    const newMedia = media.current.filter((elem) => {
+      let isSelected = true;
+      for (let i = 0; i < nodesArray.current.length; i++) {
+        const cur = nodesArray.current[i];
+        if (cur.attrs.id === elem.id) isSelected = false;
+      }
+      return isSelected;
+    });
+
+    setMedia(newMedia);
+    selectShape(null);
+    trRef.current.nodes([]);
+    setNodes([]);
+  };
+
   useEffect(() => {
-    const resizeHandler = (e) => {
-      setConfig({ ...config, w: window.innerWidth, h: window.innerHeight });
-    };
     $(":root").css("--bg-img", `url(${bg_img})`);
+
+    const keyHandler = (e) => {
+      setRotateFree(e.shiftKey);
+      // Stage.stage.multScale = e.shiftKey;
+
+      if (e.type === "keydown") {
+        // console.log(e.key);
+        
+        if (["Delete", "Backspace", "x"].includes(e.key)) delete_selected()
+
+        if (e.ctrlKey && e.key === "i") toolBtnFuncs[1]();
+
+        if (e.ctrlKey && e.key === "d") {
+          e.preventDefault();
+          duplicate_selected(nodesArray.current);
+        }
+
+        if (e.key === "q") menuBtnCon.current.anim();
+
+        if (e.key === "i" && !e.ctrlKey) toolBtnFuncs[3]();
+
+        if (e.key === "d" && !e.ctrlKey) toolBtnFuncs[5]();
+
+        if (e.key === "t") toolBtnFuncs[7]();
+
+        if (e.key === "r") toolBtnFuncs[8]();
+
+        if (e.key === "m") toolBtnFuncs[9]();
+
+        //   if (e.key === "m") proxyStage.guidesAct = !proxyStage.guidesAct;
+
+        //   if (e.ctrlKey && e.key === "s") {
+        //     e.preventDefault();
+        //     $(".fileDown").trigger("click");
+        //   }
+      }
+
+      // if (e.key === "Backspace") Stage.stage.delete_selected();
+      // if (Stage.stage.topLayer !== undefined) Stage.stage.toggle_rotation();
+    };
+
+    document.addEventListener("keyup", keyHandler);
+    document.addEventListener("keydown", keyHandler);
+
+    const resizeHandler = () => {
+      setConfig({
+        ...config.current,
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
 
     const dragoverHandler = (e) => {
       animDropSvg();
@@ -88,110 +299,125 @@ const App = () => {
     };
 
     const dropHandler = (e) => {
-      e.preventDefault();
+      e.dataTransfer.getText = () => e.dataTransfer.getData("text");
+      e.dataTransfer.getHTML = () => e.dataTransfer.getData("text/html");
       animDropSvg(true);
-      dragDrop.dropHandler(e, media.current, setMedia, config, {
+      e.preventDefault();
+      dragDrop.dropHandler(e, media.current, setMedia, config.current, {
         x: e.pageX,
         y: e.pageY,
       });
     };
 
-    const handleListeners = (del=false) =>{
-      window[del ? "removeEventListener" : "addEventListener"]("dragover", dragoverHandler);
-      window[del ? "removeEventListener" : "addEventListener"]("drop", dropHandler);
-      window[del ? "removeEventListener" : "addEventListener"]("dragleave", dragleaveHandler);
-      window[del ? "removeEventListener" : "addEventListener"]("resize", resizeHandler);
-    }
+    const handleListeners = (del = false) => {
+      window[del ? "removeEventListener" : "addEventListener"](
+        "dragover",
+        dragoverHandler
+      );
+      window[del ? "removeEventListener" : "addEventListener"](
+        "dragleave",
+        dragleaveHandler
+      );
+      window[del ? "removeEventListener" : "addEventListener"](
+        "drop",
+        dropHandler
+      );
+      window[del ? "removeEventListener" : "addEventListener"](
+        "resize",
+        resizeHandler
+      );
+    };
 
-    handleListeners()
-    return () => handleListeners(del=true);
+    handleListeners();
+    return () => handleListeners((del = true));
   }, []);
 
-  const borderWidth = () => {
-    console.log("hi", nodesArray.length)
-    return nodesArray.length > 1 ? 0.25 : 0
-  }
-
-  // console.log(nodesArray.length)
-  const [pos, setPos] = useState({});
   const url = "https://art.art/wp-content/uploads/2021/09/jamesnielsen_art.jpg";
   return (
     <>
-      <LinkField controller={linkCon} />
-      <ToolBar funcs={toolBtnFuncs} />
+      <LinkField controller={linkCon} onEnter={inputHandler} />
+      <ToolBar
+        icons={icons}
+        funcs={toolBtnFuncs}
+        isActive={isActive}
+        controller={menuBtnCon}
+      />
       <div className="dropZone">
         <DropZoneSVG isRight={true} controller={dropCon} />
         <DropZoneSVG isRight={false} controller={dropCon} />
       </div>
 
       <Stage
+        {...config.current}
         ref={stageRef}
-        width={config.width}
-        height={config.height}
+        draggable={stageStates.stageDrag}
         onDblClick={async (e) => {
-          // const ret = await imgHelp.build_img(url, config);
-          // setMedia([ret]);
-          // console.log("H");
-          // dropCon.current.right.play();
-          // dropCon.current.left.play();
-          // console.log(e.evt.pageX, e.evt.pageY);
-          // console.log(stageRef.current.getPointerPosition());
-          // setPos(stageRef.current.getRelativePointerPosition());
-          linkCon.current.svgTl.play();
-          linkCon.current.input.play();
-          // $(".linkInput").toggleClass("active")
+          // setDrag({ act: !stageDrag });
+          setDrag(!stageStates.stageDrag);
+          // linkCon.current.anim()
+          const some = await imgHelp.build_img(url, config.current, {
+            x: e.evt.pageX,
+            y: e.evt.pageY,
+          });
+          setMedia([...media.current, some]);
         }}
-        onTouchStart={(e) =>
-          selection.checkDeselect(e, trRef, selectShape, setNodes)
-        }
-        onMouseDown={(e) =>
-          selection.onMouseDown(e, curSelection, selectionRectRef)
-        }
-        onMouseMove={(e) =>
-          selection.onMouseMove(e, curSelection, selectionRectRef)
-        }
-        onMouseUp={(e) =>
+        onDragEnd={() => {
+          if (!stageStates.stageDrag) return;
+          setConfig({ ...config.current, ...stageRef.current.position() });
+        }}
+        onTouchStart={(e) => {
+          selection.checkDeselect(e, trRef, selectShape, setNodes);
+        }}
+        onMouseDown={(e) => {
+          if (stageStates.stageDrag) return;
+          selection.onMouseDown(
+            e,
+            curSelection,
+            selectionRectRef,
+            stageRef.current.position()
+          );
+        }}
+        onMouseMove={(e) => {
+          if (stageStates.stageDrag) return;
+          selection.onMouseMove(
+            e,
+            curSelection,
+            selectionRectRef,
+            stageRef.current.position()
+          );
+        }}
+        onMouseUp={(e) => {
+          if (stageStates.stageDrag) return;
+          setConfig({ ...config.current, ...stageRef.current.position() });
           selection.onMouseUp(
             trRef,
             layerRef,
             selectionRectRef,
             curSelection,
-            setNodes
-            )
-        }
-        onClick={(e) =>
-          selection.onClickTap(e, layerRef, trRef, selectShape, setNodes)
-        }
+            setNodes,
+            stageRef.current.position()
+          );
+        }}
+        onClick={(e) => {
+          selection.onClickTap(e, layerRef, trRef, selectShape, setNodes);
+        }}
       >
         <Layer ref={layerRef}>
-          {/* <Rect {...pos} width={100} height={100} fill="red" /> */}
           {media.current.map((item, index) => {
-            return (
-              <URLImage
-                imageProps={item}
-                isSelected={index === selectedId}
-                onSelect={(e) =>
-                  selection.onLayerSelect(
-                    e,
-                    index,
-                    trRef,
-                    nodesArray,
-                    setNodes,
-                    selectShape
-                  )
-                }
-                onChange={(newAttrs) =>
-                  selection.onLayerChange(
-                    newAttrs,
-                    index,
-                    media.current,
-                    setMedia
-                  )
-                }
-                idx={index}
-                key={index}
-              />
-            );
+            const props = {
+              imageProps: item,
+              isSelected: index === selectedId,
+              onChange: (newAttrs) => {
+                const meds = media.current.slice();
+                meds[index] = newAttrs;
+                setMedia(meds);
+              },
+              idx: index,
+              key: index,
+            };
+
+            if (item.type === "img") return <URLImage {...props} />;
+            else return <URLVideo {...props} />;
           })}
           <Transformer
             ref={trRef}
@@ -202,19 +428,20 @@ const App = () => {
               }
               return newBox;
             }}
-            borderStrokeWidth={borderWidth()}
+            rotateEnabled={stageStates.isRot}
+            resizeEnabled={stageStates.isResize}
+            borderStrokeWidth={nodesArray.current.length > 1 ? 0.25 : 0.1}
+            rotationSnapTolerance={stageStates.rotateFree ? 0 : 5}
             {...{
-              name:"transformer",
+              name: "transformer",
               borderStroke: "#00d0ff",
               anchorSize: 7.5,
               anchorStrokeWidth: 1,
               anchorStroke: "#b5b5b5",
               anchorCornerRadius: 50,
-              rotationSnapTolerance: 0,
               rotationSnaps: [0, 45, 90, 135, 180, -45, -90, -135, -180],
               rotateAnchorOffset: 0,
-              rotateEnabled: false,
-              resizeEnabled: true}}
+            }}
           />
           <Rect fill="rgba(0,0,255,0.5)" ref={selectionRectRef} />
         </Layer>

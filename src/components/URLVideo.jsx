@@ -1,24 +1,55 @@
-import React, { useRef, useEffect, useState, useReducer } from "react";
-import { Image, RegularPolygon } from "react-konva";
+import React, { useRef, useEffect, useReducer } from "react";
+import { Image } from "react-konva";
+import Konva from "konva";
 
+import VideoButton from "components/VideoButton";
 
-const URLImage = ({ imageProps, onChange, idx }) => {
-  const imageRef = useRef();
+const playReducer = (_, action) => {
+  switch (action.type) {
+    case "pause": {
+      action.video.pause();
+      return false;
+    }
+    case "play": {
+      action.video.play();
+      return true;
+    }
+  }
+};
 
+const URLVideo = ({ imageProps, onChange, idx }) => {
+  const videoRef = useRef();
+
+  // use Konva.Animation to redraw a layer
+  useEffect(() => {
+    imageProps.image.play();
+    const layer = videoRef.current.getLayer();
+
+    const anim = new Konva.Animation(() => {}, layer);
+    anim.start();
+    imageProps.image.pause();
+
+    return () => anim.stop();
+  }, [imageProps.image]);
+
+  const [isPlaying, playDispatch] = useReducer(playReducer, false);
+  const setPlaying = (action) => {
+    action = { ...action, video: imageProps.image };
+    playDispatch(action);
+  };
 
   const transformHandler = (e) => {
     // transformer is changing scale of the node
     // and NOT its width or height
     // but in the store we have only width and height
     // to match the data better we will reset scale on transform end
-    const node = imageRef.current;
+    const node = videoRef.current;
     const scaleX = node.scaleX();
     const scaleY = node.scaleY();
 
     // we will reset it back
     node.scaleX(1);
     node.scaleY(1);
-    // console.log("In transform: ", node.x())
     onChange({
       ...imageProps,
       src: imageProps.src,
@@ -36,17 +67,9 @@ const URLImage = ({ imageProps, onChange, idx }) => {
         {...imageProps}
         draggable
         name={"image"}
-        ref={imageRef}
-        onMouseOver={() => {
-          if (imageProps.type === "vid") {
-            setPlaying({type:"play"})
-          }
-        }}
-        onMouseLeave={() => {
-          if (imageProps.type === "vid") {
-            setPlaying({type:"pause"})
-          }
-        }}
+        ref={videoRef}
+        onMouseOver={() => setPlaying({ type: "play" })}
+        onMouseLeave={() => setPlaying({ type: "pause" })}
         // Needed for selection and transformation of the image
         // just disable video buttons while dragging, idiot
         onDragMove={(e) => {
@@ -66,8 +89,9 @@ const URLImage = ({ imageProps, onChange, idx }) => {
         // onTransform={transformHandler}
         onTransformEnd={transformHandler}
       ></Image>
+      <VideoButton props={imageProps} isPlaying={isPlaying} />
     </>
   );
 };
 
-export default URLImage;
+export default URLVideo;

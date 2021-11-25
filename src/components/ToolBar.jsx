@@ -1,25 +1,9 @@
-import React, { useState, useRef, useLayoutEffect } from "react";
+import React, { useEffect, useRef, useLayoutEffect, useState } from "react";
 import { gsap } from "gsap";
 import $ from "jquery";
 
 import ToolItem from "components/ToolItem";
-import  * as menuBtns from "js/menuBtns";
 import bg_img from "images/menu_bg.svg";
-
-let icons = [
-  "fas fa-sliders-h",
-  // add html spacer between
-  "fas fa-question",
-  "far fa-file-image",
-  "fas fa-file-download",
-  "fas fa-link",
-  "fas fa-play",
-  "fas fa-mouse-pointer",
-  "fas fa-magnet",
-  "fas fa-expand-arrows-alt",
-  "fas fa-undo",
-  "fas fa-arrow-up",
-];
 
 const tl_reducer = (tl, action) => {
   switch (action) {
@@ -34,10 +18,12 @@ const tl_reducer = (tl, action) => {
   }
 };
 
-const ToolBar = ({funcs}) => {
-  document.documentElement.style.setProperty("--bg-menu", `url(${bg_img})`);
+const ToolBar = ({ icons, funcs, isActive, controller }) => {
+  $(":root").css("--bg-menu", `url(${bg_img})`);
 
   const [isOpen, setOpen] = useState(false);
+
+  const toolbarBgRef = useRef();
   const settingsRef = useRef();
   const toolbarRef = useRef();
   const tlRef = useRef();
@@ -55,10 +41,21 @@ const ToolBar = ({funcs}) => {
     tl.from(toolBarSelect(".toolItem:not(:nth-child(1))"), fx);
     tl.reverse();
     tlRef.current = tl;
+
   }, []);
+
+  controller.current.anim = () => {
+    const newOpen = !isOpen
+    setOpen(newOpen);
+    tl_reducer(tlRef.current, isOpen);
+
+    if (!newOpen) 
+      toolbarBgRef.current.scroll({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div
+      ref={toolbarBgRef}
       className={`toolBarBg ${isOpen ? "" : "hide"}`}
       onScroll={() => {
         // backdrop-filter: blur doesn't update on scrollable div's, this is a quick and dirty fix
@@ -67,23 +64,30 @@ const ToolBar = ({funcs}) => {
           : 50;
         $(".toolBar").css("backdrop-filter", `blur(${val}px)`);
       }}
-      // onDoubleClick={() => tl_reducer(tlRef.current, isOpen)}
     >
       <div className={`toolBar ${isOpen ? "" : "hide"}`} ref={toolbarRef}>
         <ToolItem
           reference={settingsRef}
           icon={icons[0]}
           onClick={() => {
-            setOpen(!isOpen);
-            tl_reducer(tlRef.current, isOpen);
+            // setOpen(!isOpen);
+            // tl_reducer(tlRef.current, isOpen);
+            controller.current.anim();
           }}
           className={`settingsAll ${isOpen ? "" : "hide"}`}
         />
         {icons.slice(1, icons.length).map((item, idx) => {
-          return <ToolItem icon={item} key={idx} onClick={(e) => {
-            const func = funcs[idx];
-            if (func) func()
-          }} />;
+          return (
+            <ToolItem
+              icon={item}
+              key={idx}
+              className={isActive[idx] && "active"}
+              onClick={(e) => {
+                const func = funcs[idx];
+                if (func) func(e);
+              }}
+            />
+          );
         })}
       </div>
     </div>

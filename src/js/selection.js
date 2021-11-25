@@ -3,12 +3,12 @@ import React from "react";
 // selection straight up stolen from :* :
 // https://codesandbox.io/s/react-konva-multiple-selection-tgggi
 
-const updateSelectionRect = (selectionRectRef, selection) => {
+const updateSelectionRect = (selectionRectRef, selection, stagePos) => {
   const node = selectionRectRef.current;
   node.setAttrs({
     visible: selection.current.visible,
-    x: Math.min(selection.current.x1, selection.current.x2),
-    y: Math.min(selection.current.y1, selection.current.y2),
+    x: Math.min(selection.current.x1, selection.current.x2) - stagePos.x,
+    y: Math.min(selection.current.y1, selection.current.y2) - stagePos.y,
     width: Math.abs(selection.current.x1 - selection.current.x2),
     height: Math.abs(selection.current.y1 - selection.current.y2),
     fill: "rgba(0, 161, 255, 0.3)",
@@ -27,7 +27,7 @@ const checkDeselect = (e, trRef, selectShape, setNodes) => {
   }
 };
 
-const onMouseDown = (e, selection, selectionRectRef) => {
+const onMouseDown = (e, selection, selectionRectRef, stagePos) => {
   const isElement = e.target.hasName("image")
   const isTransformer = e.target.findAncestor("Transformer");
   if (isElement || isTransformer) {
@@ -40,20 +40,20 @@ const onMouseDown = (e, selection, selectionRectRef) => {
   selection.current.y1 = pos.y;
   selection.current.x2 = pos.x;
   selection.current.y2 = pos.y;
-  updateSelectionRect(selectionRectRef, selection);
+  updateSelectionRect(selectionRectRef, selection, stagePos);
 };
 
-const onMouseMove = (e, selection, selectionRectRef) => {
+const onMouseMove = (e, selection, selectionRectRef, stagePos) => {
   if (!selection.current.visible) {
     return;
   }
   const pos = e.target.getStage().getPointerPosition();
   selection.current.x2 = pos.x;
   selection.current.y2 = pos.y;
-  updateSelectionRect(selectionRectRef, selection);
+  updateSelectionRect(selectionRectRef, selection, stagePos);
 };
 
-const onMouseUp = (trRef, layerRef, selectionRectRef, selection, setNodes) => {
+const onMouseUp = (trRef, layerRef, selectionRectRef, selection, setNodes, stagePos) => {
   if (!selection.current.visible) {
     return;
   }
@@ -71,7 +71,7 @@ const onMouseUp = (trRef, layerRef, selectionRectRef, selection, setNodes) => {
   selection.current.visible = false;
   // disable click event
   window.Konva.listenClickTap = false;
-  updateSelectionRect(selectionRectRef, selection);
+  updateSelectionRect(selectionRectRef, selection, stagePos);
 };
 
 const onClickTap = (e, layerRef, trRef, selectShape, setNodes) => {
