@@ -28,13 +28,17 @@ const checkDeselect = (e, trRef, selectShape, setNodes) => {
 };
 
 const onMouseDown = (e, selection, selectionRectRef, stagePos) => {
-  const isElement = e.target.hasName("image")
+  const isElement = e.target.hasName("image");
   const isTransformer = e.target.findAncestor("Transformer");
   if (isElement || isTransformer) {
     return;
   }
 
-  const pos = e.target.getStage().getPointerPosition();
+  let pos = e.target.getStage().getRelativePointerPosition();
+  pos = {
+    x : pos.x + stagePos.x,
+    y : pos.y + stagePos.y,
+  }
   selection.current.visible = true;
   selection.current.x1 = pos.x;
   selection.current.y1 = pos.y;
@@ -47,13 +51,25 @@ const onMouseMove = (e, selection, selectionRectRef, stagePos) => {
   if (!selection.current.visible) {
     return;
   }
-  const pos = e.target.getStage().getPointerPosition();
+  let pos = e.target.getStage().getRelativePointerPosition();
+  pos = {
+    x : pos.x + stagePos.x,
+    y : pos.y + stagePos.y,
+  }
+
   selection.current.x2 = pos.x;
   selection.current.y2 = pos.y;
   updateSelectionRect(selectionRectRef, selection, stagePos);
 };
 
-const onMouseUp = (trRef, layerRef, selectionRectRef, selection, setNodes, stagePos) => {
+const onMouseUp = (
+  trRef,
+  layerRef,
+  selectionRectRef,
+  selection,
+  setNodes,
+  stagePos
+) => {
   if (!selection.current.visible) {
     return;
   }
@@ -67,7 +83,7 @@ const onMouseUp = (trRef, layerRef, selectionRectRef, selection, setNodes, stage
     }
   });
   trRef.current.nodes(elements);
-  setNodes(trRef.current.nodes())
+  setNodes(trRef.current.nodes());
   selection.current.visible = false;
   // disable click event
   window.Konva.listenClickTap = false;
@@ -107,13 +123,12 @@ const onClickTap = (e, layerRef, trRef, selectShape, setNodes) => {
     // remove node from array
     nodes.splice(nodes.indexOf(e.target), 1);
     tr.nodes(nodes);
-    
   } else if (metaPressed && !isSelected) {
     // add the node into selection
     const nodes = tr.nodes().concat([e.target]);
     tr.nodes(nodes);
   }
-  setNodes(tr.nodes())
+  setNodes(tr.nodes());
   layer.draw();
 };
 

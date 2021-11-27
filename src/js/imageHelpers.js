@@ -49,7 +49,6 @@ const construct_image = (props) => {
 
     if (image) {
       props = { ...props, width: image.width, height: image.height };
-      console.log(props);
     }
   } else {
     const [temp, size] = useVideo(imageRef, props.src);
@@ -63,7 +62,7 @@ const construct_image = (props) => {
 
 const build_img = async (src, stage, imageProps = null) => {
   const type = infere_type(src);
-  if (!type) return;
+  if (!type) return type;
 
   let props = {
     src: src,
@@ -88,23 +87,23 @@ const build_img = async (src, stage, imageProps = null) => {
   }
 
   if (imageProps === null) {
-    imageProps = { x: stage.width / 2, y: stage.height / 2, noScale:true };
+    imageProps = { x: stage.width / 2, y: stage.height / 2, mid: true };
+    //TODO When zoomed in import doesn't center anymore
   }
 
   props = { ...props, ...imageProps };
 
   if (imageProps.noMod) return props;
 
-  const get_scaled = ()=> {
-    return {
-      width: stage.width - props.x,
-      height: stage.height - props.y,
-    }
-  };
+  // const get_scaled = () => {
+  //   return {
+  //     width: stage.width - props.x,
+  //     height: stage.height - props.y,
+  //   };
+  // };
+  // const scaledStage = (imageProps.noScale && scaleCheck) ? stage : get_scaled()
+  const scaledStage = stage;
 
-  const scaledStage = imageProps.noScale ? stage : get_scaled()
-  // props = { ...props, stage: scaledStage };
-  
   if (
     (props.width > scaledStage.width || props.height > scaledStage.height) &&
     !imageProps["width"] &&
@@ -113,16 +112,16 @@ const build_img = async (src, stage, imageProps = null) => {
     props = { ...props, ...get_scaled_size(props, scaledStage) };
   }
 
-  // Center image around xy-pos
-  const midX = props.x - props.width / 2;
-  const midY = props.y - props.height / 2;
-  props = {
-    ...props,
-    x: Math.max(midX, 0) - stage.x,
-    y: Math.max(midY, 0) - stage.y,
-    // x: midX - stage.x,
-    // y: midY - stage.y,
-  };
+  if (imageProps.mid) {
+    // Center image around xy-pos
+    const midX = props.x - props.width / 2;
+    const midY = props.y - props.height / 2;
+    props = {
+      ...props,
+      x: (Math.max(midX, 0) - stage.x) * stage.scaleX,
+      y: (Math.max(midY, 0) - stage.y) * stage.scaleY,
+    };
+  }
 
   return props;
 };

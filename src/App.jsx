@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useReducer } from "react";
-import { Stage, Layer, Transformer, Rect } from "react-konva";
+import { Stage, Layer, Transformer, Rect, Line } from "react-konva";
 import $ from "jquery";
 
 import "styles.scss";
@@ -15,9 +15,11 @@ import LinkField from "components/LinkField";
 import * as selection from "js/selection";
 import * as dragDrop from "js/dragDrop";
 import * as imgHelp from "js/imageHelpers";
+import * as guidesHelp from "js/guides";
 import * as menuBtns from "js/menuBtns";
+import { stages } from "konva/lib/Stage";
 
-const useEventState = (init) => {
+const useEffectState = (init) => {
   const [state, _setState] = useState(init);
   const stateRef = useRef(state);
   const setState = (data) => {
@@ -73,8 +75,10 @@ const stageStatesReducer = (states, action) => {
 };
 
 const App = () => {
-  const [media, setMedia] = useEventState([]);
-  const [config, setConfig] = useEventState({
+  const [media, setMedia] = useEffectState([]);
+  const [config, setConfig] = useEffectState({
+    scaleX: 1,
+    scaleY: 1,
     width: window.innerWidth,
     height: window.innerHeight,
     x: 0,
@@ -83,13 +87,15 @@ const App = () => {
 
   const [selectedId, selectShape] = useState(null);
   // const [nodesArray, setNodes] = useState([]);
-  const [nodesArray, setNodes] = useEventState([]);
+  const [nodesArray, setNodes] = useEffectState([]);
 
   const stageRef = useRef();
   const layerRef = useRef();
   const trRef = useRef();
   const selectionRectRef = useRef();
   const curSelection = useRef({ ...curSelectionInitial });
+
+  const [scaleBy, setScaleBy] = useEffectState(1.02);
 
   const [isActive, setActive] = useReducer(
     active_reducer,
@@ -122,7 +128,7 @@ const App = () => {
       ref.value = "";
       if (!url) return;
       const img = await imgHelp.build_img(url, config.current);
-      setMedia([...media.current, img]);
+      if (img) setMedia([...media.current, img]);
     }
   };
   const menuBtnCon = useRef({ anim: null });
@@ -137,6 +143,7 @@ const App = () => {
       isResize: false,
       isRot: false,
       rotateFree: false,
+      isGuides: false,
     }
   );
 
@@ -161,6 +168,11 @@ const App = () => {
     setStageStates(action);
   };
 
+  const setIsGuides = (val) => {
+    const action = { act: val, actIdx: 6 , idx:4};
+    setStageStates(action);
+  }
+
   const toolBtnFuncs = [
     () => {},
     () => menuBtns.get_fileDialog(media.current, setMedia, config.current),
@@ -172,7 +184,7 @@ const App = () => {
     () => {
       setDrag(!stageStates.stageDrag);
     },
-    () => {},
+    () => {setIsGuides(!stageStates.isGuides)},
     () => {
       setResize(!stageStates.isResize);
       if (stageStates.isRot) setRot(false);
@@ -235,17 +247,49 @@ const App = () => {
     setNodes([]);
   };
 
+  const wheelHandler = (e) => {
+    e.evt.preventDefault();
+
+    // const scaleBy = 1.02;
+    const stage = e.target.getStage();
+    const oldScale = stage.scaleX();
+    const mousePointTo = {
+      x: stage.getRelativePointerPosition().x / oldScale - stage.x() / oldScale,
+      y: stage.getRelativePointerPosition().y / oldScale - stage.y() / oldScale,
+    };
+
+    let newScale =
+      e.evt.deltaY < 0
+        ? oldScale * scaleBy.current
+        : oldScale / scaleBy.current;
+    newScale = Math.max(0.02, newScale);
+
+    setConfig({
+      ...config.current,
+      scaleX: newScale,
+      scaleY: newScale,
+      x:
+        (stage.getRelativePointerPosition().x / newScale - mousePointTo.x) *
+        newScale,
+      y:
+        (stage.getRelativePointerPosition().y / newScale - mousePointTo.y) *
+        newScale,
+    });
+  };
+
+  const [guides, setGuides] = useEffectState([]);
+
   useEffect(() => {
     $(":root").css("--bg-img", `url(${bg_img})`);
 
     const keyHandler = (e) => {
       setRotateFree(e.shiftKey);
-      // Stage.stage.multScale = e.shiftKey;
+      setScaleBy(e.shiftKey ? 1.5 : 1.02);
 
       if (e.type === "keydown") {
         // console.log(e.key);
-        
-        if (["Delete", "Backspace", "x"].includes(e.key)) delete_selected()
+
+        if (["Delete", "Backspace", "x"].includes(e.key)) delete_selected();
 
         if (e.ctrlKey && e.key === "i") toolBtnFuncs[1]();
 
@@ -260,22 +304,20 @@ const App = () => {
 
         if (e.key === "d" && !e.ctrlKey) toolBtnFuncs[5]();
 
+        if (e.key === "g") toolBtnFuncs[6]();
+
         if (e.key === "t") toolBtnFuncs[7]();
 
         if (e.key === "r") toolBtnFuncs[8]();
 
         if (e.key === "m") toolBtnFuncs[9]();
 
-        //   if (e.key === "m") proxyStage.guidesAct = !proxyStage.guidesAct;
 
         //   if (e.ctrlKey && e.key === "s") {
         //     e.preventDefault();
         //     $(".fileDown").trigger("click");
         //   }
       }
-
-      // if (e.key === "Backspace") Stage.stage.delete_selected();
-      // if (Stage.stage.topLayer !== undefined) Stage.stage.toggle_rotation();
     };
 
     document.addEventListener("keyup", keyHandler);
@@ -353,14 +395,19 @@ const App = () => {
         draggable={stageStates.stageDrag}
         onDblClick={async (e) => {
           // setDrag({ act: !stageDrag });
-          setDrag(!stageStates.stageDrag);
+          // setDrag(!stageStates.stageDrag);
           // linkCon.current.anim()
+
           const some = await imgHelp.build_img(url, config.current, {
-            x: e.evt.pageX,
-            y: e.evt.pageY,
+            // x: e.evt.pageX,
+            // y: e.evt.pageY,
+            ...stageRef.current.getStage().getRelativePointerPosition(),
           });
           setMedia([...media.current, some]);
+
+          // setConfig({...config.current, scaleX:2, scaleY:2})
         }}
+        onWheel={wheelHandler}
         onDragEnd={() => {
           if (!stageStates.stageDrag) return;
           setConfig({ ...config.current, ...stageRef.current.position() });
@@ -402,7 +449,17 @@ const App = () => {
           selection.onClickTap(e, layerRef, trRef, selectShape, setNodes);
         }}
       >
-        <Layer ref={layerRef}>
+        <Layer
+          ref={layerRef}
+          onDragMove={(e) => {
+            if (!stageStates.isGuides) return
+            guidesHelp.onDragMove(e, stageRef, setGuides);
+          }}
+          onDragEnd={(e) => {
+            if (!stageStates.isGuides) return
+            guidesHelp.onDragEnd(e, setGuides);
+          }}
+        >
           {media.current.map((item, index) => {
             const props = {
               imageProps: item,
@@ -418,6 +475,10 @@ const App = () => {
 
             if (item.type === "img") return <URLImage {...props} />;
             else return <URLVideo {...props} />;
+          })}
+
+          {stageStates.isGuides && guides.current.map((item, idx) => {
+            return <Line key={idx} {...{...item, offset:{x:item.offset,y:item.offset}}} />;
           })}
           <Transformer
             ref={trRef}
