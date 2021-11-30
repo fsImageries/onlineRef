@@ -9,16 +9,21 @@ const DropZoneSVG = ({ isRight, controller }) => {
   const svgSel = gsap.utils.selector(svgRef);
 
   useLayoutEffect(() => {
-    const tl = gsap.timeline({ duration: 0.05 });
+    const tl = gsap.timeline({  });
     
     const fx = {
       ease: "expo.out",
       x: isRight ? 500 : -500,
       y: isRight? -500 : 500,
 
+      // duration:0.01,
       stagger: 0.1,
     };
 
+    // console.log(zone.current)
+    // tl.from(zone.current, {zIndex:-1});
+    tl.from(svgRef.current, {zIndex:-1});
+    // tl.from(svgSel(".dropZone"), {zIndex:-1});
     tl.from(svgSel(".slide"), fx);
     tl.pause();
     controller.current[isRight? "right" : "left"] = tl;

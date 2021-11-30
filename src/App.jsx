@@ -3,21 +3,23 @@ import { Stage, Layer, Transformer, Rect, Line } from "react-konva";
 import $ from "jquery";
 
 import "styles.scss";
-import img from "Beware_the_Goddess.jpg";
 import bg_img from "images/bg_scatter2.svg";
+import bg_settings from "images/link_field/end.svg";
 
 import URLImage from "components/URLImage";
 import URLVideo from "components/URLVideo";
 import ToolBar from "components/ToolBar";
-import DropZoneSVG from "components/DropZoneSVG";
+import DropZone from "components/DropZone";
 import LinkField from "components/LinkField";
+import SettingsMenu from "components/SettingsMenu";
 
 import * as selection from "js/selection";
 import * as dragDrop from "js/dragDrop";
 import * as imgHelp from "js/imageHelpers";
 import * as guidesHelp from "js/guides";
 import * as menuBtns from "js/menuBtns";
-import { stages } from "konva/lib/Stage";
+import * as helper from "js/helper";
+import { download } from "./js/helper";
 
 const useEffectState = (init) => {
   const [state, _setState] = useState(init);
@@ -46,6 +48,24 @@ let icons = [
   "fas fa-arrow-up",
 ];
 
+const toolTips = [
+  `Show a help menu with more extensive documentation.`,
+  `Import an image/video file or a stage config.\n[CTRL+I]`,
+  `Export and download a stage config.\n[CTRL+S]`,
+  `Import an image/video by link.\n[I]`,
+  `Play selected video(s).\n[I]`,
+  `Active stage drag/Deactive stage selection.\n[D]`,
+  `Toggle Guides/Snap.\n[G]`,
+  `Active resize/Deactive rotate on selected.\n[T]`,
+  `Active rotate/Deactive resize on selected.\n[R]`,
+  `Move selected image to foreground.\n[M]`,
+];
+
+const baseSettings = {
+  stageBg: $(":root").css("--bg-color2"),
+  showGuides: true,
+};
+
 let curSelectionInitial = {
   visible: false,
   x1: 0,
@@ -54,15 +74,10 @@ let curSelectionInitial = {
   y2: 0,
 };
 
-const active_reducer = (isActive, action) => {
+const activeReducer = (isActive, action) => {
   const temp = isActive.slice();
   temp[action.idx] = action.act;
   return temp;
-};
-
-const func_btn_active_swtich = (action) => {
-  if (!action.notAct) action.setActive({ idx: action.idx, act: action.act });
-  return action.act;
 };
 
 const stageStatesReducer = (states, action) => {
@@ -75,6 +90,32 @@ const stageStatesReducer = (states, action) => {
 };
 
 const App = () => {
+  const stored = helper.getStoredSettings();
+  const [settings, setSettings] = useState(
+    stored === null ? { ...baseSettings } : stored
+  );
+
+  const settingsCon = useRef({ main: null, anim: null });
+  const settingsFuncs = [
+    (e) => {
+      setSettings({
+        ...settings,
+        stageBg: $(":root").css("--var-bg-color"),
+        showGuides: showGuides,
+      });
+      settingsCon.current.anim(false);
+    },
+    (e) => {
+      setSettings({ ...baseSettings });
+    },
+    (e) => {
+      $(":root").css("--var-bg-color", helper.hex2rgb(e.target.value));
+    },
+    (e) => {
+      setShowGuides(e.target.checked);
+    },
+  ];
+
   const [media, setMedia] = useEffectState([]);
   const [config, setConfig] = useEffectState({
     scaleX: 1,
@@ -86,7 +127,6 @@ const App = () => {
   });
 
   const [selectedId, selectShape] = useState(null);
-  // const [nodesArray, setNodes] = useState([]);
   const [nodesArray, setNodes] = useEffectState([]);
 
   const stageRef = useRef();
@@ -98,7 +138,7 @@ const App = () => {
   const [scaleBy, setScaleBy] = useEffectState(1.02);
 
   const [isActive, setActive] = useReducer(
-    active_reducer,
+    activeReducer,
     new Array(icons.length).fill(false)
   );
 
@@ -107,9 +147,11 @@ const App = () => {
     if (rev) {
       dropCon.current.left.reverse();
       dropCon.current.right.reverse();
+      dropCon.current.zone.reverse();
     } else {
       dropCon.current.left.play();
       dropCon.current.right.play();
+      dropCon.current.zone.play();
     }
   };
 
@@ -169,22 +211,39 @@ const App = () => {
   };
 
   const setIsGuides = (val) => {
-    const action = { act: val, actIdx: 6 , idx:4};
+    const action = { act: val, actIdx: 6, idx: 4 };
     setStageStates(action);
-  }
+  };
 
   const toolBtnFuncs = [
     () => {},
-    () => menuBtns.get_fileDialog(media.current, setMedia, config.current),
-    () => {},
+    () =>
+      menuBtns.get_fileDialog(
+        media.current,
+        [setMedia, load_stageState],
+        config.current
+      ),
+    () => {
+      console.log(helper.getStageState(config.current, media.current, settings))
+      const stage = JSON.stringify(
+        helper.getStageState(config.current, media.current, settings)
+      );
+      download(stage, "OnlineRef_Stage.json");
+    },
     () => {
       linkCon.current.anim();
     },
-    () => {},
+    () => {
+      nodesArray.current.forEach((node, i) => {
+        if (node.attrs.type === "vid") node.attrs.image.play();
+      });
+    },
     () => {
       setDrag(!stageStates.stageDrag);
     },
-    () => {setIsGuides(!stageStates.isGuides)},
+    () => {
+      setIsGuides(!stageStates.isGuides);
+    },
     () => {
       setResize(!stageStates.isResize);
       if (stageStates.isRot) setRot(false);
@@ -278,9 +337,28 @@ const App = () => {
   };
 
   const [guides, setGuides] = useEffectState([]);
+  const [showGuides, setShowGuides] = useState(settings.showGuides);
+
+  const load_stageState = async (state) => {
+    const inConfig = state.config;
+    const inMedia = await Promise.all(
+      state.media.map(async (val, i) => {
+        // return {...val, noMod:true}
+        const img = await imgHelp.build_img(val.src, inConfig, val);
+        return img;
+      })
+    );
+
+    setConfig({...config.current, ...state.config})
+    setSettings(state.settings)
+    setMedia(inMedia)
+  };
 
   useEffect(() => {
     $(":root").css("--bg-img", `url(${bg_img})`);
+    $(":root").css("--bg-settings", `url(${bg_settings})`);
+
+    // document.addEventListener("click", (e) => {console.log(e.target)})
 
     const keyHandler = (e) => {
       setRotateFree(e.shiftKey);
@@ -293,6 +371,11 @@ const App = () => {
 
         if (e.ctrlKey && e.key === "i") toolBtnFuncs[1]();
 
+        if (e.ctrlKey && e.key === "s") {
+          e.preventDefault();
+          toolBtnFuncs[2]()
+        };
+
         if (e.ctrlKey && e.key === "d") {
           e.preventDefault();
           duplicate_selected(nodesArray.current);
@@ -304,6 +387,8 @@ const App = () => {
 
         if (e.key === "d" && !e.ctrlKey) toolBtnFuncs[5]();
 
+        if (e.key === "p") toolBtnFuncs[4]();
+
         if (e.key === "g") toolBtnFuncs[6]();
 
         if (e.key === "t") toolBtnFuncs[7]();
@@ -311,7 +396,6 @@ const App = () => {
         if (e.key === "r") toolBtnFuncs[8]();
 
         if (e.key === "m") toolBtnFuncs[9]();
-
 
         //   if (e.ctrlKey && e.key === "s") {
         //     e.preventDefault();
@@ -346,8 +430,9 @@ const App = () => {
       animDropSvg(true);
       e.preventDefault();
       dragDrop.dropHandler(e, media.current, setMedia, config.current, {
-        x: e.pageX,
-        y: e.pageY,
+        x: (e.pageX - config.current.x) / config.current.scaleX,
+        y: (e.pageY - config.current.y) / config.current.scaleY,
+        // ...stageRef.current.getStage().getRelativePointerPosition()
       });
     };
 
@@ -374,37 +459,42 @@ const App = () => {
     return () => handleListeners((del = true));
   }, []);
 
+  useEffect(() => {
+    helper.setStoredSettings(settings);
+    $(":root").css("--var-bg-color", settings.stageBg);
+    setShowGuides(settings.showGuides);
+  }, [settings]);
+
   const url = "https://art.art/wp-content/uploads/2021/09/jamesnielsen_art.jpg";
   return (
     <>
       <LinkField controller={linkCon} onEnter={inputHandler} />
       <ToolBar
         icons={icons}
+        toolTips={toolTips}
         funcs={toolBtnFuncs}
         isActive={isActive}
         controller={menuBtnCon}
       />
-      <div className="dropZone">
-        <DropZoneSVG isRight={true} controller={dropCon} />
-        <DropZoneSVG isRight={false} controller={dropCon} />
-      </div>
+      <DropZone controller={dropCon} />
+      <SettingsMenu
+        controller={settingsCon}
+        funcs={settingsFuncs}
+        states={[settings.stageBg, showGuides]}
+      />
 
       <Stage
         {...config.current}
         ref={stageRef}
         draggable={stageStates.stageDrag}
         onDblClick={async (e) => {
-          // setDrag({ act: !stageDrag });
-          // setDrag(!stageStates.stageDrag);
-          // linkCon.current.anim()
+          settingsCon.current.anim();
 
           const some = await imgHelp.build_img(url, config.current, {
-            // x: e.evt.pageX,
-            // y: e.evt.pageY,
-            ...stageRef.current.getStage().getRelativePointerPosition(),
+            ...stageRef.current.getRelativePointerPosition(),
           });
           setMedia([...media.current, some]);
-
+          // animDropSvg();
           // setConfig({...config.current, scaleX:2, scaleY:2})
         }}
         onWheel={wheelHandler}
@@ -452,15 +542,16 @@ const App = () => {
         <Layer
           ref={layerRef}
           onDragMove={(e) => {
-            if (!stageStates.isGuides) return
-            guidesHelp.onDragMove(e, stageRef, setGuides);
+            if (!stageStates.isGuides) return;
+            guidesHelp.onDragMove(e, stageRef, setGuides, showGuides);
           }}
           onDragEnd={(e) => {
-            if (!stageStates.isGuides) return
+            if (!stageStates.isGuides) return;
             guidesHelp.onDragEnd(e, setGuides);
           }}
         >
           {media.current.map((item, index) => {
+            // console.log(item)
             const props = {
               imageProps: item,
               isSelected: index === selectedId,
@@ -477,9 +568,15 @@ const App = () => {
             else return <URLVideo {...props} />;
           })}
 
-          {stageStates.isGuides && guides.current.map((item, idx) => {
-            return <Line key={idx} {...{...item, offset:{x:item.offset,y:item.offset}}} />;
-          })}
+          {stageStates.isGuides &&
+            guides.current.map((item, idx) => {
+              return (
+                <Line
+                  key={idx}
+                  {...{ ...item, offset: { x: item.offset, y: item.offset } }}
+                />
+              );
+            })}
           <Transformer
             ref={trRef}
             boundBoxFunc={(oldBox, newBox) => {

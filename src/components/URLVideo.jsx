@@ -89,7 +89,7 @@ const URLVideo = ({ imageProps, onChange, idx }) => {
         // onTransform={transformHandler}
         onTransformEnd={transformHandler}
       ></Image>
-      <VideoButton props={imageProps} isPlaying={isPlaying} />
+      <VideoButton props={imageProps} isPlaying={isPlaying} setPlaying={setPlaying} />
     </>
   );
 };

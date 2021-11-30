@@ -1,14 +1,17 @@
 import React, { useLayoutEffect, useRef } from "react";
-import { RegularPolygon, Line, Group, Circle } from "react-konva";
+import { RegularPolygon, Line, Group } from "react-konva";
 import $ from "jquery";
 import { gsap } from "gsap";
 
-
-const VideoButton = ({ props, isPlaying }) => {
+const VideoButton = ({ props, isPlaying, setPlaying }) => {
   const shapeRef = useRef();
 
   const iconHeight = (props.height / 100) * 5;
   const groundPush = iconHeight / 2;
+
+  const clickHandler = () => {
+    setPlaying({ type: isPlaying ? "pause" : "play" })
+  };
 
   // isPlaying = true
   const return_comp = () => {
@@ -28,6 +31,7 @@ const VideoButton = ({ props, isPlaying }) => {
           radius={r}
           fill={$(":root").css("--btn-fill")}
           opacity={0}
+          onClick={clickHandler}
         ></RegularPolygon>
       );
     } else {
@@ -41,7 +45,7 @@ const VideoButton = ({ props, isPlaying }) => {
       });
 
       return (
-        <Group ref={shapeRef} opacity={0}>
+        <Group ref={shapeRef} opacity={0} onClick={clickHandler}>
           {lines.map((points, idx) => (
             <Line
               key={idx}
@@ -57,7 +61,7 @@ const VideoButton = ({ props, isPlaying }) => {
   };
 
   useLayoutEffect(() => {
-    const duration = 0.5;
+    const duration = 1.5;
     const tl = new gsap.timeline();
 
     tl.to(shapeRef.current, {
@@ -66,11 +70,9 @@ const VideoButton = ({ props, isPlaying }) => {
       opacity: 0.35,
       ease: "power2.inOut",
     });
-
   }, [isPlaying]);
 
-  return return_comp()
-
+  return return_comp();
 };
 
 export default VideoButton;

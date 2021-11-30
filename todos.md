@@ -13,6 +13,8 @@
 ## Big Ones
 
 - [ ] save function for stage
+- [ ] write up fucking help menu and tooltips!
+- [ ] layout function to space images in grid layout
 
 ## App Todos
 
@@ -20,19 +22,24 @@
 - [x] make transformer optional, defaults to no transforms only pure dragging
 - [x] scale images according to pointer position when droped
 - [ ] links without protocol fail on import (they fail hard, need to catch)
+- [ ] import fails in general kill the app
 - [x] settingsAll buttons got some stuff overhanging
 - [x] need to calculate pointer x/y on moved canvas
 - [x] need to calculate pointer for selection rect on moved canvas
-- [ ] default settings into localstorage (build settings window)
+- [x] default settings into localstorage (build settings window)
 - [x] use 'moveToTop' for foreground change (list reordering is the solution)
-- [ ] fashion up the dropZone
+- [x] fashion up the dropZone
 - [x] build pause and play button for videos
 - [x] collect stage attributes (eg rotateFree) into single object
 - [ ] mobile zoom
+- [x] make videobutton functional
+- [ ] seperate videobutton pause from hover activation to make it persitant
+- [ ] build settings reducer to manage setting and getting stored settings
 
 ### Ideas
 
 - [ ] clipping mask for image
+- [ ] snap grid https://medium.com/@pierrebleroux/snap-to-grid-with-konvajs-c41eae97c13f
 
 ## Keycodes
 
@@ -50,3 +57,7 @@
 - [x] `rotate + hold shift` = free rotate (no snap)
 - [x] `zoom + hold shift` = zoom in steps
 
+## Stage Settings
+
+- [x] stage background color
+- [x] show guides when snapping

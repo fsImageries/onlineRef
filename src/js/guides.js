@@ -3,15 +3,15 @@ const GUIDELINE_OFFSET = 10;
 // where can we snap our objects?
 const getLineGuideStops = (skipShape, stage) => {
   // we can snap to stage borders and the center of the stage
-  var vertical = [0, stage.current.width() / 2, stage.current.width()];
-  var horizontal = [0, stage.current.height() / 2, stage.current.height()];
+  let vertical = [0, stage.current.width() / 2, stage.current.width()];
+  let horizontal = [0, stage.current.height() / 2, stage.current.height()];
 
   // and we snap over edges and center of each object on the canvas
   stage.current.find(".image").forEach((guideItem) => {
     if (guideItem === skipShape) {
       return;
     }
-    var box = guideItem.getClientRect();
+    let box = guideItem.getClientRect();
     // and we can snap to all edges of shapes
     vertical.push([box.x, box.x + box.width, box.x + box.width / 2]);
     horizontal.push([box.y, box.y + box.height, box.y + box.height / 2]);
@@ -26,8 +26,8 @@ const getLineGuideStops = (skipShape, stage) => {
 // it can be just center of the object
 // but we will enable all edges and center
 const getObjectSnappingEdges = (node) => {
-  var box = node.getClientRect();
-  var absPos = node.absolutePosition();
+  let box = node.getClientRect();
+  let absPos = node.absolutePosition();
 
   return {
     vertical: [
@@ -69,12 +69,12 @@ const getObjectSnappingEdges = (node) => {
 
 // find all snapping possibilities
 const getGuides = (lineGuideStops, itemBounds) => {
-  var resultV = [];
-  var resultH = [];
+  let resultV = [];
+  let resultH = [];
 
   lineGuideStops.vertical.forEach((lineGuide) => {
     itemBounds.vertical.forEach((itemBound) => {
-      var diff = Math.abs(lineGuide - itemBound.guide);
+      let diff = Math.abs(lineGuide - itemBound.guide);
       // if the distance between guild line and object snap point is close we can consider this for snapping
       if (diff < GUIDELINE_OFFSET) {
         resultV.push({
@@ -89,7 +89,7 @@ const getGuides = (lineGuideStops, itemBounds) => {
 
   lineGuideStops.horizontal.forEach((lineGuide) => {
     itemBounds.horizontal.forEach((itemBound) => {
-      var diff = Math.abs(lineGuide - itemBound.guide);
+      let diff = Math.abs(lineGuide - itemBound.guide);
       if (diff < GUIDELINE_OFFSET) {
         resultH.push({
           lineGuide: lineGuide,
@@ -101,11 +101,11 @@ const getGuides = (lineGuideStops, itemBounds) => {
     });
   });
 
-  var guides = [];
+  let guides = [];
 
   // find closest snap
-  var minV = resultV.sort((a, b) => a.diff - b.diff)[0];
-  var minH = resultH.sort((a, b) => a.diff - b.diff)[0];
+  let minV = resultV.sort((a, b) => a.diff - b.diff)[0];
+  let minH = resultH.sort((a, b) => a.diff - b.diff)[0];
   if (minV) {
     guides.push({
       lineGuide: minV.lineGuide,
@@ -125,13 +125,14 @@ const getGuides = (lineGuideStops, itemBounds) => {
   return guides;
 };
 
-const drawGuides = (guides, setGuides) => {
+const drawGuides = (guides, setGuides, showGuides) => {
+const strokeCol = showGuides ? "rgb(0, 161, 255)" : "rgba(0, 161, 255, 0)" 
   if (guides) {
     guides.forEach((lg) => {
       if (lg.orientation === "H") {
-        var guide = {
+        let guide = {
           points: [-6000, 0, 6000, 0],
-          stroke: "rgb(0, 161, 255)",
+          stroke: strokeCol,
           strokeWidth: 1,
           name: "guid-line",
           dash: [4, 6],
@@ -140,9 +141,9 @@ const drawGuides = (guides, setGuides) => {
         };
         setGuides([...guides, guide]);
       } else if (lg.orientation === "V") {
-        var guide = {
+        let guide = {
           points: [0, -6000, 0, 6000],
-          stroke: "rgb(0, 161, 255)",
+          stroke: strokeCol,
           strokeWidth: 1,
           name: "guid-line",
           dash: [4, 6],
@@ -155,26 +156,26 @@ const drawGuides = (guides, setGuides) => {
   }
 };
 
-const onDragMove = (e, stage, setGuides) => {
+const onDragMove = (e, stage, setGuides, showGuides) => {
   // clear all previous lines on the screen
   // layer.find('.guid-line').destroy();
 
   // find possible snapping lines
-  var lineGuideStops = getLineGuideStops(e.target, stage);
+  let lineGuideStops = getLineGuideStops(e.target, stage);
   // find snapping points of current object
-  var itemBounds = getObjectSnappingEdges(e.target);
+  let itemBounds = getObjectSnappingEdges(e.target);
 
   // now find where can we snap current object
-  var guides = getGuides(lineGuideStops, itemBounds);
+  let guides = getGuides(lineGuideStops, itemBounds);
 
   // do nothing of no snapping
   if (!guides.length) {
     return;
   }
 
-  drawGuides(guides, setGuides);
+  drawGuides(guides, setGuides, showGuides);
 
-  var absPos = e.target.absolutePosition();
+  let absPos = e.target.absolutePosition();
   // now force object position
   guides.forEach((lg) => {
     switch (lg.snap) {

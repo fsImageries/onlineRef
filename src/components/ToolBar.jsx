@@ -18,7 +18,7 @@ const tl_reducer = (tl, action) => {
   }
 };
 
-const ToolBar = ({ icons, funcs, isActive, controller }) => {
+const ToolBar = ({ icons, toolTips, funcs, isActive, controller }) => {
   $(":root").css("--bg-menu", `url(${bg_img})`);
 
   const [isOpen, setOpen] = useState(false);
@@ -82,6 +82,7 @@ const ToolBar = ({ icons, funcs, isActive, controller }) => {
               icon={item}
               key={idx}
               className={isActive[idx] && "active"}
+              toolTip={toolTips[idx] && toolTips[idx]}
               onClick={(e) => {
                 const func = funcs[idx];
                 if (func) func(e);
