@@ -490,10 +490,10 @@ const App = () => {
         onDblClick={async (e) => {
           settingsCon.current.anim();
 
-          const some = await imgHelp.build_img(url, config.current, {
-            ...stageRef.current.getRelativePointerPosition(),
-          });
-          setMedia([...media.current, some]);
+          // const some = await imgHelp.build_img(url, config.current, {
+          //   ...stageRef.current.getRelativePointerPosition(),
+          // });
+          // setMedia([...media.current, some]);
           // animDropSvg();
           // setConfig({...config.current, scaleX:2, scaleY:2})
         }}

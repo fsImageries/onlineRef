@@ -647,10 +647,11 @@ const App = () => {
     ref: stageRef,
     draggable: stageStates.stageDrag,
     onDblClick: async e => {
-      settingsCon.current.anim();
-      const some = await js_imageHelpers__WEBPACK_IMPORTED_MODULE_14__.build_img(url, config.current, { ...stageRef.current.getRelativePointerPosition()
-      });
-      setMedia([...media.current, some]); // animDropSvg();
+      settingsCon.current.anim(); // const some = await imgHelp.build_img(url, config.current, {
+      //   ...stageRef.current.getRelativePointerPosition(),
+      // });
+      // setMedia([...media.current, some]);
+      // animDropSvg();
       // setConfig({...config.current, scaleX:2, scaleY:2})
     },
     onWheel: wheelHandler,
@@ -80510,7 +80511,7 @@ _Factory_js__WEBPACK_IMPORTED_MODULE_0__.Factory.backCompat(Wedge, {
 /******/ 	
 /******/ 	/* webpack/runtime/publicPath */
 /******/ 	(() => {
-/******/ 		__webpack_require__.p = "/";
+/******/ 		__webpack_require__.p = "./";
 /******/ 	})();
 /******/ 	
 /************************************************************************/

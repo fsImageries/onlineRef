@@ -6,8 +6,8 @@ module.exports = {
   // entry: ['regenerator-runtime/runtime.js', './src/index.js'],
   output: {
     filename: 'bundle.js',
-    path: path.join(__dirname, 'public'),
-    publicPath: '/',
+    path: path.join(__dirname, 'docs'),
+    publicPath: './',
   },
   module: {
     rules: [
@@ -41,5 +41,6 @@ module.exports = {
   mode: 'development',
   devServer: {
     historyApiFallback: true,
+    disableDotRule: true
   },
 };
