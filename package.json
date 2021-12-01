@@ -1,4 +1,5 @@
 {
+  "homepage": "https://fsimageries.github.io/onlineRef/",
   "name": "onlineref",
   "version": "1.0.0",
   "description": "",
@@ -17,7 +18,6 @@
   "bugs": {
     "url": "https://github.com/fsImageries/onlineRef/issues"
   },
-  "homepage": "https://github.com/fsImageries/onlineRef#readme",
   "dependencies": {
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.0",
