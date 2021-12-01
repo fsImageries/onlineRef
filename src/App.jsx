@@ -19,7 +19,6 @@ import * as imgHelp from "js/imageHelpers";
 import * as guidesHelp from "js/guides";
 import * as menuBtns from "js/menuBtns";
 import * as helper from "js/helper";
-import { download } from "./js/helper";
 
 const useEffectState = (init) => {
   const [state, _setState] = useState(init);
@@ -91,22 +90,22 @@ const stageStatesReducer = (states, action) => {
 
 const App = () => {
   const stored = helper.getStoredSettings();
-  const [settings, setSettings] = useState(
+  const [userSettings, setUserSettings] = useState(
     stored === null ? { ...baseSettings } : stored
   );
 
   const settingsCon = useRef({ main: null, anim: null });
   const settingsFuncs = [
     (e) => {
-      setSettings({
-        ...settings,
+      setUserSettings({
+        ...userSettings,
         stageBg: $(":root").css("--var-bg-color"),
         showGuides: showGuides,
       });
       settingsCon.current.anim(false);
     },
     (e) => {
-      setSettings({ ...baseSettings });
+      setUserSettings({ ...baseSettings });
     },
     (e) => {
       $(":root").css("--var-bg-color", helper.hex2rgb(e.target.value));
@@ -225,12 +224,12 @@ const App = () => {
       ),
     () => {
       console.log(
-        helper.getStageState(config.current, media.current, settings)
+        helper.getStageState(config.current, media.current, userSettings)
       );
       const stage = JSON.stringify(
-        helper.getStageState(config.current, media.current, settings)
+        helper.getStageState(config.current, media.current, userSettings)
       );
-      download(stage, "OnlineRef_Stage.json");
+      helper.download(stage, "OnlineRef_Stage.json");
     },
     () => {
       linkCon.current.anim();
@@ -346,7 +345,7 @@ const App = () => {
   };
 
   const [guides, setGuides] = useEffectState([]);
-  const [showGuides, setShowGuides] = useState(settings.showGuides);
+  const [showGuides, setShowGuides] = useState(userSettings.showGuides);
 
   const load_stageState = async (state) => {
     const inConfig = state.config;
@@ -359,7 +358,7 @@ const App = () => {
     );
 
     setConfig({ ...config.current, ...state.config });
-    setSettings(state.settings);
+    setUserSettings(state.userSettings);
     setMedia(inMedia);
   };
 
@@ -470,7 +469,7 @@ const App = () => {
     };
 
     handleListeners();
-    return () => handleListeners((del = true));
+    return () => handleListeners(true);
   }, []);
 
   useEffect(() => {
