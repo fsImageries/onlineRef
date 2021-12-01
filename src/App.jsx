@@ -53,7 +53,7 @@ const toolTips = [
   `Import an image/video file or a stage config.\n[CTRL+I]`,
   `Export and download a stage config.\n[CTRL+S]`,
   `Import an image/video by link.\n[I]`,
-  `Play selected video(s).\n[I]`,
+  `Play selected video(s).\n[P]`,
   `Active stage drag/Deactive stage selection.\n[D]`,
   `Toggle Guides/Snap.\n[G]`,
   `Active resize/Deactive rotate on selected.\n[T]`,
@@ -224,7 +224,9 @@ const App = () => {
         config.current
       ),
     () => {
-      console.log(helper.getStageState(config.current, media.current, settings))
+      console.log(
+        helper.getStageState(config.current, media.current, settings)
+      );
       const stage = JSON.stringify(
         helper.getStageState(config.current, media.current, settings)
       );
@@ -233,9 +235,16 @@ const App = () => {
     () => {
       linkCon.current.anim();
     },
-    () => {
+    (called=false) => {
       nodesArray.current.forEach((node, i) => {
-        if (node.attrs.type === "vid") node.attrs.image.play();
+        if (node.attrs.type === "vid" && called) {
+          const isPlaying = helper.isVideoPlaying(node.attrs.image);
+          if (isPlaying) {
+            node.attrs.image.pause();
+          } else {
+            node.attrs.image.play();
+          }
+        }
       });
     },
     () => {
@@ -349,9 +358,9 @@ const App = () => {
       })
     );
 
-    setConfig({...config.current, ...state.config})
-    setSettings(state.settings)
-    setMedia(inMedia)
+    setConfig({ ...config.current, ...state.config });
+    setSettings(state.settings);
+    setMedia(inMedia);
   };
 
   useEffect(() => {
@@ -373,8 +382,8 @@ const App = () => {
 
         if (e.ctrlKey && e.key === "s") {
           e.preventDefault();
-          toolBtnFuncs[2]()
-        };
+          toolBtnFuncs[2]();
+        }
 
         if (e.ctrlKey && e.key === "d") {
           e.preventDefault();
@@ -385,9 +394,14 @@ const App = () => {
 
         if (e.key === "i" && !e.ctrlKey) toolBtnFuncs[3]();
 
+        if (e.key === "p") toolBtnFuncs[4]();
+
         if (e.key === "d" && !e.ctrlKey) toolBtnFuncs[5]();
 
-        if (e.key === "p") toolBtnFuncs[4]();
+        if (e.key === "p") {
+          console.log("Hi")
+          toolBtnFuncs[4](true);
+        }
 
         if (e.key === "g") toolBtnFuncs[6]();
 

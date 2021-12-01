@@ -7,7 +7,7 @@ module.exports = {
   output: {
     filename: 'bundle.js',
     path: path.join(__dirname, 'docs'),
-    publicPath: './',
+    publicPath: '/',
   },
   module: {
     rules: [
@@ -41,6 +41,6 @@ module.exports = {
   mode: 'development',
   devServer: {
     historyApiFallback: true,
-    disableDotRule: true
+    // disableDotRule: true
   },
 };

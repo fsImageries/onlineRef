@@ -33,9 +33,10 @@
 - [x] collect stage attributes (eg rotateFree) into single object
 - [ ] mobile zoom
 - [x] make videobutton functional
-- [ ] seperate videobutton pause from hover activation to make it persitant
+- [ ] seperate videobutton pause from hover activation to make it persitant, also for menu playbutton
 - [ ] build settings reducer to manage setting and getting stored settings
 - [ ] refine stage import, scaled images don't load correctly
+- [x] forgot to activate menu playbutton
 
 ### Ideas
 

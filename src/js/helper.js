@@ -72,6 +72,9 @@ const get_jsonFile = (file) => {
   });
 };
 
+const isVideoPlaying = video => !!(video.currentTime > 0 && !video.paused && !video.ended && video.readyState > 2);
+
+
 export {
   hex2rgb,
   rgb2Hex,
@@ -79,5 +82,6 @@ export {
   setStoredSettings,
   getStageState,
   download,
-  get_jsonFile
+  get_jsonFile,
+  isVideoPlaying
 };
