@@ -1,37 +1,64 @@
-### TODOs
+# Todos
 
-- [x] Transforms (rotate, translate, scale)
-- [x] Drag N Drop from Desktop and Browser
-- [x] Google Resolver for links
-- [x] Toggle Panning on TouchDevices
-- [x] Toggle Selecting on TouchDevices
-- [x] Toggle Zooming on TouchDevices
-- [x] free-form rotation
-- [x] blender/maya (probably maya for transforms) shortcut system (fix wrong activations)
-- [x] Order (Z-index)/ MoveToTop
-- [x] Populate icons with function (except Help)
-- [x] press ALT to drag canvas with LEFT-MOUSE-BUTTON
-- [x] touchdevices cant drag images!
-- [x] button click feedback (little wobble anim)
-- [x] add videoframe function (load videos into canvas and play while hovering)
-- [x] scales images down when bigger than window
-- [x] place images where mouse drops
-- [x] ctrl+d for duplication
-- [x] implement dragNdrop overlay
-- [x] change fonts on dragNdrop overlay
-- [x] when video gets duplicated both copies play when hovered
-- [x] tool-buttons need new rework because too much
-- [x] shortcuts don't activate ui (make ui reactive)
-- [x] find consistent color design for buttons and overlays
-- [ ] double click on stage to change color and stage settings
-- [ ] split up 'CanvasStage' to ease up functionality?
-- [ ] shortcut to enter link into input field (should be open with link inserted)
-- [ ] add tooltips to function buttons
+## Porting Todos
 
-## Big ones
+- [x] implement 'add files' methods (drag&drop[files, links], upload, linkinput)
+- [x] toolbuttons design
+- [x] actual buttons and functions
+- [x] keypresses and shortcuts!!
+- [x] video function
+- [x] stage zoom
+- [x] guides/magnet snap, rotation snap
 
-- [ ] embed youtube videos
-- [ ] Layout (in grids) || Grid overlay with snapping (https://codepen.io/pierrebleroux/pen/gGpvxJ?editors=0010)
-- [ ] write up help menu
-- [x] implement guides & snaps for moving
-- [x] save function for canvas (ask if local media should be included)
+## Big Ones
+
+- [ ] save function for stage
+- [ ] write up fucking help menu and tooltips!
+- [ ] layout function to space images in grid layout
+
+## App Todos
+
+- [ ] show image on canvas while dragging it in (maybe not possible)
+- [x] make transformer optional, defaults to no transforms only pure dragging
+- [x] scale images according to pointer position when droped
+- [ ] links without protocol fail on import (they fail hard, need to catch)
+- [ ] import fails in general kill the app
+- [x] settingsAll buttons got some stuff overhanging
+- [x] need to calculate pointer x/y on moved canvas
+- [x] need to calculate pointer for selection rect on moved canvas
+- [x] default settings into localstorage (build settings window)
+- [x] use 'moveToTop' for foreground change (list reordering is the solution)
+- [x] fashion up the dropZone
+- [x] build pause and play button for videos
+- [x] collect stage attributes (eg rotateFree) into single object
+- [ ] mobile zoom
+- [x] make videobutton functional
+- [ ] seperate videobutton pause from hover activation to make it persitant
+- [ ] build settings reducer to manage setting and getting stored settings
+- [ ] refine stage import, scaled images don't load correctly
+
+### Ideas
+
+- [ ] clipping mask for image
+- [ ] snap grid https://medium.com/@pierrebleroux/snap-to-grid-with-konvajs-c41eae97c13f
+
+## Keycodes
+
+- [x] `ctrl + d` = duplicate node(s)
+- [ ] `ctrl + c && v` = copy & paste node(s)
+- [x] `ctrl + i` = open import dialog
+- [x] `i` = open link field
+- [x] `Backspace, Delete` = delete node(s)
+- [x] `q` = toggle menu
+- [x] `t` = toggle transform
+- [x] `r` = toggle rotate
+- [x] `m` = move to top
+- [x] `d` = toggle stage drag
+- [x] `g` = toggle guides
+- [x] `rotate + hold shift` = free rotate (no snap)
+- [x] `zoom + hold shift` = zoom in steps
+
+## Stage Settings
+
+- [x] stage background color
+- [x] show guides when snapping
