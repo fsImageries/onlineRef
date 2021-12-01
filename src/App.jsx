@@ -90,22 +90,22 @@ const stageStatesReducer = (states, action) => {
 
 const App = () => {
   const stored = helper.getStoredSettings();
-  const [userSettings, setUserSettings] = useState(
+  const [settings, setSettings] = useState(
     stored === null ? { ...baseSettings } : stored
   );
 
   const settingsCon = useRef({ main: null, anim: null });
   const settingsFuncs = [
     (e) => {
-      setUserSettings({
-        ...userSettings,
+      setSettings({
+        ...settings,
         stageBg: $(":root").css("--var-bg-color"),
         showGuides: showGuides,
       });
       settingsCon.current.anim(false);
     },
     (e) => {
-      setUserSettings({ ...baseSettings });
+      setSettings({ ...baseSettings });
     },
     (e) => {
       $(":root").css("--var-bg-color", helper.hex2rgb(e.target.value));
@@ -224,10 +224,10 @@ const App = () => {
       ),
     () => {
       console.log(
-        helper.getStageState(config.current, media.current, userSettings)
+        helper.getStageState(config.current, media.current, settings)
       );
       const stage = JSON.stringify(
-        helper.getStageState(config.current, media.current, userSettings)
+        helper.getStageState(config.current, media.current, settings)
       );
       helper.download(stage, "OnlineRef_Stage.json");
     },
@@ -345,7 +345,7 @@ const App = () => {
   };
 
   const [guides, setGuides] = useEffectState([]);
-  const [showGuides, setShowGuides] = useState(userSettings.showGuides);
+  const [showGuides, setShowGuides] = useState(settings.showGuides);
 
   const load_stageState = async (state) => {
     const inConfig = state.config;
@@ -358,7 +358,7 @@ const App = () => {
     );
 
     setConfig({ ...config.current, ...state.config });
-    setUserSettings(state.userSettings);
+    setSettings(state.settings);
     setMedia(inMedia);
   };
 

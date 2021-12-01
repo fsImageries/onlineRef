@@ -228,9 +228,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var js_imageHelpers__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! js/imageHelpers */ "./src/js/imageHelpers.js");
 /* harmony import */ var js_guides__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! js/guides */ "./src/js/guides.js");
 /* harmony import */ var js_menuBtns__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! js/menuBtns */ "./src/js/menuBtns.js");
-/* harmony import */ var js_helper__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./js/helper */ "./src/js/helper.js");
+/* harmony import */ var js_helper__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! js/helper */ "./src/js/helper.js");
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
 
 
 
@@ -267,7 +266,7 @@ const useEffectState = init => {
 let icons = ["fas fa-sliders-h", // add html spacer between
 "fas fa-question", "far fa-file-image", "fas fa-file-download", "fas fa-link", "fas fa-play", // "fas fa-mouse-pointer",
 "fas fa-arrows-alt", "fas fa-magnet", "fas fa-expand-arrows-alt", "fas fa-undo", "fas fa-arrow-up"];
-const toolTips = [`Show a help menu with more extensive documentation.`, `Import an image/video file or a stage config.\n[CTRL+I]`, `Export and download a stage config.\n[CTRL+S]`, `Import an image/video by link.\n[I]`, `Play selected video(s).\n[I]`, `Active stage drag/Deactive stage selection.\n[D]`, `Toggle Guides/Snap.\n[G]`, `Active resize/Deactive rotate on selected.\n[T]`, `Active rotate/Deactive resize on selected.\n[R]`, `Move selected image to foreground.\n[M]`];
+const toolTips = [`Show a help menu with more extensive documentation.`, `Import an image/video file or a stage config.\n[CTRL+I]`, `Export and download a stage config.\n[CTRL+S]`, `Import an image/video by link.\n[I]`, `Play selected video(s).\n[P]`, `Active stage drag/Deactive stage selection.\n[D]`, `Toggle Guides/Snap.\n[G]`, `Active resize/Deactive rotate on selected.\n[T]`, `Active rotate/Deactive resize on selected.\n[R]`, `Move selected image to foreground.\n[M]`];
 const baseSettings = {
   stageBg: jquery__WEBPACK_IMPORTED_MODULE_2___default()(":root").css("--bg-color2"),
   showGuides: true
@@ -442,12 +441,20 @@ const App = () => {
   const toolBtnFuncs = [() => {}, () => js_menuBtns__WEBPACK_IMPORTED_MODULE_16__.get_fileDialog(media.current, [setMedia, load_stageState], config.current), () => {
     console.log(js_helper__WEBPACK_IMPORTED_MODULE_17__.getStageState(config.current, media.current, settings));
     const stage = JSON.stringify(js_helper__WEBPACK_IMPORTED_MODULE_17__.getStageState(config.current, media.current, settings));
-    (0,js_helper__WEBPACK_IMPORTED_MODULE_17__.download)(stage, "OnlineRef_Stage.json");
+    js_helper__WEBPACK_IMPORTED_MODULE_17__.download(stage, "OnlineRef_Stage.json");
   }, () => {
     linkCon.current.anim();
-  }, () => {
+  }, (called = false) => {
     nodesArray.current.forEach((node, i) => {
-      if (node.attrs.type === "vid") node.attrs.image.play();
+      if (node.attrs.type === "vid" && called) {
+        const isPlaying = js_helper__WEBPACK_IMPORTED_MODULE_17__.isVideoPlaying(node.attrs.image);
+
+        if (isPlaying) {
+          node.attrs.image.pause();
+        } else {
+          node.attrs.image.play();
+        }
+      }
     });
   }, () => {
     setDrag(!stageStates.stageDrag);
@@ -558,8 +565,6 @@ const App = () => {
           toolBtnFuncs[2]();
         }
 
-        ;
-
         if (e.ctrlKey && e.key === "d") {
           e.preventDefault();
           duplicate_selected(nodesArray.current);
@@ -567,8 +572,14 @@ const App = () => {
 
         if (e.key === "q") menuBtnCon.current.anim();
         if (e.key === "i" && !e.ctrlKey) toolBtnFuncs[3]();
-        if (e.key === "d" && !e.ctrlKey) toolBtnFuncs[5]();
         if (e.key === "p") toolBtnFuncs[4]();
+        if (e.key === "d" && !e.ctrlKey) toolBtnFuncs[5]();
+
+        if (e.key === "p") {
+          console.log("Hi");
+          toolBtnFuncs[4](true);
+        }
+
         if (e.key === "g") toolBtnFuncs[6]();
         if (e.key === "t") toolBtnFuncs[7]();
         if (e.key === "r") toolBtnFuncs[8]();
@@ -620,7 +631,7 @@ const App = () => {
     };
 
     handleListeners();
-    return () => handleListeners(del = true);
+    return () => handleListeners(true);
   }, []);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     js_helper__WEBPACK_IMPORTED_MODULE_17__.setStoredSettings(settings);
@@ -1964,7 +1975,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "setStoredSettings": () => (/* binding */ setStoredSettings),
 /* harmony export */   "getStageState": () => (/* binding */ getStageState),
 /* harmony export */   "download": () => (/* binding */ download),
-/* harmony export */   "get_jsonFile": () => (/* binding */ get_jsonFile)
+/* harmony export */   "get_jsonFile": () => (/* binding */ get_jsonFile),
+/* harmony export */   "isVideoPlaying": () => (/* binding */ isVideoPlaying)
 /* harmony export */ });
 const componentToHex = c => {
   var hex = c.toString(16);
@@ -2044,6 +2056,8 @@ const get_jsonFile = file => {
     reader.onload = () => resolve(JSON.parse(reader.result));
   });
 };
+
+const isVideoPlaying = video => !!(video.currentTime > 0 && !video.paused && !video.ended && video.readyState > 2);
 
 
 
