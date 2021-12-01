@@ -4,7 +4,7 @@
 
 - [x] implement 'add files' methods (drag&drop[files, links], upload, linkinput)
 - [x] toolbuttons design
-- [~] actual buttons and functions
+- [x] actual buttons and functions
 - [x] keypresses and shortcuts!!
 - [x] video function
 - [x] stage zoom
@@ -35,6 +35,7 @@
 - [x] make videobutton functional
 - [ ] seperate videobutton pause from hover activation to make it persitant
 - [ ] build settings reducer to manage setting and getting stored settings
+- [ ] refine stage import, scaled images don't load correctly
 
 ### Ideas
 
