@@ -1,22 +1,35 @@
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import $ from "jquery";
 
 import * as helper from "js/helper";
+import {useController} from "js/controllers"
+import { useStoredConfig } from "states/storedConfig";
 
-const SettingsMenu = ({ controller, funcs, states }) => {
+
+const SettingsMenu = () => {
   const settings = [
-    ["Stage Background Color", "color"],
-    ["Show Guides", "checkbox"],
+    ["Stage Background Color", "color", "stageBg"],
+    ["Show Guides", "checkbox", "showGuides"],
   ];
 
-  const footerFuncs = funcs.slice(0, 2);
-  funcs = funcs.slice(2, funcs.length);
-
   const [isOpen, setOpen] = useState(false);
-  controller.current.isOpen = isOpen;
-  controller.current.setOpen = setOpen;
   const mainRef = useRef();
-  //   const categories = [["General", true]];
+
+  const stored = useStoredConfig();
+  const controller = useController()
+
+  const settingsFuncs = [
+    (e) => {
+      stored.reset();
+    },
+    (e) => {
+      stored.setStageBg(helper.hex2rgb(e.target.value))
+    },
+    (e) => {
+      stored.setShowGuides(e.target.checked);
+    },
+  ];
 
   useLayoutEffect(() => {
     const tl = gsap.timeline({ paused: true });
@@ -28,17 +41,16 @@ const SettingsMenu = ({ controller, funcs, states }) => {
     };
 
     tl.from(mainRef.current, fx);
+    controller.con._tl = tl;
 
-    controller.current.main = tl;
-
-    controller.current.anim = (force = null) => {
+    controller.con.anim = (force = null) => {
       const newOpen = force === null ? !isOpen : force;
       setOpen(newOpen);
       if (newOpen) {
-        controller.current.main.play();
+        controller.con._tl.play();
         return;
       }
-      controller.current.main.reverse();
+      controller.con._tl.reverse();
     };
 
     const closeField = (e) => {
@@ -49,7 +61,7 @@ const SettingsMenu = ({ controller, funcs, states }) => {
         !!tl.totalProgress();
 
       if (key_check || click_check) {
-        controller.current.anim(false);
+        controller.con.anim(false);
       }
     };
 
@@ -71,7 +83,7 @@ const SettingsMenu = ({ controller, funcs, states }) => {
       <div className="settingsMenu">
         <div className="innerMenu">
           <table width="100%">
-            {settings.map(([label, type], i) => {
+            {settings.map(([label, type, attr], i) => {
               return (
                 <tbody key={i}>
                   <tr>
@@ -81,12 +93,10 @@ const SettingsMenu = ({ controller, funcs, states }) => {
                     <td>
                       <div>
                         <input
-                          {...(type === "checkbox" && { checked: states[i] })}
+                          checked={type === "checkbox" ? stored[attr] : false}
                           id={`input${i}`}
                           type={type}
-                          // checked={states[i]}
-                          // defaultChecked={type === "checkbox" && states[i]}
-                          onChange={(e) => funcs[i](e)}
+                          onChange={(e) => settingsFuncs[i+1](e)}
                         />
                         {type === "color" && (
                           <div className="colorSwatch"></div>
@@ -101,15 +111,15 @@ const SettingsMenu = ({ controller, funcs, states }) => {
             <tfoot>
               <tr>
                 <td colSpan="2">
-                  <input
+                  {/* <input
                     type="submit"
                     value="Save Settings"
-                    onClick={footerFuncs[0]}
-                  />
+                    onClick={settingsFuncs[0]}
+                  /> */}
                   <input
                     type="submit"
                     value="Reset Settings"
-                    onClick={footerFuncs[1]}
+                    onClick={settingsFuncs[0]}
                   />
                 </td>
               </tr>

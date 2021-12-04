@@ -1,5 +1,3 @@
-import React from "react";
-
 // selection straight up stolen from :* :
 // https://codesandbox.io/s/react-konva-multiple-selection-tgggi
 
@@ -16,88 +14,95 @@ const updateSelectionRect = (selectionRectRef, selection, stagePos) => {
   node.getLayer().batchDraw();
 };
 
-const checkDeselect = (e, trRef, selectShape, setNodes) => {
+const checkDeselect = (e, selection) => {
   // deselect when clicked on empty area
   const clickedOnEmpty = e.target === e.target.getStage();
   if (clickedOnEmpty) {
-    selectShape(null);
-    trRef.current.nodes([]);
-    setNodes([]);
+    selection.selectShape(null);
+    selection.trRef.nodes([]);
+    selection.setNodes([]);
     // layerRef.current.remove(selectionRectangle);
   }
 };
 
-const onMouseDown = (e, selection, selectionRectRef, stagePos) => {
+const onMouseDown = (e, selection) => {
   const isElement = e.target.hasName("image");
   const isTransformer = e.target.findAncestor("Transformer");
   if (isElement || isTransformer) {
     return;
   }
 
+  const stagePos = selection.stageRef.position();
   let pos = e.target.getStage().getRelativePointerPosition();
   pos = {
-    x : pos.x + stagePos.x,
-    y : pos.y + stagePos.y,
-  }
-  selection.current.visible = true;
-  selection.current.x1 = pos.x;
-  selection.current.y1 = pos.y;
-  selection.current.x2 = pos.x;
-  selection.current.y2 = pos.y;
-  updateSelectionRect(selectionRectRef, selection, stagePos);
+    x: pos.x + stagePos.x,
+    y: pos.y + stagePos.y,
+  };
+  selection._curSelection.current.visible = true;
+  selection._curSelection.current.x1 = pos.x;
+  selection._curSelection.current.y1 = pos.y;
+  selection._curSelection.current.x2 = pos.x;
+  selection._curSelection.current.y2 = pos.y;
+  updateSelectionRect(
+    selection._selectionRectRef,
+    selection._curSelection,
+    stagePos
+  );
 };
 
-const onMouseMove = (e, selection, selectionRectRef, stagePos) => {
-  if (!selection.current.visible) {
+const onMouseMove = (e, selection) => {
+  if (!selection.curSelection.visible) {
     return;
   }
+  const stagePos = selection.stageRef.position();
   let pos = e.target.getStage().getRelativePointerPosition();
   pos = {
-    x : pos.x + stagePos.x,
-    y : pos.y + stagePos.y,
-  }
+    x: pos.x + stagePos.x,
+    y: pos.y + stagePos.y,
+  };
 
-  selection.current.x2 = pos.x;
-  selection.current.y2 = pos.y;
-  updateSelectionRect(selectionRectRef, selection, stagePos);
+  selection.curSelection.x2 = pos.x;
+  selection.curSelection.y2 = pos.y;
+  updateSelectionRect(
+    selection._selectionRectRef,
+    selection._curSelection,
+    stagePos
+  );
 };
 
-const onMouseUp = (
-  trRef,
-  layerRef,
-  selectionRectRef,
-  selection,
-  setNodes,
-  stagePos
-) => {
-  if (!selection.current.visible) {
+const onMouseUp = (selection) => {
+  if (!selection.curSelection.visible) {
     return;
   }
-  const selBox = selectionRectRef.current.getClientRect();
+  const selBox = selection.selectionRectRef.getClientRect();
 
   const elements = [];
-  layerRef.current.find(".image").forEach((elementNode) => {
+  selection.layerRef.find(".image").forEach((elementNode) => {
     const elBox = elementNode.getClientRect();
     if (Konva.Util.haveIntersection(selBox, elBox)) {
       elements.push(elementNode);
     }
   });
-  trRef.current.nodes(elements);
-  setNodes(trRef.current.nodes());
-  selection.current.visible = false;
+  selection.trRef.nodes(elements);
+  selection.setNodes(selection.trRef.nodes());
+  selection._curSelection.current.visible = false;
   // disable click event
-  window.Konva.listenClickTap = false;
-  updateSelectionRect(selectionRectRef, selection, stagePos);
+  Konva.listenClickTap = false;
+  updateSelectionRect(
+    selection._selectionRectRef,
+    selection._curSelection,
+    selection.stageRef.position()
+  );
 };
 
-const onClickTap = (e, layerRef, trRef, selectShape, setNodes) => {
+const onClickTap = (e, selection) => {
   let stage = e.target.getStage();
-  let layer = layerRef.current;
-  let tr = trRef.current;
+  let layer = selection.layerRef;
+  let tr = selection.trRef;
   // if click on empty area - remove all selections
   if (e.target === stage) {
-    selectShape(null);
-    setNodes([]);
+    selection.selectShape(null);
+    selection.setNodes([]);
     tr.nodes([]);
     layer.draw();
     return;
@@ -128,7 +133,7 @@ const onClickTap = (e, layerRef, trRef, selectShape, setNodes) => {
     const nodes = tr.nodes().concat([e.target]);
     tr.nodes(nodes);
   }
-  setNodes(tr.nodes());
+  selection.setNodes(tr.nodes());
   layer.draw();
 };
 

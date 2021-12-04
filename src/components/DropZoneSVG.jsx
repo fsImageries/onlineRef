@@ -1,12 +1,16 @@
 import React, { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 
+import {useController } from "js/controllers"
+
 const rightStyle = { position: "absolute", top: "0", right: "0" };
 const leftStyle = { position: "absolute", bottom: "0", left: "0" };
 
-const DropZoneSVG = ({ isRight, controller }) => {
+const DropZoneSVG = ({ isRight }) => {
   const svgRef = useRef();
   const svgSel = gsap.utils.selector(svgRef);
+
+  const controller = useController()
 
   useLayoutEffect(() => {
     const tl = gsap.timeline({  });
@@ -26,7 +30,7 @@ const DropZoneSVG = ({ isRight, controller }) => {
     // tl.from(svgSel(".dropZone"), {zIndex:-1});
     tl.from(svgSel(".slide"), fx);
     tl.pause();
-    controller.current[isRight? "right" : "left"] = tl;
+    controller.con[isRight? "right" : "left"] = tl;
   }, []);
 
   return (

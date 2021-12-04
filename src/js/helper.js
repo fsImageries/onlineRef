@@ -1,3 +1,5 @@
+import {useState, useRef} from "react"
+
 const componentToHex = (c) => {
   var hex = c.toString(16);
   return hex.length == 1 ? "0" + hex : hex;
@@ -30,37 +32,12 @@ const setStoredSettings = (settings) => {
   localStorage.setItem("settings", entry);
 };
 
-const getStageState = (config, media, settings = null) => {
-  const newMedia = media.map((elem, i) => {
-    // remove image from media cuz we don't save it
-    const { image, ...newElem } = elem;
-    return newElem;
-  });
-
-  const { width, height, ...newConfig } = config;
-
-  let stage = { config: newConfig, media: newMedia };
-
-  if (settings !== null) stage = { ...stage, settings: settings };
-
-  return stage;
-};
-
 const download = (data, fileName, contentType = "text/plain") => {
   let a = document.createElement("a");
   let file = new Blob([data], { type: contentType });
   a.href = URL.createObjectURL(file);
   a.download = fileName;
   a.click();
-};
-
-const loadJsonFile = (file, callback) => {
-  const reader = new FileReader();
-  reader.onload = () => {
-    const data = JSON.parse(reader.result);
-    callback(data);
-  };
-  reader.readAsText(file);
 };
 
 const get_jsonFile = (file) => {
@@ -74,14 +51,26 @@ const get_jsonFile = (file) => {
 
 const isVideoPlaying = video => !!(video.currentTime > 0 && !video.paused && !video.ended && video.readyState > 2);
 
+//* Custom Hooks
+
+const useEffectState = (init) => {
+  const [state, _setState] = useState(init);
+  const stateRef = useRef(state);
+  const setState = (data) => {
+    stateRef.current = data;
+    _setState(data);
+  };
+
+  return [stateRef, setState];
+};
 
 export {
   hex2rgb,
   rgb2Hex,
   getStoredSettings,
   setStoredSettings,
-  getStageState,
   download,
   get_jsonFile,
-  isVideoPlaying
+  isVideoPlaying,
+  useEffectState
 };

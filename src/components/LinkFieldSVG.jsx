@@ -1,9 +1,12 @@
 import React, { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
+import {useController} from "js/controllers"
 
-const LinkFieldSVG = ({ controller }) => {
+
+const LinkFieldSVG = () => {
   const svgRef = useRef();
   const svgSel = gsap.utils.selector(svgRef);
+  const {link:controller} = useController()
 
   useLayoutEffect(() => {
     const tl = gsap.timeline({ duration: 1, paused: true });
@@ -18,7 +21,7 @@ const LinkFieldSVG = ({ controller }) => {
     };
 
     tl.from(svgSel(".slide"), fx);
-    controller.current.svgTl = tl;
+    controller.con.svgTl = tl;
   }, []);
 
   return (

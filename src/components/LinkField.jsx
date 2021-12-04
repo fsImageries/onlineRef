@@ -1,13 +1,37 @@
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 
 import LinkFieldSVG from "components/LinkFieldSVG";
+import { useController } from "js/controllers";
+import { useEffectState } from "js/helper";
+import { useMedia } from "states/media";
+import { useStageConfig } from "states/stageConfig";
+import * as imgHelp from "js/imageHelpers";
+import useImage from "use-image";
 
-const LinkField = ({ controller, onEnter }) => {
+const LinkField = () => {
+  const [isOpen, setOpen] = useEffectState(false);
+
   const linkFieldRef = useRef();
   const linkSel = gsap.utils.selector(linkFieldRef);
-
   const inputRef = useRef();
+  const {link:controller} = useController();
+  const media = useMedia();
+  const config = useStageConfig();
+
+  const inputHandler = async (e) => {
+    if (e.key === "Enter") {
+      const src = e.target.value;
+      const url = await imgHelp.test_url(src);
+
+      controller.con.anim(false);
+      e.target.value = "";
+      e.target.blur()
+      if (!url) return;
+      const img = await imgHelp.build_img(url, config.config);
+      if (img) media.addMedia(img);
+    }
+  };
 
   useLayoutEffect(() => {
     const tl = gsap.timeline({ paused: true });
@@ -32,18 +56,21 @@ const LinkField = ({ controller, onEnter }) => {
     tl.from(linkSel(".linkInput"), fx);
     tl.from(linkSel(".linkText"), fx3);
 
-    controller.current.input = tl;
+    controller.con.input = tl;
 
-    controller.current.anim = (open = true) => {
-      if (open) {
-        controller.current.svgTl.play();
-        controller.current.input.play();
-        controller.current.setActive(true);
-        return;
+    controller.con.anim = (force = null) => {
+      const newOpen = force === null ? !isOpen.current : force;
+      setOpen(newOpen);
+      controller.con.callback(newOpen);
+      if (newOpen) {
+        controller.con.svgTl.play();
+        controller.con.input.play();
+        return newOpen;
       }
-      controller.current.input.reverse();
-      controller.current.svgTl.reverse();
-      controller.current.setActive(false);
+      controller.con.input.reverse();
+      controller.con.svgTl.reverse();
+
+      return newOpen;
     };
 
     const closeLinkField = (e) => {
@@ -54,7 +81,7 @@ const LinkField = ({ controller, onEnter }) => {
         !!tl.totalProgress();
 
       if (key_check || click_check) {
-        controller.current.anim(false);
+        controller.con.anim(false);
       }
     };
 
@@ -68,7 +95,7 @@ const LinkField = ({ controller, onEnter }) => {
 
     addListeners();
 
-    return () => addListeners((del = true));
+    return () => addListeners(true);
   }, []);
 
   return (
@@ -79,7 +106,7 @@ const LinkField = ({ controller, onEnter }) => {
         type="text"
         name="linkInput"
         className="linkInput"
-        onKeyDown={(e) => onEnter(e, inputRef.current)}
+        onKeyDown={inputHandler}
       />
       <LinkFieldSVG controller={controller} />
     </div>

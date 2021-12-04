@@ -223,12 +223,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var components_DropZone__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! components/DropZone */ "./src/components/DropZone.jsx");
 /* harmony import */ var components_LinkField__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! components/LinkField */ "./src/components/LinkField.jsx");
 /* harmony import */ var components_SettingsMenu__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! components/SettingsMenu */ "./src/components/SettingsMenu.jsx");
-/* harmony import */ var js_selection__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! js/selection */ "./src/js/selection.js");
-/* harmony import */ var js_dragDrop__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! js/dragDrop */ "./src/js/dragDrop.js");
-/* harmony import */ var js_imageHelpers__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! js/imageHelpers */ "./src/js/imageHelpers.js");
-/* harmony import */ var js_guides__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! js/guides */ "./src/js/guides.js");
-/* harmony import */ var js_menuBtns__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! js/menuBtns */ "./src/js/menuBtns.js");
+/* harmony import */ var components_Guides__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! components/Guides */ "./src/components/Guides.jsx");
+/* harmony import */ var js_selection__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! js/selection */ "./src/js/selection.js");
+/* harmony import */ var js_dragDrop__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! js/dragDrop */ "./src/js/dragDrop.js");
+/* harmony import */ var js_imageHelpers__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! js/imageHelpers */ "./src/js/imageHelpers.js");
+/* harmony import */ var js_guides__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! js/guides */ "./src/js/guides.js");
 /* harmony import */ var js_helper__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! js/helper */ "./src/js/helper.js");
+/* harmony import */ var js_controllers__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! js/controllers */ "./src/js/controllers.js");
+/* harmony import */ var js_stageFuncs__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! js/stageFuncs */ "./src/js/stageFuncs.js");
+/* harmony import */ var states_media__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! states/media */ "./src/states/media.js");
+/* harmony import */ var states_stageConfig__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! states/stageConfig */ "./src/states/stageConfig.js");
+/* harmony import */ var states_storedConfig__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! states/storedConfig */ "./src/states/storedConfig.js");
+/* harmony import */ var states_stageStates__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! states/stageStates */ "./src/states/stageStates.js");
+/* harmony import */ var states_selection__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! states/selection */ "./src/states/selection.js");
+/* harmony import */ var js_toolFuncs__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! js/toolFuncs */ "./src/js/toolFuncs.js");
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 
@@ -250,315 +258,49 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
 
 
 
-const useEffectState = init => {
-  const [state, _setState] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(init);
-  const stateRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(state);
 
-  const setState = data => {
-    stateRef.current = data;
 
-    _setState(data);
-  };
 
-  return [stateRef, setState];
-};
 
-let icons = ["fas fa-sliders-h", // add html spacer between
-"fas fa-question", "far fa-file-image", "fas fa-file-download", "fas fa-link", "fas fa-play", // "fas fa-mouse-pointer",
-"fas fa-arrows-alt", "fas fa-magnet", "fas fa-expand-arrows-alt", "fas fa-undo", "fas fa-arrow-up"];
-const toolTips = [`Show a help menu with more extensive documentation.`, `Import an image/video file or a stage config.\n[CTRL+I]`, `Export and download a stage config.\n[CTRL+S]`, `Import an image/video by link.\n[I]`, `Play selected video(s).\n[P]`, `Active stage drag/Deactive stage selection.\n[D]`, `Toggle Guides/Snap.\n[G]`, `Active resize/Deactive rotate on selected.\n[T]`, `Active rotate/Deactive resize on selected.\n[R]`, `Move selected image to foreground.\n[M]`];
-const baseSettings = {
-  stageBg: jquery__WEBPACK_IMPORTED_MODULE_2___default()(":root").css("--bg-color2"),
-  showGuides: true
-};
-let curSelectionInitial = {
-  visible: false,
-  x1: 0,
-  y1: 0,
-  x2: 0,
-  y2: 0
-};
 
-const activeReducer = (isActive, action) => {
-  const temp = isActive.slice();
-  temp[action.idx] = action.act;
-  return temp;
-};
 
-const stageStatesReducer = (states, action) => {
-  if (!action.notAct) action.setActive({
-    idx: action.actIdx,
-    act: action.act
-  });
-  let temp = Object.entries(states);
-  const [prop, _] = temp[action.idx];
-  states[prop] = action.act;
-  return states;
-};
+
 
 const App = () => {
-  const stored = js_helper__WEBPACK_IMPORTED_MODULE_17__.getStoredSettings();
-  const [settings, setSettings] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(stored === null ? { ...baseSettings
-  } : stored);
-  const settingsCon = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)({
-    main: null,
-    anim: null
-  });
-  const settingsFuncs = [e => {
-    setSettings({ ...settings,
-      stageBg: jquery__WEBPACK_IMPORTED_MODULE_2___default()(":root").css("--var-bg-color"),
-      showGuides: showGuides
-    });
-    settingsCon.current.anim(false);
-  }, e => {
-    setSettings({ ...baseSettings
-    });
-  }, e => {
-    jquery__WEBPACK_IMPORTED_MODULE_2___default()(":root").css("--var-bg-color", js_helper__WEBPACK_IMPORTED_MODULE_17__.hex2rgb(e.target.value));
-  }, e => {
-    setShowGuides(e.target.checked);
-  }];
-  const [media, setMedia] = useEffectState([]);
-  const [config, setConfig] = useEffectState({
-    scaleX: 1,
-    scaleY: 1,
-    width: window.innerWidth,
-    height: window.innerHeight,
-    x: 0,
-    y: 0
-  });
-  const [selectedId, selectShape] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null);
-  const [nodesArray, setNodes] = useEffectState([]);
-  const stageRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)();
-  const layerRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)();
-  const trRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)();
-  const selectionRectRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)();
-  const curSelection = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)({ ...curSelectionInitial
-  });
-  const [scaleBy, setScaleBy] = useEffectState(1.02);
-  const [isActive, setActive] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useReducer)(activeReducer, new Array(icons.length).fill(false));
-  const dropCon = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)({
-    right: null,
-    left: null
-  });
-
-  const animDropSvg = (rev = false) => {
-    if (rev) {
-      dropCon.current.left.reverse();
-      dropCon.current.right.reverse();
-      dropCon.current.zone.reverse();
-    } else {
-      dropCon.current.left.play();
-      dropCon.current.right.play();
-      dropCon.current.zone.play();
-    }
-  };
-
-  const linkCon = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)({
-    svgTl: null,
-    input: null,
-    setActive: val => setActive({
-      idx: 3,
-      act: val
-    }),
-    isActive: isActive[3]
-  });
-
-  const inputHandler = async (e, ref) => {
-    if (e.key === "Enter") {
-      const src = ref.value;
-      const url = await js_imageHelpers__WEBPACK_IMPORTED_MODULE_14__.test_url(src);
-      linkCon.current.anim(false);
-      ref.value = "";
-      if (!url) return;
-      const img = await js_imageHelpers__WEBPACK_IMPORTED_MODULE_14__.build_img(url, config.current);
-      if (img) setMedia([...media.current, img]);
-    }
-  };
-
-  const menuBtnCon = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)({
-    anim: null
-  });
-  const [stageStates, setStageStates] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useReducer)((states, action) => {
-    action = { ...action,
-      setActive: setActive
-    };
-    return stageStatesReducer(states, action);
-  }, {
-    stageDrag: false,
-    isResize: false,
-    isRot: false,
-    rotateFree: false,
-    isGuides: false
-  });
-
-  const setDrag = val => {
-    const action = {
-      act: val,
-      actIdx: 5,
-      idx: 0
-    };
-    if (val) curSelection.current = { ...curSelectionInitial
-    };
-    setStageStates(action);
-  };
-
-  const setResize = val => {
-    const action = {
-      act: val,
-      actIdx: 7,
-      idx: 1
-    };
-    setStageStates(action);
-  };
-
-  const setRot = val => {
-    const action = {
-      act: val,
-      actIdx: 8,
-      idx: 2
-    };
-    setStageStates(action);
-  };
-
-  const setRotateFree = val => {
-    const action = {
-      act: val,
-      idx: 3
-    };
-    setStageStates(action);
-  };
-
-  const setIsGuides = val => {
-    const action = {
-      act: val,
-      actIdx: 6,
-      idx: 4
-    };
-    setStageStates(action);
-  };
-
-  const toolBtnFuncs = [() => {}, () => js_menuBtns__WEBPACK_IMPORTED_MODULE_16__.get_fileDialog(media.current, [setMedia, load_stageState], config.current), () => {
-    console.log(js_helper__WEBPACK_IMPORTED_MODULE_17__.getStageState(config.current, media.current, settings));
-    const stage = JSON.stringify(js_helper__WEBPACK_IMPORTED_MODULE_17__.getStageState(config.current, media.current, settings));
-    js_helper__WEBPACK_IMPORTED_MODULE_17__.download(stage, "OnlineRef_Stage.json");
-  }, () => {
-    linkCon.current.anim();
-  }, (called = false) => {
-    nodesArray.current.forEach((node, i) => {
-      if (node.attrs.type === "vid" && called) {
-        const isPlaying = js_helper__WEBPACK_IMPORTED_MODULE_17__.isVideoPlaying(node.attrs.image);
-
-        if (isPlaying) {
-          node.attrs.image.pause();
-        } else {
-          node.attrs.image.play();
-        }
-      }
-    });
-  }, () => {
-    setDrag(!stageStates.stageDrag);
-  }, () => {
-    setIsGuides(!stageStates.isGuides);
-  }, () => {
-    setResize(!stageStates.isResize);
-    if (stageStates.isRot) setRot(false);
-  }, () => {
-    setRot(!stageStates.isRot);
-    if (stageStates.isResize) setResize(false);
-  }, () => {
-    const cur = nodesArray.current[0];
-    if (cur === undefined) return;
-    const curIdx = media.current.findIndex(elem => cur.attrs.id === elem.id);
-
-    if (curIdx >= 0) {
-      const temp = media.current.filter((_, idx) => idx !== curIdx);
-      setMedia([...temp, media.current[curIdx]]);
-    }
-  }];
-
-  const duplicate_selected = async nodesArray => {
-    const newMedia = await Promise.all(nodesArray.map(async node => {
-      const curMedia = media.current.filter(elem => elem.id === node.attrs.id)[0];
-      const x = curMedia.x - 50;
-      const y = curMedia.y - 50;
-      const ret = await js_imageHelpers__WEBPACK_IMPORTED_MODULE_14__.build_img(curMedia.src, config.current, {
-        x: x,
-        y: y,
-        width: curMedia.width,
-        height: curMedia.height,
-        noMod: true
-      });
-      return ret;
-    }));
-    setMedia([...media.current, ...newMedia]);
-  };
-
-  const delete_selected = () => {
-    const newMedia = media.current.filter(elem => {
-      let isSelected = true;
-
-      for (let i = 0; i < nodesArray.current.length; i++) {
-        const cur = nodesArray.current[i];
-        if (cur.attrs.id === elem.id) isSelected = false;
-      }
-
-      return isSelected;
-    });
-    setMedia(newMedia);
-    selectShape(null);
-    trRef.current.nodes([]);
-    setNodes([]);
-  };
-
-  const wheelHandler = e => {
-    e.evt.preventDefault(); // const scaleBy = 1.02;
-
-    const stage = e.target.getStage();
-    const oldScale = stage.scaleX();
-    const mousePointTo = {
-      x: stage.getRelativePointerPosition().x / oldScale - stage.x() / oldScale,
-      y: stage.getRelativePointerPosition().y / oldScale - stage.y() / oldScale
-    };
-    let newScale = e.evt.deltaY < 0 ? oldScale * scaleBy.current : oldScale / scaleBy.current;
-    newScale = Math.max(0.02, newScale);
-    setConfig({ ...config.current,
-      scaleX: newScale,
-      scaleY: newScale,
-      x: (stage.getRelativePointerPosition().x / newScale - mousePointTo.x) * newScale,
-      y: (stage.getRelativePointerPosition().y / newScale - mousePointTo.y) * newScale
-    });
-  };
-
-  const [guides, setGuides] = useEffectState([]);
-  const [showGuides, setShowGuides] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(settings.showGuides);
-
-  const load_stageState = async state => {
-    const inConfig = state.config;
-    const inMedia = await Promise.all(state.media.map(async (val, i) => {
-      // return {...val, noMod:true}
-      const img = await js_imageHelpers__WEBPACK_IMPORTED_MODULE_14__.build_img(val.src, inConfig, val);
-      return img;
-    }));
-    setConfig({ ...config.current,
-      ...state.config
-    });
-    setSettings(state.settings);
-    setMedia(inMedia);
-  };
-
+  const settingsCon = new js_controllers__WEBPACK_IMPORTED_MODULE_18__.SettingsMenuController();
+  const settings = new states_storedConfig__WEBPACK_IMPORTED_MODULE_22__.StoredConfig();
+  const media = new states_media__WEBPACK_IMPORTED_MODULE_20__.Media();
+  const config = new states_stageConfig__WEBPACK_IMPORTED_MODULE_21__.StageConfig();
+  const selection = new states_selection__WEBPACK_IMPORTED_MODULE_24__.Selection();
+  const stageStates = new states_stageStates__WEBPACK_IMPORTED_MODULE_23__.StageStates();
+  const dropZoneCon = new js_controllers__WEBPACK_IMPORTED_MODULE_18__.DropZoneController();
+  const linkFieldCon = new js_controllers__WEBPACK_IMPORTED_MODULE_18__.LinkFieldController();
+  const menuCon = new js_controllers__WEBPACK_IMPORTED_MODULE_18__.DefaultController();
+  const [guides, setGuides] = js_helper__WEBPACK_IMPORTED_MODULE_17__.useEffectState([]);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     jquery__WEBPACK_IMPORTED_MODULE_2___default()(":root").css("--bg-img", `url(${images_bg_scatter2_svg__WEBPACK_IMPORTED_MODULE_4__["default"]})`);
-    jquery__WEBPACK_IMPORTED_MODULE_2___default()(":root").css("--bg-settings", `url(${images_link_field_end_svg__WEBPACK_IMPORTED_MODULE_5__["default"]})`); // document.addEventListener("click", (e) => {console.log(e.target)})
+    jquery__WEBPACK_IMPORTED_MODULE_2___default()(":root").css("--bg-settings.settings", `url(${images_link_field_end_svg__WEBPACK_IMPORTED_MODULE_5__["default"]})`);
+    const toolBtnFuncs = (0,js_toolFuncs__WEBPACK_IMPORTED_MODULE_25__["default"])(media, stageStates, selection, config, settings, linkFieldCon);
 
     const keyHandler = e => {
-      setRotateFree(e.shiftKey);
-      setScaleBy(e.shiftKey ? 1.5 : 1.02);
+      stageStates.setRotateFree(e.shiftKey);
+      stageStates.setScaleBy(e.shiftKey);
 
       if (e.type === "keydown") {
-        // console.log(e.key);
-        if (["Delete", "Backspace", "x"].includes(e.key)) delete_selected();
+        if (["Delete", "Backspace", "x"].includes(e.key)) toolBtnFuncs[11]();
         if (e.ctrlKey && e.key === "i") toolBtnFuncs[1]();
+        if (e.key === "q" && !e.ctrlKey) menuCon.con.anim();
+        if (e.key === "i" && !e.ctrlKey) toolBtnFuncs[3]();
+        if (e.key === "p") toolBtnFuncs[4]();
+        if (e.key === "d" && !e.ctrlKey) toolBtnFuncs[5]();
+        if (e.key === "g") toolBtnFuncs[6]();
+        if (e.key === "t") toolBtnFuncs[7]();
+        if (e.key === "r") toolBtnFuncs[8]();
+        if (e.key === "m") toolBtnFuncs[9]();
+
+        if (e.key === "p") {
+          toolBtnFuncs[4](e);
+        }
 
         if (e.ctrlKey && e.key === "s") {
           e.preventDefault();
@@ -567,46 +309,27 @@ const App = () => {
 
         if (e.ctrlKey && e.key === "d") {
           e.preventDefault();
-          duplicate_selected(nodesArray.current);
+          toolBtnFuncs[10]();
         }
 
-        if (e.key === "q") menuBtnCon.current.anim();
-        if (e.key === "i" && !e.ctrlKey) toolBtnFuncs[3]();
-        if (e.key === "p") toolBtnFuncs[4]();
-        if (e.key === "d" && !e.ctrlKey) toolBtnFuncs[5]();
-
-        if (e.key === "p") {
-          console.log("Hi");
-          toolBtnFuncs[4](true);
-        }
-
-        if (e.key === "g") toolBtnFuncs[6]();
-        if (e.key === "t") toolBtnFuncs[7]();
-        if (e.key === "r") toolBtnFuncs[8]();
-        if (e.key === "m") toolBtnFuncs[9](); //   if (e.ctrlKey && e.key === "s") {
-        //     e.preventDefault();
-        //     $(".fileDown").trigger("click");
-        //   }
+        if (e.ctrlKey && e.key === "q") settingsCon.con.anim();
       }
     };
 
-    document.addEventListener("keyup", keyHandler);
-    document.addEventListener("keydown", keyHandler);
-
     const resizeHandler = () => {
-      setConfig({ ...config.current,
+      config.setConfig({ ...config.config,
         width: window.innerWidth,
         height: window.innerHeight
       });
     };
 
     const dragoverHandler = e => {
-      animDropSvg();
+      dropZoneCon.con.anim();
       e.preventDefault();
     };
 
     const dragleaveHandler = e => {
-      animDropSvg(true);
+      dropZoneCon.con.anim(true);
     };
 
     const dropHandler = e => {
@@ -614,12 +337,11 @@ const App = () => {
 
       e.dataTransfer.getHTML = () => e.dataTransfer.getData("text/html");
 
-      animDropSvg(true);
+      dropZoneCon.con.anim(true);
       e.preventDefault();
-      js_dragDrop__WEBPACK_IMPORTED_MODULE_13__.dropHandler(e, media.current, setMedia, config.current, {
-        x: (e.pageX - config.current.x) / config.current.scaleX,
-        y: (e.pageY - config.current.y) / config.current.scaleY // ...stageRef.current.getStage().getRelativePointerPosition()
-
+      js_dragDrop__WEBPACK_IMPORTED_MODULE_14__.dropHandler(e, media.media, media.setMedia, config.config, {
+        x: (e.pageX - config.config.x) / config.config.scaleX,
+        y: (e.pageY - config.config.y) / config.config.scaleY
       });
     };
 
@@ -628,106 +350,105 @@ const App = () => {
       window[del ? "removeEventListener" : "addEventListener"]("dragleave", dragleaveHandler);
       window[del ? "removeEventListener" : "addEventListener"]("drop", dropHandler);
       window[del ? "removeEventListener" : "addEventListener"]("resize", resizeHandler);
+      document[del ? "removeEventListener" : "addEventListener"]("keyup", keyHandler);
+      document[del ? "removeEventListener" : "addEventListener"]("keydown", keyHandler);
     };
 
     handleListeners();
     return () => handleListeners(true);
   }, []);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-    js_helper__WEBPACK_IMPORTED_MODULE_17__.setStoredSettings(settings);
-    jquery__WEBPACK_IMPORTED_MODULE_2___default()(":root").css("--var-bg-color", settings.stageBg);
-    setShowGuides(settings.showGuides);
-  }, [settings]);
-  const url = "https://art.art/wp-content/uploads/2021/09/jamesnielsen_art.jpg";
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(components_LinkField__WEBPACK_IMPORTED_MODULE_10__["default"], {
-    controller: linkCon,
-    onEnter: inputHandler
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(components_ToolBar__WEBPACK_IMPORTED_MODULE_8__["default"], {
-    icons: icons,
-    toolTips: toolTips,
-    funcs: toolBtnFuncs,
-    isActive: isActive,
-    controller: menuBtnCon
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(components_DropZone__WEBPACK_IMPORTED_MODULE_9__["default"], {
-    controller: dropCon
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(components_SettingsMenu__WEBPACK_IMPORTED_MODULE_11__["default"], {
-    controller: settingsCon,
-    funcs: settingsFuncs,
-    states: [settings.stageBg, showGuides]
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_konva__WEBPACK_IMPORTED_MODULE_1__.Stage, _extends({}, config.current, {
-    ref: stageRef,
+    js_helper__WEBPACK_IMPORTED_MODULE_17__.setStoredSettings(settings.settings);
+    jquery__WEBPACK_IMPORTED_MODULE_2___default()(":root").css("--var-bg-color", settings.settings.stageBg); // settings.setShowGuides(settings.showGuides);
+  }, [settings.settings]);
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(states_stageStates__WEBPACK_IMPORTED_MODULE_23__.StageStatesProvider, {
+    value: stageStates
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(states_storedConfig__WEBPACK_IMPORTED_MODULE_22__.StoredConfigProvider, {
+    value: settings
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(states_selection__WEBPACK_IMPORTED_MODULE_24__.SelectionProvider, {
+    value: selection
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(states_media__WEBPACK_IMPORTED_MODULE_20__.MediaProvider, {
+    value: media
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(states_stageConfig__WEBPACK_IMPORTED_MODULE_21__.StageConfigProvider, {
+    value: config
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(js_controllers__WEBPACK_IMPORTED_MODULE_18__.ControllerProvider, {
+    value: settingsCon
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(components_SettingsMenu__WEBPACK_IMPORTED_MODULE_11__["default"], null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(js_controllers__WEBPACK_IMPORTED_MODULE_18__.ControllerProvider, {
+    value: {
+      link: linkFieldCon,
+      menu: menuCon
+    }
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(components_LinkField__WEBPACK_IMPORTED_MODULE_10__["default"], null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(components_ToolBar__WEBPACK_IMPORTED_MODULE_8__["default"], null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(js_controllers__WEBPACK_IMPORTED_MODULE_18__.ControllerProvider, {
+    value: dropZoneCon
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(components_DropZone__WEBPACK_IMPORTED_MODULE_9__["default"], null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_konva__WEBPACK_IMPORTED_MODULE_1__.Stage, _extends({}, config.config, {
+    ref: selection._stageRef,
     draggable: stageStates.stageDrag,
     onDblClick: async e => {
-      settingsCon.current.anim(); // const some = await imgHelp.build_img(url, config.current, {
-      //   ...stageRef.current.getRelativePointerPosition(),
+      settingsCon.con.anim(); // console.log(media.media);
+      // const some = await imgHelp.build_img(url, config.config, {
+      //   ...selection.stageRef.getRelativePointerPosition(),
       // });
-      // setMedia([...media.current, some]);
+      // media.setMedia([...media.media, some]);
       // animDropSvg();
-      // setConfig({...config.current, scaleX:2, scaleY:2})
+      // config.setConfig({...config.config, scaleX:2, scaleY:2})
     },
-    onWheel: wheelHandler,
+    onWheel: e => js_stageFuncs__WEBPACK_IMPORTED_MODULE_19__.wheelHandler(e, stageStates.scaleBy, v => config.addConfig(v)),
     onDragEnd: () => {
       if (!stageStates.stageDrag) return;
-      setConfig({ ...config.current,
-        ...stageRef.current.position()
+      config.setConfig({ ...config.config,
+        ...selection.stageRef.position()
       });
     },
     onTouchStart: e => {
-      js_selection__WEBPACK_IMPORTED_MODULE_12__.checkDeselect(e, trRef, selectShape, setNodes);
+      js_selection__WEBPACK_IMPORTED_MODULE_13__.checkDeselect(e, selection);
     },
     onMouseDown: e => {
       if (stageStates.stageDrag) return;
-      js_selection__WEBPACK_IMPORTED_MODULE_12__.onMouseDown(e, curSelection, selectionRectRef, stageRef.current.position());
+      js_selection__WEBPACK_IMPORTED_MODULE_13__.onMouseDown(e, selection);
     },
     onMouseMove: e => {
       if (stageStates.stageDrag) return;
-      js_selection__WEBPACK_IMPORTED_MODULE_12__.onMouseMove(e, curSelection, selectionRectRef, stageRef.current.position());
+      js_selection__WEBPACK_IMPORTED_MODULE_13__.onMouseMove(e, selection);
     },
     onMouseUp: e => {
       if (stageStates.stageDrag) return;
-      setConfig({ ...config.current,
-        ...stageRef.current.position()
+      config.setConfig({ ...config.config,
+        ...selection.stageRef.position()
       });
-      js_selection__WEBPACK_IMPORTED_MODULE_12__.onMouseUp(trRef, layerRef, selectionRectRef, curSelection, setNodes, stageRef.current.position());
+      js_selection__WEBPACK_IMPORTED_MODULE_13__.onMouseUp(selection);
     },
     onClick: e => {
-      js_selection__WEBPACK_IMPORTED_MODULE_12__.onClickTap(e, layerRef, trRef, selectShape, setNodes);
+      // selectHelp.onClickTap(e, selection._layerRef, selection._trRef, selection.selectShape, selection.setNodes);
+      js_selection__WEBPACK_IMPORTED_MODULE_13__.onClickTap(e, selection);
     }
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_konva__WEBPACK_IMPORTED_MODULE_1__.Layer, {
-    ref: layerRef,
+    ref: selection._layerRef,
     onDragMove: e => {
       if (!stageStates.isGuides) return;
-      js_guides__WEBPACK_IMPORTED_MODULE_15__.onDragMove(e, stageRef, setGuides, showGuides);
+      js_guides__WEBPACK_IMPORTED_MODULE_16__.onDragMove(e, selection._stageRef, setGuides, settings.showGuides);
     },
     onDragEnd: e => {
       if (!stageStates.isGuides) return;
-      js_guides__WEBPACK_IMPORTED_MODULE_15__.onDragEnd(e, setGuides);
+      js_guides__WEBPACK_IMPORTED_MODULE_16__.onDragEnd(e, setGuides);
     }
-  }, media.current.map((item, index) => {
+  }, media.media.map((item, index) => {
     // console.log(item)
     const props = {
       imageProps: item,
-      isSelected: index === selectedId,
+      isSelected: index === selection.selectedId,
       onChange: newAttrs => {
-        const meds = media.current.slice();
+        const meds = media.media.slice();
         meds[index] = newAttrs;
-        setMedia(meds);
+        media.setMedia(meds);
       },
       idx: index,
       key: index
     };
     if (item.type === "img") return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(components_URLImage__WEBPACK_IMPORTED_MODULE_6__["default"], props);else return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(components_URLVideo__WEBPACK_IMPORTED_MODULE_7__["default"], props);
-  }), stageStates.isGuides && guides.current.map((item, idx) => {
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_konva__WEBPACK_IMPORTED_MODULE_1__.Line, _extends({
-      key: idx
-    }, item, {
-      offset: {
-        x: item.offset,
-        y: item.offset
-      }
-    }));
+  }), stageStates.isGuides && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(components_Guides__WEBPACK_IMPORTED_MODULE_12__["default"], {
+    guides: guides.current
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_konva__WEBPACK_IMPORTED_MODULE_1__.Transformer, {
-    ref: trRef,
+    ref: selection._trRef,
     boundBoxFunc: (oldBox, newBox) => {
       // limit resize
       if (newBox.width < 5 || newBox.height < 5) {
@@ -738,7 +459,7 @@ const App = () => {
     },
     rotateEnabled: stageStates.isRot,
     resizeEnabled: stageStates.isResize,
-    borderStrokeWidth: nodesArray.current.length > 1 ? 0.25 : 0.1,
+    borderStrokeWidth: selection.nodesArray.length > 1 ? 0.25 : 0.1,
     rotationSnapTolerance: stageStates.rotateFree ? 0 : 5,
     name: "transformer",
     borderStroke: "#00d0ff",
@@ -750,8 +471,8 @@ const App = () => {
     rotateAnchorOffset: 0
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_konva__WEBPACK_IMPORTED_MODULE_1__.Rect, {
     fill: "rgba(0,0,255,0.5)",
-    ref: selectionRectRef
-  }))));
+    ref: selection._selectionRectRef
+  }))))))));
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (App);
@@ -770,19 +491,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var gsap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! gsap */ "./node_modules/gsap/index.js");
+/* harmony import */ var gsap__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! gsap */ "./node_modules/gsap/index.js");
 /* harmony import */ var components_DropZoneSVG__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! components/DropZoneSVG */ "./src/components/DropZoneSVG.jsx");
+/* harmony import */ var js_controllers__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! js/controllers */ "./src/js/controllers.js");
 
 
 
 
-const DropZone = ({
-  controller
-}) => {
+
+const DropZone = () => {
   const zoneRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)();
-  const zoneSel = gsap__WEBPACK_IMPORTED_MODULE_2__.gsap.utils.selector(zoneRef);
+  const zoneSel = gsap__WEBPACK_IMPORTED_MODULE_3__.gsap.utils.selector(zoneRef);
+  const controller = (0,js_controllers__WEBPACK_IMPORTED_MODULE_2__.useController)();
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useLayoutEffect)(() => {
-    const tl = gsap__WEBPACK_IMPORTED_MODULE_2__.gsap.timeline({});
+    const tl = gsap__WEBPACK_IMPORTED_MODULE_3__.gsap.timeline({});
     const fx = {
       background: "rgba(10, 10, 20, 0)",
       backdropFilter: "blur(0px)"
@@ -794,7 +516,19 @@ const DropZone = ({
     tl.from(zoneRef.current, fx);
     tl.from(zoneSel(".text"), fx2);
     tl.pause();
-    controller.current.zone = tl;
+    controller.con.zone = tl;
+
+    controller.con.anim = (rev = false) => {
+      if (rev) {
+        controller.con.left.reverse();
+        controller.con.right.reverse();
+        controller.con.zone.reverse();
+      } else {
+        controller.con.left.play();
+        controller.con.right.play();
+        controller.con.zone.play();
+      }
+    };
   }, []);
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
     className: "dropZone",
@@ -802,11 +536,9 @@ const DropZone = ({
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
     className: "text"
   }, "Just drop it in here."), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(components_DropZoneSVG__WEBPACK_IMPORTED_MODULE_1__["default"], {
-    isRight: true,
-    controller: controller
+    isRight: true
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(components_DropZoneSVG__WEBPACK_IMPORTED_MODULE_1__["default"], {
-    isRight: false,
-    controller: controller
+    isRight: false
   }));
 };
 
@@ -826,7 +558,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var gsap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gsap */ "./node_modules/gsap/index.js");
+/* harmony import */ var gsap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! gsap */ "./node_modules/gsap/index.js");
+/* harmony import */ var js_controllers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! js/controllers */ "./src/js/controllers.js");
+
 
 
 const rightStyle = {
@@ -841,13 +575,13 @@ const leftStyle = {
 };
 
 const DropZoneSVG = ({
-  isRight,
-  controller
+  isRight
 }) => {
   const svgRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)();
-  const svgSel = gsap__WEBPACK_IMPORTED_MODULE_1__.gsap.utils.selector(svgRef);
+  const svgSel = gsap__WEBPACK_IMPORTED_MODULE_2__.gsap.utils.selector(svgRef);
+  const controller = (0,js_controllers__WEBPACK_IMPORTED_MODULE_1__.useController)();
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useLayoutEffect)(() => {
-    const tl = gsap__WEBPACK_IMPORTED_MODULE_1__.gsap.timeline({});
+    const tl = gsap__WEBPACK_IMPORTED_MODULE_2__.gsap.timeline({});
     const fx = {
       ease: "expo.out",
       x: isRight ? 500 : -500,
@@ -863,7 +597,7 @@ const DropZoneSVG = ({
 
     tl.from(svgSel(".slide"), fx);
     tl.pause();
-    controller.current[isRight ? "right" : "left"] = tl;
+    controller.con[isRight ? "right" : "left"] = tl;
   }, []);
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", {
     id: "visual",
@@ -917,6 +651,44 @@ const DropZoneSVG = ({
 
 /***/ }),
 
+/***/ "./src/components/Guides.jsx":
+/*!***********************************!*\
+  !*** ./src/components/Guides.jsx ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react_konva__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-konva */ "./node_modules/react-konva/es/ReactKonva.js");
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
+
+
+
+const Guides = ({
+  guides
+}) => {
+  //   const guides = [];
+  return guides.map((item, idx) => {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_konva__WEBPACK_IMPORTED_MODULE_1__.Line, _extends({
+      key: idx
+    }, item, {
+      offset: {
+        x: item.offset,
+        y: item.offset
+      }
+    }));
+  });
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Guides);
+
+/***/ }),
+
 /***/ "./src/components/LinkField.jsx":
 /*!**************************************!*\
   !*** ./src/components/LinkField.jsx ***!
@@ -929,21 +701,51 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var gsap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! gsap */ "./node_modules/gsap/index.js");
+/* harmony import */ var gsap__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! gsap */ "./node_modules/gsap/index.js");
 /* harmony import */ var components_LinkFieldSVG__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! components/LinkFieldSVG */ "./src/components/LinkFieldSVG.jsx");
+/* harmony import */ var js_controllers__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! js/controllers */ "./src/js/controllers.js");
+/* harmony import */ var js_helper__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! js/helper */ "./src/js/helper.js");
+/* harmony import */ var states_media__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! states/media */ "./src/states/media.js");
+/* harmony import */ var states_stageConfig__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! states/stageConfig */ "./src/states/stageConfig.js");
+/* harmony import */ var js_imageHelpers__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! js/imageHelpers */ "./src/js/imageHelpers.js");
+/* harmony import */ var use_image__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! use-image */ "./node_modules/use-image/index.js");
+/* harmony import */ var use_image__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(use_image__WEBPACK_IMPORTED_MODULE_7__);
 
 
 
 
-const LinkField = ({
-  controller,
-  onEnter
-}) => {
+
+
+
+
+
+
+const LinkField = () => {
+  const [isOpen, setOpen] = (0,js_helper__WEBPACK_IMPORTED_MODULE_3__.useEffectState)(false);
   const linkFieldRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)();
-  const linkSel = gsap__WEBPACK_IMPORTED_MODULE_2__.gsap.utils.selector(linkFieldRef);
+  const linkSel = gsap__WEBPACK_IMPORTED_MODULE_8__.gsap.utils.selector(linkFieldRef);
   const inputRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)();
+  const {
+    link: controller
+  } = (0,js_controllers__WEBPACK_IMPORTED_MODULE_2__.useController)();
+  const media = (0,states_media__WEBPACK_IMPORTED_MODULE_4__.useMedia)();
+  const config = (0,states_stageConfig__WEBPACK_IMPORTED_MODULE_5__.useStageConfig)();
+
+  const inputHandler = async e => {
+    if (e.key === "Enter") {
+      const src = e.target.value;
+      const url = await js_imageHelpers__WEBPACK_IMPORTED_MODULE_6__.test_url(src);
+      controller.con.anim(false);
+      e.target.value = "";
+      e.target.blur();
+      if (!url) return;
+      const img = await js_imageHelpers__WEBPACK_IMPORTED_MODULE_6__.build_img(url, config.config);
+      if (img) media.addMedia(img);
+    }
+  };
+
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useLayoutEffect)(() => {
-    const tl = gsap__WEBPACK_IMPORTED_MODULE_2__.gsap.timeline({
+    const tl = gsap__WEBPACK_IMPORTED_MODULE_8__.gsap.timeline({
       paused: true
     });
     const fx = {
@@ -964,19 +766,22 @@ const LinkField = ({
     tl.from(linkFieldRef.current, fx2);
     tl.from(linkSel(".linkInput"), fx);
     tl.from(linkSel(".linkText"), fx3);
-    controller.current.input = tl;
+    controller.con.input = tl;
 
-    controller.current.anim = (open = true) => {
-      if (open) {
-        controller.current.svgTl.play();
-        controller.current.input.play();
-        controller.current.setActive(true);
-        return;
+    controller.con.anim = (force = null) => {
+      const newOpen = force === null ? !isOpen.current : force;
+      setOpen(newOpen);
+      controller.con.callback(newOpen);
+
+      if (newOpen) {
+        controller.con.svgTl.play();
+        controller.con.input.play();
+        return newOpen;
       }
 
-      controller.current.input.reverse();
-      controller.current.svgTl.reverse();
-      controller.current.setActive(false);
+      controller.con.input.reverse();
+      controller.con.svgTl.reverse();
+      return newOpen;
     };
 
     const closeLinkField = e => {
@@ -984,7 +789,7 @@ const LinkField = ({
       const click_check = !e.target.closest(".innerParts, input") && !tl.paused() && !!tl.totalProgress();
 
       if (key_check || click_check) {
-        controller.current.anim(false);
+        controller.con.anim(false);
       }
     };
 
@@ -995,7 +800,7 @@ const LinkField = ({
     };
 
     addListeners();
-    return () => addListeners(del = true);
+    return () => addListeners(true);
   }, []);
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
     className: "linkField",
@@ -1007,7 +812,7 @@ const LinkField = ({
     type: "text",
     name: "linkInput",
     className: "linkInput",
-    onKeyDown: e => onEnter(e, inputRef.current)
+    onKeyDown: inputHandler
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(components_LinkFieldSVG__WEBPACK_IMPORTED_MODULE_1__["default"], {
     controller: controller
   }));
@@ -1029,17 +834,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var gsap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gsap */ "./node_modules/gsap/index.js");
+/* harmony import */ var gsap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! gsap */ "./node_modules/gsap/index.js");
+/* harmony import */ var js_controllers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! js/controllers */ "./src/js/controllers.js");
 
 
 
-const LinkFieldSVG = ({
-  controller
-}) => {
+
+const LinkFieldSVG = () => {
   const svgRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)();
-  const svgSel = gsap__WEBPACK_IMPORTED_MODULE_1__.gsap.utils.selector(svgRef);
+  const svgSel = gsap__WEBPACK_IMPORTED_MODULE_2__.gsap.utils.selector(svgRef);
+  const {
+    link: controller
+  } = (0,js_controllers__WEBPACK_IMPORTED_MODULE_1__.useController)();
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useLayoutEffect)(() => {
-    const tl = gsap__WEBPACK_IMPORTED_MODULE_1__.gsap.timeline({
+    const tl = gsap__WEBPACK_IMPORTED_MODULE_2__.gsap.timeline({
       duration: 1,
       paused: true
     });
@@ -1052,7 +860,7 @@ const LinkFieldSVG = ({
       zIndex: 0
     };
     tl.from(svgSel(".slide"), fx);
-    controller.current.svgTl = tl;
+    controller.con.svgTl = tl;
   }, []);
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", {
     ref: svgRef,
@@ -1101,29 +909,34 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var gsap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! gsap */ "./node_modules/gsap/index.js");
-/* harmony import */ var js_helper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! js/helper */ "./src/js/helper.js");
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+/* harmony import */ var gsap__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! gsap */ "./node_modules/gsap/index.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var js_helper__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! js/helper */ "./src/js/helper.js");
+/* harmony import */ var js_controllers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! js/controllers */ "./src/js/controllers.js");
+/* harmony import */ var states_storedConfig__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! states/storedConfig */ "./src/states/storedConfig.js");
 
 
 
 
 
-const SettingsMenu = ({
-  controller,
-  funcs,
-  states
-}) => {
-  const settings = [["Stage Background Color", "color"], ["Show Guides", "checkbox"]];
-  const footerFuncs = funcs.slice(0, 2);
-  funcs = funcs.slice(2, funcs.length);
+
+
+const SettingsMenu = () => {
+  const settings = [["Stage Background Color", "color", "stageBg"], ["Show Guides", "checkbox", "showGuides"]];
   const [isOpen, setOpen] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
-  controller.current.isOpen = isOpen;
-  controller.current.setOpen = setOpen;
-  const mainRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(); //   const categories = [["General", true]];
-
+  const mainRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)();
+  const stored = (0,states_storedConfig__WEBPACK_IMPORTED_MODULE_4__.useStoredConfig)();
+  const controller = (0,js_controllers__WEBPACK_IMPORTED_MODULE_3__.useController)();
+  const settingsFuncs = [e => {
+    stored.reset();
+  }, e => {
+    stored.setStageBg(js_helper__WEBPACK_IMPORTED_MODULE_2__.hex2rgb(e.target.value));
+  }, e => {
+    stored.setShowGuides(e.target.checked);
+  }];
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useLayoutEffect)(() => {
-    const tl = gsap__WEBPACK_IMPORTED_MODULE_2__.gsap.timeline({
+    const tl = gsap__WEBPACK_IMPORTED_MODULE_5__.gsap.timeline({
       paused: true
     });
     const fx = {
@@ -1132,18 +945,19 @@ const SettingsMenu = ({
       width: 0
     };
     tl.from(mainRef.current, fx);
-    controller.current.main = tl;
+    controller.con._tl = tl;
 
-    controller.current.anim = (force = null) => {
+    controller.con.anim = (force = null) => {
       const newOpen = force === null ? !isOpen : force;
       setOpen(newOpen);
 
       if (newOpen) {
-        controller.current.main.play();
+        controller.con._tl.play();
+
         return;
       }
 
-      controller.current.main.reverse();
+      controller.con._tl.reverse();
     };
 
     const closeField = e => {
@@ -1151,7 +965,7 @@ const SettingsMenu = ({
       const click_check = !e.target.closest(".settingsMenu") && !tl.paused() && !!tl.totalProgress();
 
       if (key_check || click_check) {
-        controller.current.anim(false);
+        controller.con.anim(false);
       }
     };
 
@@ -1173,32 +987,25 @@ const SettingsMenu = ({
     className: "innerMenu"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("table", {
     width: "100%"
-  }, settings.map(([label, type], i) => {
+  }, settings.map(([label, type, attr], i) => {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("tbody", {
       key: i
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("tr", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("label", {
       htmlFor: `input${i}`
-    }, label)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", _extends({}, type === "checkbox" && {
-      checked: states[i]
-    }, {
+    }, label)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
+      checked: type === "checkbox" ? stored[attr] : false,
       id: `input${i}`,
-      type: type // checked={states[i]}
-      // defaultChecked={type === "checkbox" && states[i]}
-      ,
-      onChange: e => funcs[i](e)
-    })), type === "color" && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+      type: type,
+      onChange: e => settingsFuncs[i + 1](e)
+    }), type === "color" && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
       className: "colorSwatch"
     }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", null)))));
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("tfoot", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("tr", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", {
     colSpan: "2"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
     type: "submit",
-    value: "Save Settings",
-    onClick: footerFuncs[0]
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
-    type: "submit",
     value: "Reset Settings",
-    onClick: footerFuncs[1]
+    onClick: settingsFuncs[0]
   }))))))));
 };
 
@@ -1218,11 +1025,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var gsap__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! gsap */ "./node_modules/gsap/index.js");
+/* harmony import */ var gsap__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! gsap */ "./node_modules/gsap/index.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var components_ToolItem__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! components/ToolItem */ "./src/components/ToolItem.jsx");
-/* harmony import */ var images_menu_bg_svg__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! images/menu_bg.svg */ "./src/images/menu_bg.svg");
+/* harmony import */ var states_stageStates__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! states/stageStates */ "./src/states/stageStates.js");
+/* harmony import */ var states_selection__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! states/selection */ "./src/states/selection.js");
+/* harmony import */ var states_storedConfig__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! states/storedConfig */ "./src/states/storedConfig.js");
+/* harmony import */ var states_media__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! states/media */ "./src/states/media.js");
+/* harmony import */ var js_controllers__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! js/controllers */ "./src/js/controllers.js");
+/* harmony import */ var js_toolFuncs__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! js/toolFuncs */ "./src/js/toolFuncs.js");
+/* harmony import */ var images_menu_bg_svg__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! images/menu_bg.svg */ "./src/images/menu_bg.svg");
+
+
+
+
+
+
 
 
 
@@ -1243,22 +1062,91 @@ const tl_reducer = (tl, action) => {
   }
 };
 
-const ToolBar = ({
-  icons,
-  toolTips,
-  funcs,
-  isActive,
-  controller
-}) => {
-  jquery__WEBPACK_IMPORTED_MODULE_1___default()(":root").css("--bg-menu", `url(${images_menu_bg_svg__WEBPACK_IMPORTED_MODULE_3__["default"]})`);
+const topIcon = "fas fa-sliders-h";
+const icons = [// add html spacer between
+"fas fa-question", "far fa-file-image", "fas fa-file-download", "fas fa-link", "fas fa-play", // "fas fa-mouse-pointer",
+"fas fa-arrows-alt", "fas fa-magnet", "fas fa-expand-arrows-alt", "fas fa-undo", "fas fa-arrow-up"];
+const toolTips = [`Show a help menu with more extensive documentation.`, `Import an image/video file or a stage config.\n[CTRL+I]`, `Export and download a stage config.\n[CTRL+S]`, `Import an image/video by link.\n[I]`, `Play selected video(s).\n[P]`, `Active stage drag/Deactive stage selection.\n[D]`, `Toggle Guides/Snap.\n[G]`, `Active resize/Deactive rotate on selected.\n[T]`, `Active rotate/Deactive resize on selected.\n[R]`, `Move selected image to foreground.\n[M]`];
+
+const ToolBar = () => {
   const [isOpen, setOpen] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const [isLinkFieldActive, setLinkFieldActive] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
   const toolbarBgRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)();
   const settingsRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)();
   const toolbarRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)();
   const tlRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)();
-  const toolBarSelect = gsap__WEBPACK_IMPORTED_MODULE_4__.gsap.utils.selector(toolbarRef);
+  const toolBarSelect = gsap__WEBPACK_IMPORTED_MODULE_10__.gsap.utils.selector(toolbarRef);
+  const stageStates = (0,states_stageStates__WEBPACK_IMPORTED_MODULE_3__.useStageStates)();
+  const {
+    link: linkFieldCon,
+    menu: controller
+  } = (0,js_controllers__WEBPACK_IMPORTED_MODULE_7__.useController)();
+  const selection = (0,states_selection__WEBPACK_IMPORTED_MODULE_4__.useSelection)();
+  const media = (0,states_media__WEBPACK_IMPORTED_MODULE_6__.useMedia)();
+  const config = (0,states_storedConfig__WEBPACK_IMPORTED_MODULE_5__.useStoredConfig)(); // const controller = useController();
+
+  linkFieldCon.con.callback = val => {
+    setLinkFieldActive(val);
+  };
+
+  const funcs = (0,js_toolFuncs__WEBPACK_IMPORTED_MODULE_8__["default"])(media, stageStates, selection, config, linkFieldCon); // const funcs = [
+  //   () => {},
+  //   () => {},
+  //   () => {
+  //     // console.log(
+  //     //   helper.getStageState(config.config, media.media, settings.settings)
+  //     // );
+  //     // const stage = JSON.stringify(
+  //     //   helper.getStageState(config.config, media.media, settings.settings)
+  //     // );
+  //     // helper.download(stage, "OnlineRef_Stage.json");
+  //   },
+  //   () => {
+  //     linkFieldCon.con.anim();
+  //   },
+  //   () => {
+  //     selection.nodesArray.forEach((node, i) => {
+  //       if (node.attrs.type === "vid" && called) {
+  //         const isPlaying = helper.isVideoPlaying(node.attrs.image);
+  //         if (isPlaying) {
+  //           node.attrs.image.pause();
+  //         } else {
+  //           node.attrs.image.play();
+  //         }
+  //       }
+  //     });
+  //   },
+  //   () => {
+  //     stageStates.setStageDrag(!stageStates.stageDrag);
+  //   },
+  //   () => {
+  //     stageStates.setGuides(!stageStates.isGuides);
+  //   },
+  //   () => {
+  //     stageStates.setResize(!stageStates.isResize);
+  //   },
+  //   () => {
+  //     stageStates.setRot(!stageStates.isRot);
+  //   },
+  //   () => {
+  //     const cur = selection.nodesArray[0];
+  //     if (cur === undefined) return;
+  //     const curIdx = media.media.findIndex((elem) => cur.attrs.id === elem.id);
+  //     if (curIdx >= 0) {
+  //       const temp = media.media.filter((_, idx) => idx !== curIdx);
+  //       media.setMedia([...temp, media.media[curIdx]]);
+  //     }
+  //     selection.selectShape(null);
+  //     selection.trRef.nodes([]);
+  //     selection.setNodes([]);
+  //   },
+  // ];
+
+  const isActive = [,,, isLinkFieldActive,, stageStates.stageDrag, stageStates.isGuides, stageStates.isResize, stageStates.isRot];
+  const toolItems = icons.map((val, i) => [val, toolTips[i], funcs[i], isActive[i]]);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useLayoutEffect)(() => {
-    const tl = gsap__WEBPACK_IMPORTED_MODULE_4__.gsap.timeline({
+    jquery__WEBPACK_IMPORTED_MODULE_1___default()(":root").css("--bg-menu", `url(${images_menu_bg_svg__WEBPACK_IMPORTED_MODULE_9__["default"]})`);
+    const tl = gsap__WEBPACK_IMPORTED_MODULE_10__.gsap.timeline({
       duration: 0.1
     });
     const fx = {
@@ -1271,7 +1159,7 @@ const ToolBar = ({
     tlRef.current = tl;
   }, []);
 
-  controller.current.anim = () => {
+  controller.con.anim = () => {
     const newOpen = !isOpen;
     setOpen(newOpen);
     tl_reducer(tlRef.current, isOpen);
@@ -1294,21 +1182,18 @@ const ToolBar = ({
     ref: toolbarRef
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(components_ToolItem__WEBPACK_IMPORTED_MODULE_2__["default"], {
     reference: settingsRef,
-    icon: icons[0],
+    icon: topIcon,
     onClick: () => {
-      // setOpen(!isOpen);
-      // tl_reducer(tlRef.current, isOpen);
-      controller.current.anim();
+      controller.con.anim();
     },
     className: `settingsAll ${isOpen ? "" : "hide"}`
-  }), icons.slice(1, icons.length).map((item, idx) => {
+  }), toolItems.map(([icon, toolTip, func, isActive], idx) => {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(components_ToolItem__WEBPACK_IMPORTED_MODULE_2__["default"], {
-      icon: item,
+      icon: icon,
       key: idx,
-      className: isActive[idx] && "active",
-      toolTip: toolTips[idx] && toolTips[idx],
+      className: isActive && "active",
+      toolTip: toolTip && toolTip,
       onClick: e => {
-        const func = funcs[idx];
         if (func) func(e);
       }
     });
@@ -1658,6 +1543,96 @@ const VideoButton = ({
 
 /***/ }),
 
+/***/ "./src/js/controllers.js":
+/*!*******************************!*\
+  !*** ./src/js/controllers.js ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "DefaultController": () => (/* binding */ DefaultController),
+/* harmony export */   "SettingsMenuController": () => (/* binding */ SettingsMenuController),
+/* harmony export */   "LinkFieldController": () => (/* binding */ LinkFieldController),
+/* harmony export */   "DropZoneController": () => (/* binding */ DropZoneController),
+/* harmony export */   "ControllerProvider": () => (/* binding */ ControllerProvider),
+/* harmony export */   "useController": () => (/* binding */ useController)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+
+class DefaultController {
+  constructor() {
+    this._controller = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(this.getDefaults());
+  }
+
+  getDefaults() {
+    return {
+      anim: null
+    };
+  }
+
+  get con() {
+    return this._controller.current;
+  }
+
+}
+
+class SettingsMenuController extends DefaultController {
+  getDefaults() {
+    return {
+      anim: null,
+      _tl: null
+    };
+  }
+
+}
+
+class LinkFieldController extends DefaultController {
+  getDefaults() {
+    return {
+      anim: null,
+      svgTl: null,
+      input: null,
+      callback: null,
+      setActive: null,
+      isActive: null
+    };
+  }
+
+}
+
+class DropZoneController extends DefaultController {
+  getDefaults() {
+    return {
+      anim: null,
+      right: null,
+      left: null
+    };
+  }
+
+}
+
+const ControllerContext = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createContext();
+
+const ControllerProvider = ({
+  value,
+  children
+}) => {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(ControllerContext.Provider, {
+    value: value
+  }, children);
+};
+
+const useController = () => {
+  return (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(ControllerContext);
+};
+
+
+
+/***/ }),
+
 /***/ "./src/js/dragDrop.js":
 /*!****************************!*\
   !*** ./src/js/dragDrop.js ***!
@@ -1973,11 +1948,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "rgb2Hex": () => (/* binding */ rgb2Hex),
 /* harmony export */   "getStoredSettings": () => (/* binding */ getStoredSettings),
 /* harmony export */   "setStoredSettings": () => (/* binding */ setStoredSettings),
-/* harmony export */   "getStageState": () => (/* binding */ getStageState),
 /* harmony export */   "download": () => (/* binding */ download),
 /* harmony export */   "get_jsonFile": () => (/* binding */ get_jsonFile),
-/* harmony export */   "isVideoPlaying": () => (/* binding */ isVideoPlaying)
+/* harmony export */   "isVideoPlaying": () => (/* binding */ isVideoPlaying),
+/* harmony export */   "useEffectState": () => (/* binding */ useEffectState)
 /* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+
 const componentToHex = c => {
   var hex = c.toString(16);
   return hex.length == 1 ? "0" + hex : hex;
@@ -2002,30 +1980,6 @@ const setStoredSettings = settings => {
   localStorage.setItem("settings", entry);
 };
 
-const getStageState = (config, media, settings = null) => {
-  const newMedia = media.map((elem, i) => {
-    // remove image from media cuz we don't save it
-    const {
-      image,
-      ...newElem
-    } = elem;
-    return newElem;
-  });
-  const {
-    width,
-    height,
-    ...newConfig
-  } = config;
-  let stage = {
-    config: newConfig,
-    media: newMedia
-  };
-  if (settings !== null) stage = { ...stage,
-    settings: settings
-  };
-  return stage;
-};
-
 const download = (data, fileName, contentType = "text/plain") => {
   let a = document.createElement("a");
   let file = new Blob([data], {
@@ -2034,17 +1988,6 @@ const download = (data, fileName, contentType = "text/plain") => {
   a.href = URL.createObjectURL(file);
   a.download = fileName;
   a.click();
-};
-
-const loadJsonFile = (file, callback) => {
-  const reader = new FileReader();
-
-  reader.onload = () => {
-    const data = JSON.parse(reader.result);
-    callback(data);
-  };
-
-  reader.readAsText(file);
 };
 
 const get_jsonFile = file => {
@@ -2057,7 +2000,21 @@ const get_jsonFile = file => {
   });
 };
 
-const isVideoPlaying = video => !!(video.currentTime > 0 && !video.paused && !video.ended && video.readyState > 2);
+const isVideoPlaying = video => !!(video.currentTime > 0 && !video.paused && !video.ended && video.readyState > 2); //* Custom Hooks
+
+
+const useEffectState = init => {
+  const [state, _setState] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(init);
+  const stateRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(state);
+
+  const setState = data => {
+    stateRef.current = data;
+
+    _setState(data);
+  };
+
+  return [stateRef, setState];
+};
 
 
 
@@ -2306,51 +2263,6 @@ const infere_type = url => {
 
 /***/ }),
 
-/***/ "./src/js/menuBtns.js":
-/*!****************************!*\
-  !*** ./src/js/menuBtns.js ***!
-  \****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "get_fileDialog": () => (/* binding */ get_fileDialog)
-/* harmony export */ });
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var js_imageHelpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! js/imageHelpers */ "./src/js/imageHelpers.js");
-/* harmony import */ var js_helper__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! js/helper */ "./src/js/helper.js");
-
-
-
-
-const get_fileDialog = (media, [setMedia, setStage], config) => {
-  const input = jquery__WEBPACK_IMPORTED_MODULE_0___default()(document.createElement("input"));
-  input.attr("type", "file");
-  input.prop("multiple", true);
-  input.on("change", async () => {
-    const files = Array.from(input.prop("files"));
-    const isJson = files.filter((elem, i) => elem.type.includes("json"));
-
-    if (!isJson.length) {
-      const filesAttrs = await js_imageHelpers__WEBPACK_IMPORTED_MODULE_1__.awaitAllFiles(input.prop("files"), config);
-      setMedia([...media, ...filesAttrs]);
-    } else {
-      const json = await js_helper__WEBPACK_IMPORTED_MODULE_2__.get_jsonFile(isJson[0]);
-      console.log(json);
-      setStage(json);
-    }
-  });
-  input.trigger("click"); // opening dialog
-
-  return false; // avoiding navigation
-};
-
-
-
-/***/ }),
-
 /***/ "./src/js/selection.js":
 /*!*****************************!*\
   !*** ./src/js/selection.js ***!
@@ -2368,10 +2280,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "onLayerSelect": () => (/* binding */ onLayerSelect),
 /* harmony export */   "onLayerChange": () => (/* binding */ onLayerChange)
 /* harmony export */ });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
- // selection straight up stolen from :* :
+// selection straight up stolen from :* :
 // https://codesandbox.io/s/react-konva-multiple-selection-tgggi
-
 const updateSelectionRect = (selectionRectRef, selection, stagePos) => {
   const node = selectionRectRef.current;
   node.setAttrs({
@@ -2385,18 +2295,18 @@ const updateSelectionRect = (selectionRectRef, selection, stagePos) => {
   node.getLayer().batchDraw();
 };
 
-const checkDeselect = (e, trRef, selectShape, setNodes) => {
+const checkDeselect = (e, selection) => {
   // deselect when clicked on empty area
   const clickedOnEmpty = e.target === e.target.getStage();
 
   if (clickedOnEmpty) {
-    selectShape(null);
-    trRef.current.nodes([]);
-    setNodes([]); // layerRef.current.remove(selectionRectangle);
+    selection.selectShape(null);
+    selection.trRef.nodes([]);
+    selection.setNodes([]); // layerRef.current.remove(selectionRectangle);
   }
 };
 
-const onMouseDown = (e, selection, selectionRectRef, stagePos) => {
+const onMouseDown = (e, selection) => {
   const isElement = e.target.hasName("image");
   const isTransformer = e.target.findAncestor("Transformer");
 
@@ -2404,64 +2314,66 @@ const onMouseDown = (e, selection, selectionRectRef, stagePos) => {
     return;
   }
 
+  const stagePos = selection.stageRef.position();
   let pos = e.target.getStage().getRelativePointerPosition();
   pos = {
     x: pos.x + stagePos.x,
     y: pos.y + stagePos.y
   };
-  selection.current.visible = true;
-  selection.current.x1 = pos.x;
-  selection.current.y1 = pos.y;
-  selection.current.x2 = pos.x;
-  selection.current.y2 = pos.y;
-  updateSelectionRect(selectionRectRef, selection, stagePos);
+  selection._curSelection.current.visible = true;
+  selection._curSelection.current.x1 = pos.x;
+  selection._curSelection.current.y1 = pos.y;
+  selection._curSelection.current.x2 = pos.x;
+  selection._curSelection.current.y2 = pos.y;
+  updateSelectionRect(selection._selectionRectRef, selection._curSelection, stagePos);
 };
 
-const onMouseMove = (e, selection, selectionRectRef, stagePos) => {
-  if (!selection.current.visible) {
+const onMouseMove = (e, selection) => {
+  if (!selection.curSelection.visible) {
     return;
   }
 
+  const stagePos = selection.stageRef.position();
   let pos = e.target.getStage().getRelativePointerPosition();
   pos = {
     x: pos.x + stagePos.x,
     y: pos.y + stagePos.y
   };
-  selection.current.x2 = pos.x;
-  selection.current.y2 = pos.y;
-  updateSelectionRect(selectionRectRef, selection, stagePos);
+  selection.curSelection.x2 = pos.x;
+  selection.curSelection.y2 = pos.y;
+  updateSelectionRect(selection._selectionRectRef, selection._curSelection, stagePos);
 };
 
-const onMouseUp = (trRef, layerRef, selectionRectRef, selection, setNodes, stagePos) => {
-  if (!selection.current.visible) {
+const onMouseUp = selection => {
+  if (!selection.curSelection.visible) {
     return;
   }
 
-  const selBox = selectionRectRef.current.getClientRect();
+  const selBox = selection.selectionRectRef.getClientRect();
   const elements = [];
-  layerRef.current.find(".image").forEach(elementNode => {
+  selection.layerRef.find(".image").forEach(elementNode => {
     const elBox = elementNode.getClientRect();
 
     if (Konva.Util.haveIntersection(selBox, elBox)) {
       elements.push(elementNode);
     }
   });
-  trRef.current.nodes(elements);
-  setNodes(trRef.current.nodes());
-  selection.current.visible = false; // disable click event
+  selection.trRef.nodes(elements);
+  selection.setNodes(selection.trRef.nodes());
+  selection._curSelection.current.visible = false; // disable click event
 
-  window.Konva.listenClickTap = false;
-  updateSelectionRect(selectionRectRef, selection, stagePos);
+  Konva.listenClickTap = false;
+  updateSelectionRect(selection._selectionRectRef, selection._curSelection, selection.stageRef.position());
 };
 
-const onClickTap = (e, layerRef, trRef, selectShape, setNodes) => {
+const onClickTap = (e, selection) => {
   let stage = e.target.getStage();
-  let layer = layerRef.current;
-  let tr = trRef.current; // if click on empty area - remove all selections
+  let layer = selection.layerRef;
+  let tr = selection.trRef; // if click on empty area - remove all selections
 
   if (e.target === stage) {
-    selectShape(null);
-    setNodes([]);
+    selection.selectShape(null);
+    selection.setNodes([]);
     tr.nodes([]);
     layer.draw();
     return;
@@ -2494,7 +2406,7 @@ const onClickTap = (e, layerRef, trRef, selectShape, setNodes) => {
     tr.nodes(nodes);
   }
 
-  setNodes(tr.nodes());
+  selection.setNodes(tr.nodes());
   layer.draw();
 };
 
@@ -2516,6 +2428,249 @@ const onLayerChange = (newAttrs, index, media, setMedia) => {
 };
 
 
+
+/***/ }),
+
+/***/ "./src/js/stageFuncs.js":
+/*!******************************!*\
+  !*** ./src/js/stageFuncs.js ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "wheelHandler": () => (/* binding */ wheelHandler)
+/* harmony export */ });
+const wheelHandler = (e, scaleBy, setConfig) => {
+  e.evt.preventDefault();
+  const stage = e.target.getStage();
+  const oldScale = stage.scaleX();
+  const mousePointTo = {
+    x: stage.getRelativePointerPosition().x / oldScale - stage.x() / oldScale,
+    y: stage.getRelativePointerPosition().y / oldScale - stage.y() / oldScale
+  };
+  let newScale = e.evt.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
+  newScale = Math.max(0.02, newScale);
+  setConfig({
+    scaleX: newScale,
+    scaleY: newScale,
+    x: (stage.getRelativePointerPosition().x / newScale - mousePointTo.x) * newScale,
+    y: (stage.getRelativePointerPosition().y / newScale - mousePointTo.y) * newScale
+  });
+};
+
+
+
+/***/ }),
+
+/***/ "./src/js/toolFuncs.js":
+/*!*****************************!*\
+  !*** ./src/js/toolFuncs.js ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var js_imageHelpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! js/imageHelpers */ "./src/js/imageHelpers.js");
+/* harmony import */ var js_helper__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! js/helper */ "./src/js/helper.js");
+
+
+
+
+const getStageState = (config, media, settings = null) => {
+  const newMedia = media.map((elem, i) => {
+    // remove image from media cuz we don't save it
+    const {
+      image,
+      ...newElem
+    } = elem;
+    return newElem;
+  });
+  const {
+    width,
+    height,
+    ...newConfig
+  } = config;
+  const stage = {
+    config: newConfig,
+    media: newMedia,
+    settings: settings
+  };
+  return stage;
+};
+
+const setStageState = async (state, config, media, settings) => {
+  const inConfig = state.config;
+  const inMedia = await Promise.all(state.media.map(async (val, i) => {
+    val = { ...val,
+      noMod: true
+    };
+    const img = await js_imageHelpers__WEBPACK_IMPORTED_MODULE_1__.build_img(val.src, inConfig, val);
+    return img;
+  }));
+  config.setConfig({ ...config.config,
+    ...state.config
+  });
+  settings.setSettings(state.settings);
+  media.setMedia(inMedia);
+};
+
+const get_fileDialog = (addMedia, loadStage, config) => {
+  const input = jquery__WEBPACK_IMPORTED_MODULE_0___default()(document.createElement("input"));
+  input.attr("type", "file");
+  input.prop("multiple", true);
+  input.on("change", async () => {
+    const files = Array.from(input.prop("files"));
+    const isJson = files.filter((elem, i) => elem.type.includes("json"));
+
+    if (!isJson.length) {
+      const filesAttrs = await js_imageHelpers__WEBPACK_IMPORTED_MODULE_1__.awaitAllFiles(input.prop("files"), config); //   setMedia([...media, ...filesAttrs]);filesAttrs
+      // media.addMedia(filesAttrs, true)
+
+      addMedia(filesAttrs);
+      return filesAttrs;
+    } else {
+      const json = await js_helper__WEBPACK_IMPORTED_MODULE_2__.get_jsonFile(isJson[0]);
+      console.log(json); //   setStage(json);
+
+      loadStage(json);
+    }
+  });
+  input.trigger("click"); // opening dialog
+
+  return false; // avoiding navigation
+};
+
+const get_funcs = (media, stageStates, selection, config, settings, linkFieldCon) => {
+  return [() => {},
+  /**
+   * Load Media (Images/Videos) or Stage Config (JSON) from disk
+   */
+  () => {
+    const loadStage = state => {
+      setStageState(state, config, media, settings);
+    };
+
+    const addMedia = inMedia => {
+      media.addMedia(inMedia, true);
+    };
+
+    get_fileDialog(addMedia, loadStage, config.config);
+  },
+  /**
+   * Download Stage Config to disk
+   */
+  () => {
+    const stage = JSON.stringify(getStageState(config.config, media.media, settings.settings));
+    js_helper__WEBPACK_IMPORTED_MODULE_2__.download(stage, "OnlineRef_Stage.json");
+  },
+  /**
+   * Toggle the LinkField
+   */
+  () => {
+    linkFieldCon.con.anim();
+  }, (called = false) => {
+    selection.nodesArray.forEach(node => {
+      if (node.attrs.type === "vid" && called) {
+        const isPlaying = js_helper__WEBPACK_IMPORTED_MODULE_2__.isVideoPlaying(node.attrs.image);
+
+        if (isPlaying) {
+          node.attrs.image.pause();
+        } else {
+          node.attrs.image.play();
+        }
+      }
+    });
+  },
+  /**
+   * Toggle Stage Drag
+   */
+  () => {
+    stageStates.setStageDrag(!stageStates.stageDrag);
+  },
+  /**
+   * Toggle Stage Guides
+   */
+  () => {
+    stageStates.setGuides(!stageStates.isGuides);
+  },
+  /**
+   * Toggle Media Resize
+   */
+  () => {
+    stageStates.setResize(!stageStates.isResize);
+  },
+  /**
+   * Toggle Media Rotate
+   */
+  () => {
+    stageStates.setRot(!stageStates.isRot);
+  },
+  /**
+   * Move selected node to top/foreground.
+   * Returns when no node is selected.
+   */
+  () => {
+    const cur = selection.nodesArray[0];
+    if (cur === undefined) return;
+    const curIdx = media.media.findIndex(elem => cur.attrs.id === elem.id);
+
+    if (curIdx >= 0) {
+      const temp = media.media.filter((_, idx) => idx !== curIdx);
+      media.setMedia([...temp, media.media[curIdx]]);
+    }
+
+    selection.selectShape(null);
+    selection.trRef.nodes([]);
+    selection.setNodes([]);
+  },
+  /**
+   * Duplicate selected node(s)
+   */
+  async () => {
+    const newMedia = await Promise.all(selection.nodesArray.map(async node => {
+      const curMedia = media.media.filter(elem => elem.id === node.attrs.id)[0];
+      const x = curMedia.x - 50;
+      const y = curMedia.y - 50;
+      const ret = await js_imageHelpers__WEBPACK_IMPORTED_MODULE_1__.build_img(curMedia.src, config.config, {
+        x: x,
+        y: y,
+        width: curMedia.width,
+        height: curMedia.height,
+        noMod: true
+      });
+      return ret;
+    }));
+    media.addMedia(newMedia, true);
+  },
+  /**
+   * Delete selected nodes from media
+   */
+  () => {
+    const newMedia = media.media.filter(elem => {
+      let isSelected = true;
+
+      for (let i = 0; i < selection.nodesArray.length; i++) {
+        const cur = selection.nodesArray[i];
+        if (cur.attrs.id === elem.id) isSelected = false;
+      }
+
+      return isSelected;
+    });
+    media.setMedia(newMedia);
+    selection.selectShape(null);
+    selection.trRef.nodes([]);
+    selection.setNodes([]);
+  }];
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (get_funcs);
 
 /***/ }),
 
@@ -2567,6 +2722,461 @@ const useVideo = src => {
 
 /***/ }),
 
+/***/ "./src/states/media.js":
+/*!*****************************!*\
+  !*** ./src/states/media.js ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Media": () => (/* binding */ Media),
+/* harmony export */   "MediaProvider": () => (/* binding */ MediaProvider),
+/* harmony export */   "useMedia": () => (/* binding */ useMedia)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var js_helper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! js/helper */ "./src/js/helper.js");
+
+
+
+class Media {
+  constructor(defaults = []) {
+    const [media, setMedia] = (0,js_helper__WEBPACK_IMPORTED_MODULE_1__.useEffectState)(defaults);
+    this._media = media;
+    this.setMedia = setMedia;
+  }
+
+  get media() {
+    return this._media.current;
+  }
+
+  addMedia(media, iter = false) {
+    if (iter) this.setMedia([...this.media, ...media]);else this.setMedia([...this.media, media]);
+  }
+
+}
+
+const MediaContext = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createContext();
+
+const MediaProvider = ({
+  value,
+  children
+}) => {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(MediaContext.Provider, {
+    value: value
+  }, children);
+};
+
+const useMedia = () => {
+  return (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(MediaContext);
+};
+
+
+
+/***/ }),
+
+/***/ "./src/states/selection.js":
+/*!*********************************!*\
+  !*** ./src/states/selection.js ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Selection": () => (/* binding */ Selection),
+/* harmony export */   "SelectionProvider": () => (/* binding */ SelectionProvider),
+/* harmony export */   "useSelection": () => (/* binding */ useSelection)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var js_helper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! js/helper */ "./src/js/helper.js");
+
+
+const selectionInitial = {
+  visible: false,
+  x1: 0,
+  y1: 0,
+  x2: 0,
+  y2: 0
+};
+
+class Selection {
+  constructor() {
+    const [selectedId, selectShape] = (0,js_helper__WEBPACK_IMPORTED_MODULE_1__.useEffectState)(null);
+    const [nodesArray, setNodes] = (0,js_helper__WEBPACK_IMPORTED_MODULE_1__.useEffectState)([]);
+    this._selectedId = selectedId;
+    this._nodesArray = nodesArray;
+    this.selectShape = selectShape;
+    this.setNodes = setNodes;
+    this._stageRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)();
+    this._layerRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)();
+    this._trRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)();
+    this._selectionRectRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)();
+    this._curSelection = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)({ ...selectionInitial
+    });
+  }
+
+  get selectedId() {
+    return this._selectedId.current;
+  }
+
+  get nodesArray() {
+    return this._nodesArray.current;
+  }
+
+  get stageRef() {
+    return this._stageRef.current;
+  }
+
+  get layerRef() {
+    return this._layerRef.current;
+  }
+
+  get trRef() {
+    return this._trRef.current;
+  }
+
+  get selectionRectRef() {
+    return this._selectionRectRef.current;
+  }
+
+  get curSelection() {
+    return this._curSelection.current;
+  }
+
+}
+
+const SelectionContext = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createContext();
+
+const SelectionProvider = ({
+  value,
+  children
+}) => {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(SelectionContext.Provider, {
+    value: value
+  }, children);
+};
+
+const useSelection = () => {
+  return (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(SelectionContext);
+};
+
+
+
+/***/ }),
+
+/***/ "./src/states/stageConfig.js":
+/*!***********************************!*\
+  !*** ./src/states/stageConfig.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "StageConfig": () => (/* binding */ StageConfig),
+/* harmony export */   "StageConfigProvider": () => (/* binding */ StageConfigProvider),
+/* harmony export */   "useStageConfig": () => (/* binding */ useStageConfig)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var js_helper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! js/helper */ "./src/js/helper.js");
+
+
+
+class StageConfig {
+  constructor(defaults = null) {
+    if (defaults === null) {
+      defaults = {
+        scaleX: 1,
+        scaleY: 1,
+        width: window.innerWidth,
+        height: window.innerHeight,
+        x: 0,
+        y: 0
+      };
+    }
+
+    const [config, setConfig] = (0,js_helper__WEBPACK_IMPORTED_MODULE_1__.useEffectState)(defaults);
+    this._config = config;
+    this.setConfig = setConfig;
+  }
+
+  get config() {
+    return this._config.current;
+  }
+
+  get scale() {
+    return this.config.scaleX;
+  }
+
+  get pos() {
+    return [this.config.x, this.config.y];
+  }
+
+  get dims() {
+    return [this.config.width, this.config.height];
+  }
+
+  addConfig(inConfig) {
+    this.setConfig({ ...this.config,
+      ...inConfig
+    });
+  }
+
+  setDims([width, height]) {
+    this.setConfig({ ...this.config,
+      width: width,
+      height: height
+    });
+  }
+
+  setPos([x, y]) {
+    this.setConfig({ ...this.config,
+      x: x,
+      y: y
+    });
+  }
+
+  setScale(newScale) {
+    this.setConfig({ ...this.config,
+      scaleX: newScale,
+      scaleY: newScale
+    });
+  }
+
+}
+
+const StageConfigContext = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createContext();
+
+const StageConfigProvider = ({
+  value,
+  children
+}) => {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(StageConfigContext.Provider, {
+    value: value
+  }, children);
+};
+
+const useStageConfig = () => {
+  return (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(StageConfigContext);
+};
+
+
+
+/***/ }),
+
+/***/ "./src/states/stageStates.js":
+/*!***********************************!*\
+  !*** ./src/states/stageStates.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "StageStates": () => (/* binding */ StageStates),
+/* harmony export */   "StageStatesProvider": () => (/* binding */ StageStatesProvider),
+/* harmony export */   "useStageStates": () => (/* binding */ useStageStates)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var js_helper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! js/helper */ "./src/js/helper.js");
+
+
+
+class StageStates {
+  constructor(defaults = null) {
+    if (defaults === null) {
+      defaults = {
+        stageDrag: false,
+        isGuides: false,
+        isResize: false,
+        isRot: false,
+        rotateFree: false,
+        scaleBy: 1.015
+      };
+    }
+
+    const [states, setStates] = (0,js_helper__WEBPACK_IMPORTED_MODULE_1__.useEffectState)(defaults);
+    this._states = states;
+    this.setStates = setStates;
+  }
+
+  get states() {
+    return this._states.current;
+  }
+
+  get stageDrag() {
+    return this.states.stageDrag;
+  }
+
+  get isGuides() {
+    return this.states.isGuides;
+  }
+
+  get isResize() {
+    return this.states.isResize;
+  }
+
+  get isRot() {
+    return this.states.isRot;
+  }
+
+  get rotateFree() {
+    return this.states.rotateFree;
+  }
+
+  get scaleBy() {
+    return this.states.scaleBy;
+  }
+
+  setStageDrag(val) {
+    this.setStates({ ...this.states,
+      stageDrag: val
+    });
+  }
+
+  setGuides(val) {
+    this.setStates({ ...this.states,
+      isGuides: val
+    });
+  }
+
+  setResize(val) {
+    this.setStates({ ...this.states,
+      isResize: val,
+      isRot: val ? false : this.states.isRot
+    });
+  }
+
+  setRot(val) {
+    this.setStates({ ...this.states,
+      isRot: val,
+      isResize: val ? false : this.states.isResize
+    });
+  }
+
+  setRotateFree(val) {
+    this.setStates({ ...this.states,
+      rotateFree: val
+    });
+  }
+
+  setScaleBy(val) {
+    this.setStates({ ...this.states,
+      scaleBy: val ? 1.5 : 1.015
+    });
+  }
+
+}
+
+const StageStatesContext = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createContext();
+
+const StageStatesProvider = ({
+  value,
+  children
+}) => {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(StageStatesContext.Provider, {
+    value: value
+  }, children);
+};
+
+const useStageStates = () => {
+  return (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(StageStatesContext);
+};
+
+ // export default StageStates;
+
+/***/ }),
+
+/***/ "./src/states/storedConfig.js":
+/*!************************************!*\
+  !*** ./src/states/storedConfig.js ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "StoredConfig": () => (/* binding */ StoredConfig),
+/* harmony export */   "StoredConfigProvider": () => (/* binding */ StoredConfigProvider),
+/* harmony export */   "useStoredConfig": () => (/* binding */ useStoredConfig)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var js_helper__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! js/helper */ "./src/js/helper.js");
+
+
+
+const baseSettings = {
+  stageBg: jquery__WEBPACK_IMPORTED_MODULE_1___default()(":root").css("--bg-color2"),
+  showGuides: true
+};
+
+class StoredConfig {
+  constructor(defaults = null) {
+    if (defaults === null) {
+      const stored = (0,js_helper__WEBPACK_IMPORTED_MODULE_2__.getStoredSettings)();
+      defaults = stored === null ? { ...baseSettings
+      } : stored;
+    }
+
+    const [settings, setSettings] = (0,js_helper__WEBPACK_IMPORTED_MODULE_2__.useEffectState)(defaults);
+    this._settings = settings;
+    this.setSettings = setSettings;
+  }
+
+  get settings() {
+    return this._settings.current;
+  }
+
+  get stageBg() {
+    return this.settings.stageBg;
+  }
+
+  get showGuides() {
+    return this.settings.showGuides;
+  }
+
+  setStageBg(val) {
+    this.setSettings({ ...this.settings,
+      stageBg: val
+    });
+  }
+
+  setShowGuides(val) {
+    this.setSettings({ ...this.settings,
+      showGuides: val
+    });
+  }
+
+  reset() {
+    this.setSettings({ ...baseSettings
+    });
+  }
+
+}
+
+const StoredConfigContext = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createContext();
+
+const StoredConfigProvider = ({
+  value,
+  children
+}) => {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(StoredConfigContext.Provider, {
+    value: value
+  }, children);
+};
+
+const useStoredConfig = () => {
+  return (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(StoredConfigContext);
+};
+
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles.scss":
 /*!******************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles.scss ***!
@@ -2590,7 +3200,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, "@import url(https://fonts.googleapis.c
 ___CSS_LOADER_EXPORT___.push([module.id, "@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css);"]);
 ___CSS_LOADER_EXPORT___.push([module.id, "@import url(https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap);"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ":root {\n  --roboto: \"Roboto\", sans-serif;\n  --montserrat: \"Montserrat\", sans-serif;\n  --dark-liver: #5b5863ff;\n  --sonic-silver: #77767aff;\n  --persian-indigo: #32156bff;\n  --medium-purple: #9d6dfcff;\n  --ultramarine: #5612deff;\n  --bg-color: 9, 8, 32;\n  --bg-color2: 10, 10, 20;\n  --var-bg-color: var(--bg-color2);\n  --btn-fill: white;\n  --frostedWhite: 255, 255, 255;\n  --bg-img: none;\n  --bg-menu: none;\n  --bg-settings: none;\n  --trans-main: 1s; }\n\nbody {\n  overflow: hidden;\n  margin: 0;\n  background-image: var(--bg-img);\n  background-color: rgba(var(--var-bg-color), 1);\n  background-repeat: no-repeat;\n  background-size: cover;\n  background-attachment: fixed; }\n\n#root {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  background: rgba(var(--var-bg-color), 0.95);\n  box-shadow: 0 8px 32px 0 rgba(19, 23, 83, 0.37);\n  backdrop-filter: blur(50px);\n  position: fixed;\n  width: 100vw;\n  height: 100vh; }\n\nsvg {\n  z-index: -1; }\n\n.dropZone {\n  position: absolute;\n  z-index: 1;\n  width: 100%;\n  height: 100%;\n  transition: backdrop-filter calc(var(--trans-main) * 0.1) ease-in-out, background var(--trans-main) ease-in-out;\n  background: rgba(var(--bg-color2), 0.5);\n  visibility: visible;\n  pointer-events: none; }\n  .dropZone svg {\n    z-index: 7; }\n  .dropZone .text {\n    background: white;\n    -webkit-background-clip: text;\n    background-clip: text;\n    -webkit-text-fill-color: transparent;\n    font-family: var(--montserrat);\n    font-size: 1rem;\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    opacity: 1;\n    z-index: 8;\n    font-weight: 900;\n    font-size: 3rem;\n    text-align: center; }\n\n.toolBarBg {\n  --btn-size: 8vh;\n  --br: calc(var(--btn-size) / 3.33);\n  width: calc(var(--btn-size) + 3vh);\n  height: auto;\n  max-height: 90vh;\n  position: absolute;\n  top: 0;\n  right: 0;\n  background-image: var(--bg-menu);\n  margin: 1vh 2vh;\n  border-radius: var(--br);\n  overflow-x: hidden;\n  transition: width var(--trans-main) ease-in-out, max-height var(--trans-main) ease-in-out, margin var(--trans-main) ease-in-out;\n  z-index: 999; }\n  .toolBarBg::-webkit-scrollbar {\n    width: 0; }\n  .toolBarBg.hide {\n    overflow-y: hidden;\n    width: var(--btn-size);\n    max-height: var(--btn-size);\n    margin: 2vh 3vh; }\n  .toolBarBg .toolBar {\n    background: rgba(var(--frostedWhite), 0.05);\n    box-shadow: 0 8px 32px 0 rgba(19, 23, 83, 0.37);\n    backdrop-filter: blur(50px);\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    overflow-y: scroll;\n    z-index: 1;\n    justify-content: start;\n    flex-direction: column;\n    padding: 1vh 0;\n    transition: padding var(--trans-main) ease-in-out; }\n    .toolBarBg .toolBar::-webkit-scrollbar {\n      width: 0; }\n    .toolBarBg .toolBar.hide {\n      padding: 0; }\n      .toolBarBg .toolBar.hide .toolItem {\n        margin: 0; }\n    .toolBarBg .toolBar .toolItem {\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      background: rgba(var(--frostedWhite), 0.1);\n      box-shadow: 0 8px 32px 0 rgba(19, 23, 83, 0.37);\n      backdrop-filter: blur(50px);\n      z-index: 999999;\n      cursor: pointer;\n      margin: 0.5vh 0;\n      width: var(--btn-size);\n      height: var(--btn-size);\n      border-radius: var(--br);\n      transition: margin var(--trans-main) ease-in-out, background calc(var(--trans-main) * 0.2) ease-in-out; }\n      .toolBarBg .toolBar .toolItem.active {\n        background: rgba(var(--frostedWhite), 0.3);\n        box-shadow: 0 8px 32px 0 rgba(19, 23, 83, 0.37);\n        backdrop-filter: blur(50px); }\n      .toolBarBg .toolBar .toolItem i {\n        z-index: inherit;\n        color: white; }\n    .toolBarBg .toolBar .settingsAll i {\n      transition: transform var(--trans-main) ease-in-out;\n      transform: rotate(0deg); }\n    .toolBarBg .toolBar .settingsAll.hide i {\n      transform: rotate(180deg); }\n\n.linkField {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  background: rgba(var(--bg-color2), 0.7);\n  backdrop-filter: blur(10px);\n  width: 100%;\n  height: 100%;\n  z-index: 7; }\n  .linkField .linkText {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    background: linear-gradient(45deg, #333 55%, #383838 100%);\n    -webkit-background-clip: text;\n    background-clip: text;\n    -webkit-text-fill-color: transparent;\n    font-family: var(--montserrat);\n    font-size: 1rem;\n    top: 41%;\n    text-align: center;\n    opacity: 1; }\n  .linkField .linkInput {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    z-index: 7;\n    top: 45%;\n    border-radius: 2vh;\n    border: 1px white solid;\n    background-color: rgba(255, 255, 255, 0); }\n  .linkField .linkFieldSvg {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    transform: translate(-50%, -50%) scale(1.5); }\n\n.mainWrapper {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  width: 70vh;\n  height: max-content;\n  overflow: hidden;\n  border-radius: 2.5vh;\n  z-index: 7; }\n  .mainWrapper .settingsMenu {\n    background-image: var(--bg-menu);\n    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1);\n    width: 70vh; }\n    .mainWrapper .settingsMenu .innerMenu {\n      background: rgba(var(--frostedWhite), 0.05);\n      box-shadow: 0 8px 32px 0 rgba(19, 23, 83, 0.37);\n      backdrop-filter: blur(50px);\n      box-shadow: none;\n      padding: 30px 20px 20px; }\n      .mainWrapper .settingsMenu .innerMenu table tbody {\n        border-bottom: 1px solid rgba(65, 65, 65, 0.5);\n        display: block;\n        border-collapse: separate;\n        border-spacing: 4px; }\n      .mainWrapper .settingsMenu .innerMenu table tr {\n        display: flex;\n        flex-direction: row;\n        align-items: center;\n        justify-content: space-between; }\n      .mainWrapper .settingsMenu .innerMenu table td {\n        font-family: var(--roboto);\n        font-weight: 200;\n        padding: 5px 10px;\n        color: white; }\n      .mainWrapper .settingsMenu .innerMenu table td:nth-child(2) {\n        width: 40px; }\n      .mainWrapper .settingsMenu .innerMenu table tfoot td {\n        border: none;\n        padding: 30px 10px 10px;\n        text-align: center;\n        display: flex;\n        justify-content: space-between;\n        width: 100%; }\n      .mainWrapper .settingsMenu .innerMenu table input,\n      .mainWrapper .settingsMenu .innerMenu table label {\n        cursor: pointer; }\n      .mainWrapper .settingsMenu .innerMenu table .colorSwatch {\n        height: 30px;\n        width: 30px;\n        border-radius: 50%;\n        background-color: rgba(var(--var-bg-color), 1); }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"color\"] {\n        display: none;\n        height: 30px;\n        width: 30px;\n        border-radius: 50%; }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"checkbox\"] {\n        cursor: pointer;\n        height: 30px;\n        margin: 4px 0 0;\n        position: absolute;\n        opacity: 0;\n        width: 30px;\n        z-index: 2; }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"checkbox\"] + span {\n        background: #e74c3c;\n        border-radius: 50%;\n        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1);\n        display: inline-block;\n        height: 30px;\n        margin: 4px 0 0;\n        position: relative;\n        width: 30px;\n        transition: all 0.2s ease; }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"checkbox\"] + span::before,\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"checkbox\"] + span::after {\n        background: #fff;\n        content: \"\";\n        display: block;\n        position: absolute;\n        width: 4px;\n        transition: all 0.2s ease; }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"checkbox\"] + span::before {\n        height: 16px;\n        left: 13px;\n        top: 7px;\n        -webkit-transform: rotate(-45deg);\n        transform: rotate(-45deg); }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"checkbox\"] + span::after {\n        height: 16px;\n        right: 13px;\n        top: 7px;\n        -webkit-transform: rotate(45deg);\n        transform: rotate(45deg); }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"checkbox\"]:checked + span {\n        background: #2ecc71; }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"checkbox\"]:checked + span::before {\n        height: 9px;\n        left: 9px;\n        top: 13px;\n        -webkit-transform: rotate(-47deg);\n        transform: rotate(-47deg); }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"checkbox\"]:checked + span::after {\n        height: 15px;\n        right: 11px;\n        top: 8px; }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"submit\"] {\n        background-color: #2ecc71;\n        border: 0;\n        border-radius: 4px;\n        color: #fff;\n        cursor: pointer;\n        display: inline-block;\n        font-size: 16px;\n        text-align: center;\n        padding: 12px 20px 14px; }\n\n.tooltip {\n  display: inline-block;\n  position: relative;\n  border-bottom: 1px dotted #666;\n  text-align: left; }\n\n.tooltip h3 {\n  margin: 12px 0; }\n\n.tooltip .left {\n  min-width: 200px;\n  max-width: 400px;\n  top: 50%;\n  right: 100%;\n  margin-right: 20px;\n  transform: translate(0, -50%);\n  padding: 20px;\n  color: #666666;\n  background-color: #FFFFE0;\n  font-weight: normal;\n  font-size: 13px;\n  border-radius: 8px;\n  position: absolute;\n  z-index: 99999999;\n  box-sizing: border-box;\n  display: none;\n  border: 1px solid #DCA; }\n\n.tooltip:hover .left {\n  display: block; }\n\n.tooltip .left i {\n  position: absolute;\n  top: 50%;\n  left: 100%;\n  margin-top: -12px;\n  width: 12px;\n  height: 24px;\n  overflow: hidden; }\n\n.tooltip .left i::after {\n  content: '';\n  position: absolute;\n  width: 12px;\n  height: 12px;\n  left: 0;\n  top: 50%;\n  transform: translate(-50%, -50%) rotate(-45deg);\n  background-color: #FFFFE0;\n  border: 1px solid #DCA; }\n", "",{"version":3,"sources":["webpack://./src/styles.scss"],"names":[],"mappings":"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","sourcesContent":["@import url(\"https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap\");\r\n@import url(\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css\");\r\n@import url(\"https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap\");\r\n\r\n@mixin frostedGlass(\r\n  $bgCol: (\r\n    255,\r\n    255,\r\n    255,\r\n  ),\r\n  $alpha: 0.5,\r\n  $blur: 50px\r\n) {\r\n  background: rgba($bgCol, $alpha);\r\n  box-shadow: 0 8px 32px 0 hsla(236, 63%, 20%, 0.37);\r\n  backdrop-filter: blur($blur);\r\n  //   -webkit-backdrop-filter: blur(5px);\r\n}\r\n\r\n@mixin flexCenter {\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n}\r\n\r\n@mixin absCenter {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%, -50%);\r\n}\r\n\r\n@mixin textTemplate {\r\n  background: white;\r\n  -webkit-background-clip: text;\r\n  background-clip: text;\r\n  -webkit-text-fill-color: transparent;\r\n  font-family: var(--montserrat);\r\n  font-size: 1rem;\r\n}\r\n\r\n:root {\r\n  --roboto: \"Roboto\", sans-serif;\r\n  --montserrat: \"Montserrat\", sans-serif;\r\n\r\n  // Background color palette\r\n  --dark-liver: #5b5863ff;\r\n  --sonic-silver: #77767aff;\r\n  --persian-indigo: #32156bff;\r\n  --medium-purple: #9d6dfcff;\r\n  --ultramarine: #5612deff;\r\n\r\n  --bg-color: 9, 8, 32;\r\n  --bg-color2: 10, 10, 20;\r\n\r\n  --var-bg-color: var(--bg-color2);\r\n\r\n  --btn-fill: white;\r\n\r\n  --frostedWhite: 255, 255, 255;\r\n\r\n  --bg-img: none;\r\n  --bg-menu: none;\r\n  --bg-settings: none;\r\n\r\n  --trans-main: 1s;\r\n}\r\n\r\nbody {\r\n  overflow: hidden;\r\n  margin: 0;\r\n  background-image: var(--bg-img);\r\n  background-color: rgba(var(--var-bg-color), 1);\r\n  background-repeat: no-repeat;\r\n  background-size: cover;\r\n  background-attachment: fixed;\r\n}\r\n\r\n#root {\r\n  @include absCenter;\r\n  @include frostedGlass(var(--var-bg-color), 0.95);\r\n\r\n  position: fixed;\r\n  width: 100vw;\r\n  height: 100vh;\r\n}\r\n\r\nsvg {\r\n  z-index: -1;\r\n}\r\n\r\ncanvas {\r\n  // border: 5px white solid;\r\n}\r\n\r\n.dropZone {\r\n  // z-index: 7;\r\n  position: absolute;\r\n  z-index: 1;\r\n  width: 100%;\r\n  height: 100%;\r\n  // @include frostedGlass(var(--bg-color2), 0.95, 10px);\r\n  transition: backdrop-filter calc(var(--trans-main) * 0.1) ease-in-out,\r\n    background var(--trans-main) ease-in-out;\r\n  // backdrop-filter: blur(10px);\r\n  background: rgba(var(--bg-color2), 0.5);\r\n  visibility: visible;\r\n  pointer-events: none;\r\n\r\n  svg {\r\n    z-index: 7;\r\n  }\r\n\r\n  .text {\r\n    @include textTemplate;\r\n    @include absCenter;\r\n\r\n    opacity: 1;\r\n    z-index: 8;\r\n    font-weight: 900;\r\n    font-size: 3rem;\r\n    text-align: center;\r\n  }\r\n}\r\n\r\n.toolBarBg {\r\n  --btn-size: 8vh;\r\n  --br: calc(var(--btn-size) / 3.33);\r\n\r\n  width: calc(var(--btn-size) + 3vh);\r\n  height: auto;\r\n  max-height: 90vh;\r\n  position: absolute;\r\n  top: 0;\r\n  right: 0;\r\n  background-image: var(--bg-menu);\r\n  // background-size: contain;\r\n  // background-attachment: fixed;\r\n  margin: 1vh 2vh;\r\n  border-radius: var(--br);\r\n  overflow-x: hidden;\r\n  transition: width var(--trans-main) ease-in-out,\r\n    max-height var(--trans-main) ease-in-out,\r\n    margin var(--trans-main) ease-in-out;\r\n\r\n  z-index: 999;\r\n\r\n  &::-webkit-scrollbar {\r\n    width: 0;\r\n  }\r\n\r\n  &.hide {\r\n    overflow-y: hidden;\r\n    width: var(--btn-size);\r\n    max-height: var(--btn-size);\r\n    margin: 2vh 3vh;\r\n  }\r\n\r\n  .toolBar {\r\n    @include frostedGlass(var(--frostedWhite), 0.05);\r\n    @include flexCenter;\r\n\r\n    overflow-y: scroll;\r\n    z-index: 1;\r\n    justify-content: start;\r\n    flex-direction: column;\r\n    padding: 1vh 0;\r\n    transition: padding var(--trans-main) ease-in-out;\r\n\r\n    &::-webkit-scrollbar {\r\n      width: 0;\r\n    }\r\n\r\n    &.hide {\r\n      padding: 0;\r\n      .toolItem {\r\n        margin: 0;\r\n      }\r\n    }\r\n\r\n    .toolItem {\r\n      @include flexCenter;\r\n      @include frostedGlass(var(--frostedWhite), 0.1);\r\n\r\n      z-index: 999999;\r\n      cursor: pointer;\r\n      margin: 0.5vh 0;\r\n      width: var(--btn-size);\r\n      height: var(--btn-size);\r\n      border-radius: var(--br);\r\n      transition: margin var(--trans-main) ease-in-out,\r\n        background calc(var(--trans-main) * 0.2) ease-in-out;\r\n\r\n      &.active {\r\n        @include frostedGlass(var(--frostedWhite), 0.3);\r\n      }\r\n\r\n      i {\r\n        z-index: inherit;\r\n        color: white;\r\n      }\r\n    }\r\n\r\n    .settingsAll {\r\n      i {\r\n        transition: transform var(--trans-main) ease-in-out;\r\n        transform: rotate(0deg);\r\n      }\r\n      &.hide i {\r\n        transform: rotate(180deg);\r\n      }\r\n    }\r\n  }\r\n}\r\n\r\n.linkField {\r\n  @include absCenter;\r\n  background: rgba(var(--bg-color2), 0.7);\r\n  backdrop-filter: blur(10px);\r\n  width: 100%;\r\n  height: 100%;\r\n  z-index: 7;\r\n\r\n  .linkText {\r\n    @include absCenter;\r\n    background: linear-gradient(45deg, #333 55%, rgb(56, 56, 56) 100%);\r\n    -webkit-background-clip: text;\r\n    background-clip: text;\r\n    -webkit-text-fill-color: transparent;\r\n    font-family: var(--montserrat);\r\n    font-size: 1rem;\r\n    top: 41%;\r\n    text-align: center;\r\n    opacity: 1;\r\n  }\r\n\r\n  .linkInput {\r\n    @include absCenter;\r\n    z-index: 7;\r\n    top: 45%;\r\n    border-radius: 2vh;\r\n    border: 1px white solid;\r\n    background-color: rgba(255, 255, 255, 0);\r\n  }\r\n\r\n  .linkFieldSvg {\r\n    @include absCenter;\r\n    // z-index: 5;\r\n    // pointer-events: none;\r\n    transform: translate(-50%, -50%) scale(1.5);\r\n  }\r\n}\r\n\r\n.mainWrapper {\r\n  @include absCenter;\r\n  width:70vh;\r\n  height: max-content;\r\n  overflow:hidden;\r\n  border-radius: 2.5vh;\r\n  z-index: 7;\r\n\r\n  .settingsMenu {\r\n    // @include absCenter;\r\n    // @include absCenter;\r\n    // background: #fff;\r\n    background-image: var(--bg-menu);\r\n    // background: black;\r\n    \r\n    // overflow: hidden;\r\n    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1);\r\n    // margin: 100px auto;\r\n    // padding: 30px 20px 20px;\r\n    width: 70vh;\r\n    \r\n\r\n    .innerMenu {\r\n      @include frostedGlass(var(--frostedWhite), 0.05);\r\n      box-shadow: none;\r\n      padding: 30px 20px 20px;\r\n\r\n      table {\r\n        tbody {\r\n          border-bottom: 1px solid rgba(65, 65, 65, 0.5);\r\n          display: block;\r\n          border-collapse: separate;\r\n          border-spacing: 4px;\r\n        }\r\n\r\n        tr {\r\n          display: flex;\r\n          flex-direction: row;\r\n          align-items: center;\r\n          justify-content: space-between;\r\n        }\r\n\r\n        td {\r\n          font-family: var(--roboto);\r\n          font-weight: 200;\r\n          padding: 5px 10px;\r\n          color: white;\r\n        }\r\n\r\n        td:nth-child(2) {\r\n          // text-align: right;\r\n          width: 40px;\r\n        }\r\n\r\n        tfoot td {\r\n          border: none;\r\n          padding: 30px 10px 10px;\r\n          text-align: center;\r\n          display: flex;\r\n          justify-content: space-between;\r\n          width: 100%;\r\n        }\r\n\r\n        input,\r\n        label {\r\n          cursor: pointer;\r\n        }\r\n\r\n        .colorSwatch {\r\n          height: 30px;\r\n          width: 30px;\r\n          border-radius: 50%;\r\n          background-color: rgba(var(--var-bg-color), 1);\r\n        }\r\n\r\n        input[type=\"color\"] {\r\n          display: none;\r\n          height: 30px;\r\n          width: 30px;\r\n          border-radius: 50%;\r\n        }\r\n\r\n        input[type=\"checkbox\"] {\r\n          cursor: pointer;\r\n          height: 30px;\r\n          margin: 4px 0 0;\r\n          position: absolute;\r\n          opacity: 0;\r\n          width: 30px;\r\n          z-index: 2;\r\n        }\r\n\r\n        input[type=\"checkbox\"] + span {\r\n          background: #e74c3c;\r\n          border-radius: 50%;\r\n          box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1);\r\n          display: inline-block;\r\n          height: 30px;\r\n          margin: 4px 0 0;\r\n          position: relative;\r\n          width: 30px;\r\n          transition: all 0.2s ease;\r\n        }\r\n\r\n        input[type=\"checkbox\"] + span::before,\r\n        input[type=\"checkbox\"] + span::after {\r\n          background: #fff;\r\n          content: \"\";\r\n          display: block;\r\n          position: absolute;\r\n          width: 4px;\r\n          transition: all 0.2s ease;\r\n        }\r\n\r\n        input[type=\"checkbox\"] + span::before {\r\n          height: 16px;\r\n          left: 13px;\r\n          top: 7px;\r\n          -webkit-transform: rotate(-45deg);\r\n          transform: rotate(-45deg);\r\n        }\r\n\r\n        input[type=\"checkbox\"] + span::after {\r\n          height: 16px;\r\n          right: 13px;\r\n          top: 7px;\r\n          -webkit-transform: rotate(45deg);\r\n          transform: rotate(45deg);\r\n        }\r\n\r\n        input[type=\"checkbox\"]:checked + span {\r\n          background: #2ecc71;\r\n        }\r\n\r\n        input[type=\"checkbox\"]:checked + span::before {\r\n          height: 9px;\r\n          left: 9px;\r\n          top: 13px;\r\n          -webkit-transform: rotate(-47deg);\r\n          transform: rotate(-47deg);\r\n        }\r\n\r\n        input[type=\"checkbox\"]:checked + span::after {\r\n          height: 15px;\r\n          right: 11px;\r\n          top: 8px;\r\n        }\r\n\r\n        input[type=\"submit\"] {\r\n          background-color: #2ecc71;\r\n          border: 0;\r\n          border-radius: 4px;\r\n          color: #fff;\r\n          cursor: pointer;\r\n          display: inline-block;\r\n          font-size: 16px;\r\n          text-align: center;\r\n          padding: 12px 20px 14px;\r\n        }\r\n      }\r\n    }\r\n  }\r\n}\r\n\r\n.tooltip {\r\n  display:inline-block;\r\n  position:relative;\r\n  border-bottom:1px dotted #666;\r\n  text-align:left;\r\n}\r\n\r\n.tooltip h3 {margin:12px 0;}\r\n\r\n.tooltip .left {\r\n  min-width:200px;\r\n  max-width:400px;\r\n  top:50%;\r\n  right:100%;\r\n  margin-right:20px;\r\n  transform:translate(0, -50%);\r\n  padding:20px;\r\n  color:#666666;\r\n  background-color:#FFFFE0;\r\n  font-weight:normal;\r\n  font-size:13px;\r\n  border-radius:8px;\r\n  position:absolute;\r\n  z-index:99999999;\r\n  box-sizing:border-box;\r\n  display:none;\r\n  border:1px solid #DCA;\r\n}\r\n\r\n.tooltip:hover .left {\r\n  display:block;\r\n}\r\n\r\n.tooltip .left i {\r\n  position:absolute;\r\n  top:50%;\r\n  left:100%;\r\n  margin-top:-12px;\r\n  width:12px;\r\n  height:24px;\r\n  overflow:hidden;\r\n}\r\n\r\n.tooltip .left i::after {\r\n  content:'';\r\n  position:absolute;\r\n  width:12px;\r\n  height:12px;\r\n  left:0;\r\n  top:50%;\r\n  transform:translate(-50%,-50%) rotate(-45deg);\r\n  background-color:#FFFFE0;\r\n  border:1px solid #DCA;\r\n}"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, ":root {\n  --roboto: \"Roboto\", sans-serif;\n  --montserrat: \"Montserrat\", sans-serif;\n  --dark-liver: #5b5863ff;\n  --sonic-silver: #77767aff;\n  --persian-indigo: #32156bff;\n  --medium-purple: #9d6dfcff;\n  --ultramarine: #5612deff;\n  --bg-color: 9, 8, 32;\n  --bg-color2: 10, 10, 20;\n  --var-bg-color: var(--bg-color2);\n  --btn-fill: white;\n  --frostedWhite: 255, 255, 255;\n  --bg-img: none;\n  --bg-menu: none;\n  --bg-settings: none;\n  --trans-main: 1s; }\n\nbody {\n  overflow: hidden;\n  margin: 0;\n  background-image: var(--bg-img);\n  background-color: rgba(var(--var-bg-color), 1);\n  background-repeat: no-repeat;\n  background-size: cover;\n  background-attachment: fixed; }\n\n#root {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  background: rgba(var(--var-bg-color), 0.95);\n  box-shadow: 0 8px 32px 0 rgba(19, 23, 83, 0.37);\n  backdrop-filter: blur(50px);\n  position: fixed;\n  width: 100vw;\n  height: 100vh; }\n\nsvg {\n  z-index: -1; }\n\n.dropZone {\n  position: absolute;\n  z-index: 1;\n  width: 100%;\n  height: 100%;\n  transition: backdrop-filter calc(var(--trans-main) * 0.1) ease-in-out, background var(--trans-main) ease-in-out;\n  background: rgba(var(--bg-color2), 0.5);\n  visibility: visible;\n  pointer-events: none; }\n  .dropZone svg {\n    z-index: 7; }\n  .dropZone .text {\n    background: white;\n    -webkit-background-clip: text;\n    background-clip: text;\n    -webkit-text-fill-color: transparent;\n    font-family: var(--montserrat);\n    font-size: 1rem;\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    opacity: 1;\n    z-index: 8;\n    font-weight: 900;\n    font-size: 3rem;\n    text-align: center; }\n\n.toolBarBg {\n  --btn-size: 8vh;\n  --br: calc(var(--btn-size) / 3.33);\n  width: calc(var(--btn-size) + 3vh);\n  height: auto;\n  max-height: 90vh;\n  position: absolute;\n  top: 0;\n  right: 0;\n  background-image: var(--bg-menu);\n  margin: 1vh 2vh;\n  border-radius: var(--br);\n  overflow-x: hidden;\n  transition: width var(--trans-main) ease-in-out, max-height var(--trans-main) ease-in-out, margin var(--trans-main) ease-in-out;\n  z-index: 999; }\n  .toolBarBg::-webkit-scrollbar {\n    width: 0; }\n  .toolBarBg.hide {\n    overflow-y: hidden;\n    width: var(--btn-size);\n    max-height: var(--btn-size);\n    margin: 2vh 3vh; }\n  .toolBarBg .toolBar {\n    background: rgba(var(--frostedWhite), 0.05);\n    box-shadow: 0 8px 32px 0 rgba(19, 23, 83, 0.37);\n    backdrop-filter: blur(50px);\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    overflow-y: scroll;\n    z-index: 1;\n    justify-content: start;\n    flex-direction: column;\n    padding: 1vh 0;\n    transition: padding var(--trans-main) ease-in-out; }\n    .toolBarBg .toolBar::-webkit-scrollbar {\n      width: 0; }\n    .toolBarBg .toolBar.hide {\n      padding: 0; }\n      .toolBarBg .toolBar.hide .toolItem {\n        margin: 0; }\n    .toolBarBg .toolBar .toolItem {\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      background: rgba(var(--frostedWhite), 0.1);\n      box-shadow: 0 8px 32px 0 rgba(19, 23, 83, 0.37);\n      backdrop-filter: blur(50px);\n      z-index: 999999;\n      cursor: pointer;\n      margin: 0.5vh 0;\n      width: var(--btn-size);\n      height: var(--btn-size);\n      border-radius: var(--br);\n      transition: margin var(--trans-main) ease-in-out, background calc(var(--trans-main) * 0.2) ease-in-out; }\n      .toolBarBg .toolBar .toolItem.active {\n        background: rgba(var(--frostedWhite), 0.3);\n        box-shadow: 0 8px 32px 0 rgba(19, 23, 83, 0.37);\n        backdrop-filter: blur(50px); }\n      .toolBarBg .toolBar .toolItem i {\n        z-index: inherit;\n        color: white; }\n    .toolBarBg .toolBar .settingsAll i {\n      transition: transform var(--trans-main) ease-in-out;\n      transform: rotate(0deg); }\n    .toolBarBg .toolBar .settingsAll.hide i {\n      transform: rotate(180deg); }\n\n.linkField {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  background: rgba(var(--bg-color2), 0.7);\n  backdrop-filter: blur(10px);\n  width: 100%;\n  height: 100%;\n  z-index: 7; }\n  .linkField .linkText {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    background: linear-gradient(45deg, #333 55%, #383838 100%);\n    -webkit-background-clip: text;\n    background-clip: text;\n    -webkit-text-fill-color: transparent;\n    font-family: var(--montserrat);\n    font-size: 1rem;\n    top: 41%;\n    text-align: center;\n    opacity: 1; }\n  .linkField .linkInput {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    z-index: 7;\n    top: 45%;\n    border-radius: 2vh;\n    border: 1px white solid;\n    background-color: rgba(255, 255, 255, 0); }\n  .linkField .linkFieldSvg {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    transform: translate(-50%, -50%) scale(1.5); }\n\n.mainWrapper {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  width: 70vh;\n  height: max-content;\n  overflow: hidden;\n  border-radius: 2.5vh;\n  z-index: 7; }\n  .mainWrapper .settingsMenu {\n    background-image: var(--bg-menu);\n    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1);\n    width: 70vh; }\n    .mainWrapper .settingsMenu .innerMenu {\n      background: rgba(var(--frostedWhite), 0.05);\n      box-shadow: 0 8px 32px 0 rgba(19, 23, 83, 0.37);\n      backdrop-filter: blur(50px);\n      box-shadow: none;\n      padding: 30px 20px 20px; }\n      .mainWrapper .settingsMenu .innerMenu table tbody {\n        border-bottom: 1px solid rgba(65, 65, 65, 0.5);\n        display: block;\n        border-collapse: separate;\n        border-spacing: 4px; }\n      .mainWrapper .settingsMenu .innerMenu table tr {\n        display: flex;\n        flex-direction: row;\n        align-items: center;\n        justify-content: space-between; }\n      .mainWrapper .settingsMenu .innerMenu table td {\n        font-family: var(--roboto);\n        font-weight: 200;\n        padding: 5px 10px;\n        color: white; }\n      .mainWrapper .settingsMenu .innerMenu table td:nth-child(2) {\n        width: 40px; }\n      .mainWrapper .settingsMenu .innerMenu table tfoot td {\n        border: none;\n        padding: 30px 10px 10px;\n        text-align: center;\n        display: flex;\n        justify-content: center;\n        width: 100%; }\n      .mainWrapper .settingsMenu .innerMenu table input,\n      .mainWrapper .settingsMenu .innerMenu table label {\n        cursor: pointer; }\n      .mainWrapper .settingsMenu .innerMenu table .colorSwatch {\n        height: 30px;\n        width: 30px;\n        border-radius: 50%;\n        background-color: rgba(var(--var-bg-color), 1); }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"color\"] {\n        display: none;\n        height: 30px;\n        width: 30px;\n        border-radius: 50%; }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"checkbox\"] {\n        cursor: pointer;\n        height: 30px;\n        margin: 4px 0 0;\n        position: absolute;\n        opacity: 0;\n        width: 30px;\n        z-index: 2; }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"checkbox\"] + span {\n        background: #e74c3c;\n        border-radius: 50%;\n        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1);\n        display: inline-block;\n        height: 30px;\n        margin: 4px 0 0;\n        position: relative;\n        width: 30px;\n        transition: all 0.2s ease; }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"checkbox\"] + span::before,\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"checkbox\"] + span::after {\n        background: #fff;\n        content: \"\";\n        display: block;\n        position: absolute;\n        width: 4px;\n        transition: all 0.2s ease; }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"checkbox\"] + span::before {\n        height: 16px;\n        left: 13px;\n        top: 7px;\n        -webkit-transform: rotate(-45deg);\n        transform: rotate(-45deg); }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"checkbox\"] + span::after {\n        height: 16px;\n        right: 13px;\n        top: 7px;\n        -webkit-transform: rotate(45deg);\n        transform: rotate(45deg); }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"checkbox\"]:checked + span {\n        background: #2ecc71; }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"checkbox\"]:checked + span::before {\n        height: 9px;\n        left: 9px;\n        top: 13px;\n        -webkit-transform: rotate(-47deg);\n        transform: rotate(-47deg); }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"checkbox\"]:checked + span::after {\n        height: 15px;\n        right: 11px;\n        top: 8px; }\n      .mainWrapper .settingsMenu .innerMenu table input[type=\"submit\"] {\n        background-color: #2ecc71;\n        border: 0;\n        border-radius: 4px;\n        color: #fff;\n        cursor: pointer;\n        display: inline-block;\n        font-size: 16px;\n        text-align: center;\n        padding: 12px 20px 14px; }\n\n.tooltip {\n  display: inline-block;\n  position: relative;\n  border-bottom: 1px dotted #666;\n  text-align: left; }\n\n.tooltip h3 {\n  margin: 12px 0; }\n\n.tooltip .left {\n  min-width: 200px;\n  max-width: 400px;\n  top: 50%;\n  right: 100%;\n  margin-right: 20px;\n  transform: translate(0, -50%);\n  padding: 20px;\n  color: #666666;\n  background-color: #FFFFE0;\n  font-weight: normal;\n  font-size: 13px;\n  border-radius: 8px;\n  position: absolute;\n  z-index: 99999999;\n  box-sizing: border-box;\n  display: none;\n  border: 1px solid #DCA; }\n\n.tooltip:hover .left {\n  display: block; }\n\n.tooltip .left i {\n  position: absolute;\n  top: 50%;\n  left: 100%;\n  margin-top: -12px;\n  width: 12px;\n  height: 24px;\n  overflow: hidden; }\n\n.tooltip .left i::after {\n  content: '';\n  position: absolute;\n  width: 12px;\n  height: 12px;\n  left: 0;\n  top: 50%;\n  transform: translate(-50%, -50%) rotate(-45deg);\n  background-color: #FFFFE0;\n  border: 1px solid #DCA; }\n", "",{"version":3,"sources":["webpack://./src/styles.scss"],"names":[],"mappings":"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","sourcesContent":["@import url(\"https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap\");\r\n@import url(\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css\");\r\n@import url(\"https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap\");\r\n\r\n@mixin frostedGlass(\r\n  $bgCol: (\r\n    255,\r\n    255,\r\n    255,\r\n  ),\r\n  $alpha: 0.5,\r\n  $blur: 50px\r\n) {\r\n  background: rgba($bgCol, $alpha);\r\n  box-shadow: 0 8px 32px 0 hsla(236, 63%, 20%, 0.37);\r\n  backdrop-filter: blur($blur);\r\n  //   -webkit-backdrop-filter: blur(5px);\r\n}\r\n\r\n@mixin flexCenter {\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n}\r\n\r\n@mixin absCenter {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%, -50%);\r\n}\r\n\r\n@mixin textTemplate {\r\n  background: white;\r\n  -webkit-background-clip: text;\r\n  background-clip: text;\r\n  -webkit-text-fill-color: transparent;\r\n  font-family: var(--montserrat);\r\n  font-size: 1rem;\r\n}\r\n\r\n:root {\r\n  --roboto: \"Roboto\", sans-serif;\r\n  --montserrat: \"Montserrat\", sans-serif;\r\n\r\n  // Background color palette\r\n  --dark-liver: #5b5863ff;\r\n  --sonic-silver: #77767aff;\r\n  --persian-indigo: #32156bff;\r\n  --medium-purple: #9d6dfcff;\r\n  --ultramarine: #5612deff;\r\n\r\n  --bg-color: 9, 8, 32;\r\n  --bg-color2: 10, 10, 20;\r\n\r\n  --var-bg-color: var(--bg-color2);\r\n\r\n  --btn-fill: white;\r\n\r\n  --frostedWhite: 255, 255, 255;\r\n\r\n  --bg-img: none;\r\n  --bg-menu: none;\r\n  --bg-settings: none;\r\n\r\n  --trans-main: 1s;\r\n}\r\n\r\nbody {\r\n  overflow: hidden;\r\n  margin: 0;\r\n  background-image: var(--bg-img);\r\n  background-color: rgba(var(--var-bg-color), 1);\r\n  background-repeat: no-repeat;\r\n  background-size: cover;\r\n  background-attachment: fixed;\r\n}\r\n\r\n#root {\r\n  @include absCenter;\r\n  @include frostedGlass(var(--var-bg-color), 0.95);\r\n\r\n  position: fixed;\r\n  width: 100vw;\r\n  height: 100vh;\r\n}\r\n\r\nsvg {\r\n  z-index: -1;\r\n}\r\n\r\ncanvas {\r\n  // border: 5px white solid;\r\n}\r\n\r\n.dropZone {\r\n  // z-index: 7;\r\n  position: absolute;\r\n  z-index: 1;\r\n  width: 100%;\r\n  height: 100%;\r\n  // @include frostedGlass(var(--bg-color2), 0.95, 10px);\r\n  transition: backdrop-filter calc(var(--trans-main) * 0.1) ease-in-out,\r\n    background var(--trans-main) ease-in-out;\r\n  // backdrop-filter: blur(10px);\r\n  background: rgba(var(--bg-color2), 0.5);\r\n  visibility: visible;\r\n  pointer-events: none;\r\n\r\n  svg {\r\n    z-index: 7;\r\n  }\r\n\r\n  .text {\r\n    @include textTemplate;\r\n    @include absCenter;\r\n\r\n    opacity: 1;\r\n    z-index: 8;\r\n    font-weight: 900;\r\n    font-size: 3rem;\r\n    text-align: center;\r\n  }\r\n}\r\n\r\n.toolBarBg {\r\n  --btn-size: 8vh;\r\n  --br: calc(var(--btn-size) / 3.33);\r\n\r\n  width: calc(var(--btn-size) + 3vh);\r\n  height: auto;\r\n  max-height: 90vh;\r\n  position: absolute;\r\n  top: 0;\r\n  right: 0;\r\n  background-image: var(--bg-menu);\r\n  // background-size: contain;\r\n  // background-attachment: fixed;\r\n  margin: 1vh 2vh;\r\n  border-radius: var(--br);\r\n  overflow-x: hidden;\r\n  transition: width var(--trans-main) ease-in-out,\r\n    max-height var(--trans-main) ease-in-out,\r\n    margin var(--trans-main) ease-in-out;\r\n\r\n  z-index: 999;\r\n\r\n  &::-webkit-scrollbar {\r\n    width: 0;\r\n  }\r\n\r\n  &.hide {\r\n    overflow-y: hidden;\r\n    width: var(--btn-size);\r\n    max-height: var(--btn-size);\r\n    margin: 2vh 3vh;\r\n  }\r\n\r\n  .toolBar {\r\n    @include frostedGlass(var(--frostedWhite), 0.05);\r\n    @include flexCenter;\r\n\r\n    overflow-y: scroll;\r\n    z-index: 1;\r\n    justify-content: start;\r\n    flex-direction: column;\r\n    padding: 1vh 0;\r\n    transition: padding var(--trans-main) ease-in-out;\r\n\r\n    &::-webkit-scrollbar {\r\n      width: 0;\r\n    }\r\n\r\n    &.hide {\r\n      padding: 0;\r\n      .toolItem {\r\n        margin: 0;\r\n      }\r\n    }\r\n\r\n    .toolItem {\r\n      @include flexCenter;\r\n      @include frostedGlass(var(--frostedWhite), 0.1);\r\n\r\n      z-index: 999999;\r\n      cursor: pointer;\r\n      margin: 0.5vh 0;\r\n      width: var(--btn-size);\r\n      height: var(--btn-size);\r\n      border-radius: var(--br);\r\n      transition: margin var(--trans-main) ease-in-out,\r\n        background calc(var(--trans-main) * 0.2) ease-in-out;\r\n\r\n      &.active {\r\n        @include frostedGlass(var(--frostedWhite), 0.3);\r\n      }\r\n\r\n      i {\r\n        z-index: inherit;\r\n        color: white;\r\n      }\r\n    }\r\n\r\n    .settingsAll {\r\n      i {\r\n        transition: transform var(--trans-main) ease-in-out;\r\n        transform: rotate(0deg);\r\n      }\r\n      &.hide i {\r\n        transform: rotate(180deg);\r\n      }\r\n    }\r\n  }\r\n}\r\n\r\n.linkField {\r\n  @include absCenter;\r\n  background: rgba(var(--bg-color2), 0.7);\r\n  backdrop-filter: blur(10px);\r\n  width: 100%;\r\n  height: 100%;\r\n  z-index: 7;\r\n\r\n  .linkText {\r\n    @include absCenter;\r\n    background: linear-gradient(45deg, #333 55%, rgb(56, 56, 56) 100%);\r\n    -webkit-background-clip: text;\r\n    background-clip: text;\r\n    -webkit-text-fill-color: transparent;\r\n    font-family: var(--montserrat);\r\n    font-size: 1rem;\r\n    top: 41%;\r\n    text-align: center;\r\n    opacity: 1;\r\n  }\r\n\r\n  .linkInput {\r\n    @include absCenter;\r\n    z-index: 7;\r\n    top: 45%;\r\n    border-radius: 2vh;\r\n    border: 1px white solid;\r\n    background-color: rgba(255, 255, 255, 0);\r\n  }\r\n\r\n  .linkFieldSvg {\r\n    @include absCenter;\r\n    // z-index: 5;\r\n    // pointer-events: none;\r\n    transform: translate(-50%, -50%) scale(1.5);\r\n  }\r\n}\r\n\r\n.mainWrapper {\r\n  @include absCenter;\r\n  width:70vh;\r\n  height: max-content;\r\n  overflow:hidden;\r\n  border-radius: 2.5vh;\r\n  z-index: 7;\r\n\r\n  .settingsMenu {\r\n    // @include absCenter;\r\n    // @include absCenter;\r\n    // background: #fff;\r\n    background-image: var(--bg-menu);\r\n    // background: black;\r\n    \r\n    // overflow: hidden;\r\n    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1);\r\n    // margin: 100px auto;\r\n    // padding: 30px 20px 20px;\r\n    width: 70vh;\r\n    \r\n\r\n    .innerMenu {\r\n      @include frostedGlass(var(--frostedWhite), 0.05);\r\n      box-shadow: none;\r\n      padding: 30px 20px 20px;\r\n\r\n      table {\r\n        tbody {\r\n          border-bottom: 1px solid rgba(65, 65, 65, 0.5);\r\n          display: block;\r\n          border-collapse: separate;\r\n          border-spacing: 4px;\r\n        }\r\n\r\n        tr {\r\n          display: flex;\r\n          flex-direction: row;\r\n          align-items: center;\r\n          justify-content: space-between;\r\n        }\r\n\r\n        td {\r\n          font-family: var(--roboto);\r\n          font-weight: 200;\r\n          padding: 5px 10px;\r\n          color: white;\r\n        }\r\n\r\n        td:nth-child(2) {\r\n          // text-align: right;\r\n          width: 40px;\r\n        }\r\n\r\n        tfoot td {\r\n          border: none;\r\n          padding: 30px 10px 10px;\r\n          text-align: center;\r\n          display: flex;\r\n          justify-content: center;\r\n          width: 100%;\r\n        }\r\n\r\n        input,\r\n        label {\r\n          cursor: pointer;\r\n        }\r\n\r\n        .colorSwatch {\r\n          height: 30px;\r\n          width: 30px;\r\n          border-radius: 50%;\r\n          background-color: rgba(var(--var-bg-color), 1);\r\n        }\r\n\r\n        input[type=\"color\"] {\r\n          display: none;\r\n          height: 30px;\r\n          width: 30px;\r\n          border-radius: 50%;\r\n        }\r\n\r\n        input[type=\"checkbox\"] {\r\n          cursor: pointer;\r\n          height: 30px;\r\n          margin: 4px 0 0;\r\n          position: absolute;\r\n          opacity: 0;\r\n          width: 30px;\r\n          z-index: 2;\r\n        }\r\n\r\n        input[type=\"checkbox\"] + span {\r\n          background: #e74c3c;\r\n          border-radius: 50%;\r\n          box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1);\r\n          display: inline-block;\r\n          height: 30px;\r\n          margin: 4px 0 0;\r\n          position: relative;\r\n          width: 30px;\r\n          transition: all 0.2s ease;\r\n        }\r\n\r\n        input[type=\"checkbox\"] + span::before,\r\n        input[type=\"checkbox\"] + span::after {\r\n          background: #fff;\r\n          content: \"\";\r\n          display: block;\r\n          position: absolute;\r\n          width: 4px;\r\n          transition: all 0.2s ease;\r\n        }\r\n\r\n        input[type=\"checkbox\"] + span::before {\r\n          height: 16px;\r\n          left: 13px;\r\n          top: 7px;\r\n          -webkit-transform: rotate(-45deg);\r\n          transform: rotate(-45deg);\r\n        }\r\n\r\n        input[type=\"checkbox\"] + span::after {\r\n          height: 16px;\r\n          right: 13px;\r\n          top: 7px;\r\n          -webkit-transform: rotate(45deg);\r\n          transform: rotate(45deg);\r\n        }\r\n\r\n        input[type=\"checkbox\"]:checked + span {\r\n          background: #2ecc71;\r\n        }\r\n\r\n        input[type=\"checkbox\"]:checked + span::before {\r\n          height: 9px;\r\n          left: 9px;\r\n          top: 13px;\r\n          -webkit-transform: rotate(-47deg);\r\n          transform: rotate(-47deg);\r\n        }\r\n\r\n        input[type=\"checkbox\"]:checked + span::after {\r\n          height: 15px;\r\n          right: 11px;\r\n          top: 8px;\r\n        }\r\n\r\n        input[type=\"submit\"] {\r\n          background-color: #2ecc71;\r\n          border: 0;\r\n          border-radius: 4px;\r\n          color: #fff;\r\n          cursor: pointer;\r\n          display: inline-block;\r\n          font-size: 16px;\r\n          text-align: center;\r\n          padding: 12px 20px 14px;\r\n        }\r\n      }\r\n    }\r\n  }\r\n}\r\n\r\n.tooltip {\r\n  display:inline-block;\r\n  position:relative;\r\n  border-bottom:1px dotted #666;\r\n  text-align:left;\r\n}\r\n\r\n.tooltip h3 {margin:12px 0;}\r\n\r\n.tooltip .left {\r\n  min-width:200px;\r\n  max-width:400px;\r\n  top:50%;\r\n  right:100%;\r\n  margin-right:20px;\r\n  transform:translate(0, -50%);\r\n  padding:20px;\r\n  color:#666666;\r\n  background-color:#FFFFE0;\r\n  font-weight:normal;\r\n  font-size:13px;\r\n  border-radius:8px;\r\n  position:absolute;\r\n  z-index:99999999;\r\n  box-sizing:border-box;\r\n  display:none;\r\n  border:1px solid #DCA;\r\n}\r\n\r\n.tooltip:hover .left {\r\n  display:block;\r\n}\r\n\r\n.tooltip .left i {\r\n  position:absolute;\r\n  top:50%;\r\n  left:100%;\r\n  margin-top:-12px;\r\n  width:12px;\r\n  height:24px;\r\n  overflow:hidden;\r\n}\r\n\r\n.tooltip .left i::after {\r\n  content:'';\r\n  position:absolute;\r\n  width:12px;\r\n  height:12px;\r\n  left:0;\r\n  top:50%;\r\n  transform:translate(-50%,-50%) rotate(-45deg);\r\n  background-color:#FFFFE0;\r\n  border:1px solid #DCA;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

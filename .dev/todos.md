@@ -12,8 +12,8 @@
 
 ## Big Ones
 
-- [ ] save function for stage
-- [ ] write up fucking help menu and tooltips!
+- [x] save function for stage
+- [ ] write up fucking help menu and tooltips[x]!
 - [ ] layout function to space images in grid layout
 
 ## App Todos
@@ -34,9 +34,11 @@
 - [ ] mobile zoom
 - [x] make videobutton functional
 - [ ] seperate videobutton pause from hover activation to make it persitant, also for menu playbutton
-- [ ] build settings reducer to manage setting and getting stored settings
-- [ ] refine stage import, scaled images don't load correctly
+- [x] build settings reducer to manage setting and getting stored settings
+- [x] refine stage import, scaled images don't load correctly
 - [x] forgot to activate menu playbutton
+
+- [ ] switch from webpack to vite
 
 ### Ideas
 
@@ -48,6 +50,7 @@
 - [x] `ctrl + d` = duplicate node(s)
 - [ ] `ctrl + c && v` = copy & paste node(s)
 - [x] `ctrl + i` = open import dialog
+- [x] `ctrl + q` = open settings
 - [x] `i` = open link field
 - [x] `Backspace, Delete` = delete node(s)
 - [x] `q` = toggle menu
