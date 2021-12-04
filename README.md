@@ -15,3 +15,8 @@ It's designed to work with online resources so dropping from google should work 
 It's very unstable at the moment, it's recommended to only use it with local media for now.
 
 A help menu is also not implemented at the moment but will be coming in the future. For now when you expand the Tool Menu it will show you shortcuts and what it's function is on the tooltip. 
+
+
+## Help/Contribute
+As always this project is open for anyone who is interested, if you'd like to help out I've got some todos if you don't know where to start.
+Have a look [here.](.dev/todos.md)
