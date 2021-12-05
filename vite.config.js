@@ -6,7 +6,7 @@ import path from "path";
 export default defineConfig({
   plugins: [react()],
   // root: ".",
-  base: "./",
+  base: "/onlineRef/",
   build: {
     outDir: "./docs",
   },
