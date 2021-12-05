@@ -10,7 +10,7 @@ import { useMedia } from "src/states/media";
 import { useController } from "src/js/controllers";
 import get_funcs from "src/js/toolFuncs";
 
-import bg_img from "src/images/menu_bg.svg";
+// import bg_img from "src/images/menu_bg.svg";
 
 
 const tl_reducer = (tl, action) => {
@@ -153,7 +153,8 @@ const ToolBar = () => {
   ]);
 
   useLayoutEffect(() => {
-    $(":root").css("--bg-menu", `url(${bg_img})`);
+    // $(":root").css("--bg-menu", `url(${bg_img})`);
+    // $(":root").css("--bg-menu", new URL(bg_img).href);
     const tl = gsap.timeline({ duration: 0.1 });
     const fx = {
       x: 100,

@@ -2,33 +2,33 @@ import React, { useState, useEffect, useRef, useReducer } from "react";
 import { Stage, Layer, Transformer, Rect, Line } from "react-konva";
 import $ from "jquery";
 
-import "./app.scss";
+import "src/app.scss";
 
-import bg_img from "./images/bg_scatter2.svg";
-import bg_settings from "./images/link_field/end.svg";
+import bg_img from "src/images/bg_scatter2.svg";
+import bg_menu from "src/images/menu_bg.svg";
+import bg_settings from "src/images/link_field/end.svg";
 
-import URLImage from "./components/URLImage";
-import URLVideo from "./components/URLVideo";
-import ToolBar from "./components/ToolBar";
-import DropZone from "./components/DropZone";
-import LinkField from "./components/LinkField";
-import SettingsMenu from "./components/SettingsMenu";
-import Guides from "./components/Guides";
+import URLImage from "src/components/URLImage";
+import URLVideo from "src/components/URLVideo";
+import ToolBar from "src/components/ToolBar";
+import DropZone from "src/components/DropZone";
+import LinkField from "src/components/LinkField";
+import SettingsMenu from "src/components/SettingsMenu";
+import Guides from "src/components/Guides";
 
-import * as selectHelp from "./js/selection";
-import * as dragDrop from "./js/dragDrop";
-import * as imgHelp from "./js/imageHelpers";
-import * as guidesHelp from "./js/guides";
-import * as helper from "./js/helper";
-import * as controllers from "./js/controllers";
-import * as stageFuncs from "./js/stageFuncs";
+import * as selectHelp from "src/js/selection";
+import * as dragDrop from "src/js/dragDrop";
+import * as guidesHelp from "src/js/guides";
+import * as helper from "src/js/helper";
+import * as controllers from "src/js/controllers";
+import * as stageFuncs from "src/js/stageFuncs";
 
-import { Media, MediaProvider } from "./states/media";
-import { StageConfig, StageConfigProvider } from "./states/stageConfig";
-import { StoredConfig, StoredConfigProvider } from "./states/storedConfig";
-import { StageStates, StageStatesProvider } from "./states/stageStates";
-import { Selection, SelectionProvider } from "./states/selection";
-import get_funcs from "./js/toolFuncs";
+import { Media, MediaProvider } from "src/states/media";
+import { StageConfig, StageConfigProvider } from "src/states/stageConfig";
+import { StoredConfig, StoredConfigProvider } from "src/states/storedConfig";
+import { StageStates, StageStatesProvider } from "src/states/stageStates";
+import { Selection, SelectionProvider } from "src/states/selection";
+import get_funcs from "src/js/toolFuncs";
 
 
 const App = () => {
@@ -49,6 +49,7 @@ const App = () => {
 
   useEffect(() => {
     $(":root").css("--bg-img", `url(${bg_img})`);
+    $(":root").css("--bg-menu", `url(${bg_menu})`);
     $(":root").css("--bg-settings.settings", `url(${bg_settings})`);
 
     const toolBtnFuncs = get_funcs(
