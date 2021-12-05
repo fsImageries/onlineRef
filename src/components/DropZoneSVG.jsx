@@ -45,7 +45,7 @@ const DropZoneSVG = ({ isRight }) => {
     >
       {isRight && (
         <g transform="translate(900, 0)">
-          <path className="slide"
+          <path
             className="slide rightEnd"
             d="M0 405.6C-44.5 403 -89 400.4 -124.2 382.3C-159.5 364.2 -185.6 330.7 -223.4 307.4C-261.2 284.2 -310.7 271.2 -328.2 238.4C-345.6 205.6 -331 153 -338.6 110C-346.1 67 -375.9 33.5 -405.6 0L0 0Z"
             fill="#232745"
